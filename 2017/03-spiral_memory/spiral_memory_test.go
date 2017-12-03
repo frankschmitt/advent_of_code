@@ -13,7 +13,13 @@ func ExpectEqual(t *testing.T, expected uint64, actual uint64) {
 }
 
 func TestDistanceInSpiralMemoryForSampleTestCases(t *testing.T) {
-   ExpectEqual(t, 1, 2)
+   ExpectEqual(t, 0, DistanceInSpiralMemory(1))  // 1 = origin - no walking required
+   ExpectEqual(t, 3, DistanceInSpiralMemory(12)) // down, left, left
+   ExpectEqual(t, 2, DistanceInSpiralMemory(23)) 
+   ExpectEqual(t, 31, DistanceInSpiralMemory(1024)) 
 }
 
 
+func TestDistanceInSpiralMemorySolution(t *testing.T) {
+   ExpectEqual(t, 480, DistanceInSpiralMemory(347991))  
+}
