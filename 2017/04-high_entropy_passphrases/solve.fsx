@@ -26,5 +26,7 @@ let testPassphrase input expected =
   printfn "%s" s 
 
 // unit tests
-[("abc", true); ("abc abc", false)]
+[ ("abc", true)
+; ("abc abc", false)
+]
 |> List.iter (fun (input,expected) -> testPassphrase input expected)
