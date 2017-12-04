@@ -6,4 +6,4 @@ Solution for the high entropy password challenge in F#.
 brew install mono
 
 ## Running the tests
-
+fsharpi solve.fsx
