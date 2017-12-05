@@ -10,7 +10,7 @@ Haskell
 + Python (2017-01)
 Java
 Kotlin
-F#
++ F# (2017-04)
 OCaml
 Prolog
 Minikanren
@@ -29,12 +29,12 @@ Ada
 Eiffel
 R
 Julia 
+* Go (2017-03)
 
 ## Future / Fallback
 SQL
 PL/SQL
 Bash / Sed / Awk / grep / ...
-Go
 Javascript
 Excel
 
