@@ -14,7 +14,7 @@ Kotlin
 OCaml
 Prolog
 Minikanren
-C++
++ C++ (2017-05
 C#
 Elm
 Purescript
