@@ -30,6 +30,7 @@ Eiffel
 R
 Julia 
 * Go (2017-03)
+Crystal
 
 ## Future / Fallback
 SQL

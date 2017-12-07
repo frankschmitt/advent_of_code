@@ -38,4 +38,6 @@ func DistanceInSpiralMemory(square uint64) uint64 {
   return spiral[square]
 }
 
-
+func SumInSpiralMemory(square uint64) uint64 {
+  return 1
+}

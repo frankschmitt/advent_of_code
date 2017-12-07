@@ -23,3 +23,7 @@ func TestDistanceInSpiralMemoryForSampleTestCases(t *testing.T) {
 func TestDistanceInSpiralMemorySolution(t *testing.T) {
    ExpectEqual(t, 480, DistanceInSpiralMemory(347991))  
 }
+
+func TestSumInSpiralMemoryForSampleTestCases(t *testing.T) {
+   ExpectEqual(t, 1, SumInSpiralMemory(1))
+}
