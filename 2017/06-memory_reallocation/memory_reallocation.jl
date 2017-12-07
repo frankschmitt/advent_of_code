@@ -22,17 +22,18 @@ function redistribute(x)
 end
 
 # count redistributions until cycle is detected
-# @return the number of redistributions
+# @return the number of redistributions overall, and the cycle length
 function count_until_cycle(x)
   seen = Dict()
   n = 0
   next = x
+  # we use the string representation of the array as key to avoid aliasing problems
   while !haskey(seen, "$next")
-    n += 1
-    seen["$next"] = true
+    seen["$next"] = n
     next = redistribute(next)
+    n += 1
   end
-  n
+  (n, n - seen["$next"])
 end
 
 # tests for choose_block 
@@ -45,7 +46,7 @@ end
 @test redistribute([0, 2, 7, 0]) == [2, 4, 1, 2]
 
 # tests for detecting cycles
-@test count_until_cycle([0, 2, 7, 0]) == 5
+@test count_until_cycle([0, 2, 7, 0]) == (5, 4)
 
 
 # solve it
