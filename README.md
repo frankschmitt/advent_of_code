@@ -28,15 +28,15 @@ Perl
 Ada
 Eiffel
 R
-Julia 
++ Julia (2017-06)
 * Go (2017-03)
 Lua
 Crystal
+* Bash / Sed / Awk / grep / ... (2017-07)
 
 ## Future / Fallback
 SQL
 PL/SQL
-Bash / Sed / Awk / grep / ...
 Javascript
 Excel
 
