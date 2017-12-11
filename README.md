@@ -33,6 +33,7 @@ R
 Lua
 * Crystal (2017-07)
 * Bash / Sed / Awk / grep / ... (2017-07, first part)
+Frank (https://github.com/cmcl/frankjnr)
 
 ## Future / Fallback
 SQL
