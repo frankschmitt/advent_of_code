@@ -4,7 +4,8 @@ function table.print(t)
 end
 
 -- get the key and value for the max value in a table
--- idea taken from https://stackoverflow.com/a/5180611/610979
+-- idea taken from https://stackoverflow.com/a/5180611/610979, adapted to return only the value
+-- (we don't care about its index)
 function max(t)
   res = nil
   for key,value in pairs(t) do 
@@ -15,6 +16,7 @@ function max(t)
   return res
 end
 
+-- copy a table
 -- taken from https://stackoverflow.com/a/641993/610979
 function table.shallow_copy(t)
   local t2 = {}
@@ -24,6 +26,7 @@ function table.shallow_copy(t)
   return t2
 end
 
+-- split a string at the given separator
 -- taken from http://lua-users.org/wiki/SplitJoin
 function string:split(sSeparator, nMax, bRegexp)
   assert(sSeparator ~= '')
@@ -51,7 +54,7 @@ end
 
 -- given the current state, evaluate the condition "<var> <op> <val>"
 --    e.g. "b < 5" returns true if b is less than 5 
---    if a variable has never been initialize, it is assumed to be 0
+--    if a variable has never been initialized, it is assumed to be 0
 function evaluateCondition(state, var, op, val)
   local x = state[var] 
   local n = tonumber(val)
@@ -75,42 +78,51 @@ function evaluateCondition(state, var, op, val)
   end
 end
 
--- compute new state from old state and input
+-- compute new state from old state, input and old maximum value
 -- @return new state (as a table)
-function registers( input, old_state  ) 
+function registers( input, old_state, old_max  ) 
   local new_state = table.shallow_copy(old_state)
+  local new_max = old_max
   -- Format: operand operator offset if argument comparison value
   --    e.g. 'a inc 2 if b < 5'
   local ops = string.split(input, ' ')
+  -- get old val, and use 0 as default if it was not set yet
+  local old_val = old_state[ops[1]]
+  if old_val == nil then
+    old_val = 0
+  end
+  local new_val = old_val 
+  -- run inc/dec only if our condition is met
   if evaluateCondition(old_state, ops[5], ops[6], ops[7]) then
-    local old_val = old_state[ops[1]]
-    -- use 0 as default 
-    if old_val == nil then
-      old_val = 0
-    end
     -- compute new value
     if ops[2] == "inc" then
-      new_state[ops[1]] = old_val + ops[3]
+      new_val = old_val + ops[3]
     elseif ops[2] == "dec" then
-      new_state[ops[1]] = old_val - ops[3]
+      new_val = old_val - ops[3]
     else
       error("unknown inc/dec operator: " + ops[2])
     end
   end
-  -- new_state["a"] = 2
-  return new_state
+  -- store new value
+  new_state[ops[1]] = new_val 
+  -- check for new maximum 
+  if new_val > new_max then
+    new_max = new_val
+  end
+  return new_state, new_max
 end
 
 -- load a program from file, evaluate it, and print the result
 function runProgram(filename) 
   local file = io.open(filename)
   local result = {}
+  local old_max = 0
   if file then
     for line in file:lines() do 
-      result = registers(line, result)
+      result, old_max = registers(line, result, old_max)
     end
   end
-  return max(result)
+  return { max(result), old_max }
 end
 
 -- Unit testing starts
@@ -147,28 +159,29 @@ function TestMax:testMaxForUnsortedTable()
   input["c"] = 12
   lu.assertEquals(max(input), 13)
 end
+
 TestRegister = {} --class
 function TestRegister:testSingleInstructionShouldSetValIfConditionIsTrue()
   input = 'a inc 2 if b < 5'
-  result = registers(input, {})
+  result = registers(input, {}, 0)
   lu.assertEquals( type(result), 'table' )
   lu.assertEquals( result["a"], 2 )
 end
 
-function TestRegister:testSingleInstructionShouldNotSetValIfConditionIsTrue()
+function TestRegister:testSingleInstructionShouldNotChangeValIfConditionIsTrue()
   local input = 'a inc 2 if b > 5'
-  local result = registers(input, {})
+  local result = registers(input, {}, 0)
   lu.assertEquals( type(result), 'table' )
-  lu.assertEquals( result["a"], nil )
+  lu.assertEquals( result["a"], 0 ) -- 0 is the default value
 end
 
-function TestRegister:testMaxValueAfterSampleProgram()
-  lu.assertEquals(1, runProgram("sample_input.txt"))
+function TestRegister:testResultAfterSampleProgram()
+  lu.assertEquals(runProgram("sample_input.txt"), {1, 10})
 end
 
 TestSolve = {}
-function TestSolve:testSolutionForPartI() 
-  lu.assertEquals(6611, runProgram("input.txt"))
+function TestSolve:testSolution() 
+  lu.assertEquals(runProgram("input.txt"), {6611, 6619} )
 end
 
 os.exit(lu.LuaUnit.run())
