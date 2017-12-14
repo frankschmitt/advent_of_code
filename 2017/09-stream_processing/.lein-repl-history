@@ -3,3 +3,7 @@
 (source head)
 (source hd)
 (source cdr)
+(= (first "abc" \{))
+(= ((first "abc") \{))
+(= (first "abc") \{)
+(= (first "{abc") \{)
