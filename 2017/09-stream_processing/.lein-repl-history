@@ -1,0 +1,5 @@
+(score "xyz")
+(:require [stream-processing.core :refer :all])
+(source head)
+(source hd)
+(source cdr)
