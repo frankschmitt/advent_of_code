@@ -57,15 +57,44 @@ class RecursiveCircus
     nodes
   end
   
-  # parse input (given as an array of strings), and return the root node
-  def find_root(input)
-    # extract list of nodes
-    nodes = parse_input(input)
+  # given a list of nodes, return the root node
+  def find_root_internal(nodes)
     # build shallow list of children
     all_children = nodes.map {|n| n.child_names}.flatten
     # find the node that is not a child (= the root node)
     nodes.find { |n| !all_children.includes?(n.name) }
   end
 
+  # parse input (given as an array of strings), and return the root node
+  def find_root(input)
+    # extract list of nodes
+    nodes = parse_input(input)
+    find_root_internal(nodes)
+  end
 
+  # given a root node and a list of available nodes, return the (sub-)tree for the root node
+  def build_tree_internal(root : Node, nodes : Array(Node))
+    # find all nodes for the child names
+    child_nodes = [] of Node
+    root.child_names.each do |child_name| 
+      child_nodes += nodes.select {|n| n.name == child_name }
+    end
+    # build child trees recursively
+    child_trees = child_nodes.map {|child_node| build_tree_internal(child_node, nodes).as(Tree) }
+    # finally, build the tree from the root node and the child trees
+    Tree.new(root, child_trees)
+  end
+
+  # parse input (given as an array of strings), build tree and return it
+  def build_tree(input)
+    nodes = parse_input(input)
+    tree = case root = find_root_internal(nodes)
+      when Node 
+        build_tree_internal(root, nodes)
+      else
+        # return a dummy Tree if we didn't find a root node
+        Tree.new(Node.new("????", -1, [] of String), [] of Tree)
+    end 
+    tree
+  end
 end
