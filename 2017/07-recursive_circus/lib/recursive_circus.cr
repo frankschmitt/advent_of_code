@@ -8,14 +8,20 @@ class Node
   def ==(other : Node)
     @name == other.name && @weight == other.weight && @child_names == other.child_names
   end
+
+  def to_s
+    "#{name} (#{weight}) -> #{child_names.join(',')}"
+  end
 end
 
 
 class Tree
-  property root, children
+  property root, children, weight : Int32, is_balanced : Bool
 
   def initialize(root : Node, children : Array(Tree))
     @root, @children = root, children
+    @weight = root.weight + children.map {|c| c.weight}.sum
+    @is_balanced = children.empty? || children.all? {|child| child.weight == children.first.weight }
   end
 
   def ==(other : Tree)
@@ -97,4 +103,34 @@ class RecursiveCircus
     end 
     tree
   end
+
+  # find the deepest unbalanced sub-tree in a given tree
+  # @return deepest unbalanced sub-tree if tree is not balanced, nil otherwise
+  def find_unbalanced_int(tree)
+    result = nil
+    if !tree.is_balanced 
+      result = tree 
+      tree.children.each do |child|
+        if subtree = find_unbalanced_int(child) 
+          result = subtree
+        end
+      end
+    end
+    result 
+  end
+
+  # find the deepest unbalanced node in the given tree, and return a string that contains its name and base weight and 
+  #   all its children with their respective sub-tree weight
+  # The answer to the puzzle can then be extracted by 
+  #   - finding the single child whose weight doesn't match 
+  #   - getting its base weight from the input
+  #   - adjusting this base weight by the difference found in step 1
+  def find_unbalanced(tree)
+    case t = find_unbalanced_int(tree)
+      when Tree
+        "#{t.root.name} (#{t.root.weight}) -> #{t.children.map {|c| c.root.name + '(' + c.weight.to_s + ')' }.join(',')}"
+      else
+        t.to_s
+    end
+  end   
 end
