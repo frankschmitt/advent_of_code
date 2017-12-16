@@ -31,7 +31,7 @@ R
 + Julia (2017-06)
 + Go (2017-03)
 + Lua (2017-08)
-* Crystal (2017-07)
++ Crystal (2017-07)
 * Bash / Sed / Awk / grep / ... (2017-07, first part)
 Frank (https://github.com/cmcl/frankjnr)
 
