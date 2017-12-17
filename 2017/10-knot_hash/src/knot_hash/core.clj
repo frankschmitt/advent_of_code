@@ -3,27 +3,70 @@
 
 (defrecord KnotHashState [input, position, skip, lengths])
 
-;;(defrecord Person [fname lname address])
+(defn wrap-input
+  "Given the old state, return the properly wrapped input"
+  [state]
+  (let [pos (:position state)
+        input (:input state)
+        length (count input)]
+    (take length (drop pos (cycle input))) ; wrap around, and omit first pos elements
+  ))
+
+(defn hash-step2
+  "Given input, starting pos and length, reverse the substring starting at pos and having the given length (with wrap-around"
+  [old-state]
+  (let [ old-input (:input old-state)
+         ;wrapped-input (wrap-input old-state)
+         wrapped-input (cycle old-input)
+         overall_length (count old-input)
+         seg1_length (:position old-state)
+         seg2_length (first (:lengths old-state))
+         seg3_length (- overall_length seg1_length seg2_length)
+         seg1 (take seg1_length old-input)
+         seg2 (reverse (take seg2_length (drop seg1_length wrapped-input)))
+         seg3 (take seg3_length (drop (+ seg1_length seg2_length) wrapped-input))
+        ]
+        ;(take length (concat (reverse (take offset wrapped-input)) (drop offset wrapped-input)))))
+        (concat seg1 seg2 seg3)))
+
+(defn hash-step
+  "Given input, starting pos and length, reverse the substring starting at pos and having the given length (with wrap-around"
+  [old-state]
+  (let [ old-input (:input old-state)
+        wrapped-input (cycle old-input)
+        overall-length (count old-input)
+        seg1_length (:position old-state)
+        seg2_length (first (:lengths old-state))
+        seg3_length (- overall-length seg1_length seg2_length)
+        seg1 (take seg1_length old-input)
+        seg2 (reverse (take seg2_length (drop seg1_length wrapped-input)))
+        seg3 (take seg3_length (drop (+ seg1_length seg2_length) wrapped-input))
+        ]
+        (concat seg1 seg2 seg3)))
 
 (defn step
   "Given the current state and the list of input lengths, compute the next step"
   [old-state]
   (let [offset (first (:lengths old-state))
-        ;old-input (cycle (:input old-state)) ; use cycle to wrap around
-        old-input (:input old-state) ; use cycle to wrap around
-        old-pos (:position old-state)
+        old-input (:input old-state)
+        old-skip (:skip old-state)
         length (count old-input)
+        old-pos (:position old-state)
+        ;wrapped-input (drop old-pos (take (* 3 length) (cycle old-input))) ; hopefully, wrapping around 3 times should be enough
+        wrapped-input (wrap-input old-state)
         ; construct new input
-        ;seg1 (take old-pos old-input) ; first part: unchanged
-        ;seg2 (take offset (drop old-pos old-input)) ; second part: reversed
-        ;seg3 (take length (drop (+ offset old-pos) old-input)) ; third part: unchanged (too long, but we'll fix that in the next step)
-        ;new-input (take length (concat seg1 (reverse seg2) seg3))
+        seg1 (take old-pos wrapped-input) ; first part: unchanged
+        seg2 (reverse (take offset (drop old-pos wrapped-input))) ; second part: reversed
+        seg3 (take length (drop (+ offset old-pos) wrapped-input)) ; third part: unchanged (too long, but we'll fix that in the next step)
+        new-input (take length (concat seg1 seg2 seg3))
 
-        ;new-input (concat (take offset old-input) (reverse (drop offset old-input)))
-        new-input (concat (reverse (take offset old-input)) (drop offset old-input))
+        ; works for simple cases
+        ; new-input (take length (concat (reverse (take offset wrapped-input)) (drop offset wrapped-input)))
 
-        new-pos (mod (+ old-pos offset) length)
-        new-skip (+ 1 (:skip old-state))
+        new-pos (mod (+ old-pos offset old-skip) length)
+        ; our new input is now shifted; we need to shift it back
+        ;wrapped-new-input (take length (drop (- length new-pos) (cycle new-input)))
+        new-skip (+ 1 old-skip)
         new-lengths (rest (:lengths old-state))
         ]
     (->KnotHashState new-input new-pos new-skip new-lengths)))

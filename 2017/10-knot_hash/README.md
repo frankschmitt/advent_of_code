@@ -21,6 +21,8 @@ or (from the REPL)
 To reload changed code in the repl, use
 ```
 (use 'knot-hash.core-test :reload)
+(use 'knot-hash.core :reload)
+(run-tests 'knot-hash.core-test)
 ```
 
 ## Usage
