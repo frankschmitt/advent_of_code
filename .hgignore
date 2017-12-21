@@ -4,3 +4,4 @@
 __pycache__/
 current
 target
+.DS_Store
