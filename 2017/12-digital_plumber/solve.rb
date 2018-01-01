@@ -1,5 +1,5 @@
 class DigitalPlumber
-  attr_reader :edges
+  attr_reader :edges 
 
   def initialize(input)
     parse_input(input)
@@ -55,12 +55,22 @@ class DigitalPlumber
     end
   end
 
+  # get the group containing the given vertex
   def group_for_id(id) 
     find_groups if @groups == nil
     @groups.detect {|g| g.include? id }
   end
+
+  # get a list of all groups
+  def groups
+    find_groups if @groups == nil
+    @groups
+  end
 end
 
+#####################
+# TESTS             #
+#####################
 describe "Digital Plumber" do
   it "builds a list of edges from single-element input" do
     conns = [ "1 <-> 1"]
@@ -98,5 +108,11 @@ describe "Digital Plumber" do
     conns = IO.readlines("input.txt")
     dp = DigitalPlumber.new(conns)
     expect(dp.group_for_id(0).count).to eq(306)
+  end
+
+  it "solves part II" do
+    conns = IO.readlines("input.txt")
+    dp = DigitalPlumber.new(conns)
+    expect(dp.groups.count).to eq(200)
   end
 end
