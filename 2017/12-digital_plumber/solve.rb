@@ -93,4 +93,10 @@ describe "Digital Plumber" do
     dp = DigitalPlumber.new(conns)
     expect(dp.group_for_id(0).count).to eq(6)
   end
+
+  it "solves part I" do
+    conns = IO.readlines("input.txt")
+    dp = DigitalPlumber.new(conns)
+    expect(dp.group_for_id(0).count).to eq(306)
+  end
 end
