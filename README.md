@@ -5,8 +5,8 @@ Instead of using one of my favourite languages for all challenges, I challenge m
 different programming languages as possible; my plan is to use
 
 ## 2017
-Ruby
-Haskell
++ Ruby (2017-12)
++ Haskell
 + Python (2017-01)
 Java
 Kotlin
@@ -18,7 +18,7 @@ Minikanren
 C#
 Elm
 Purescript
-Clojure
+* Clojure
 Factor
 Typescript
 Elixir
