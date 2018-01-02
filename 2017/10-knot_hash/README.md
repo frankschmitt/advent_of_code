@@ -1,10 +1,10 @@
-# knot-hash
+# Synopsis
+Solution for the knot hash challenge, written in [Clojure|https://clojure.org/ ]
 
-FIXME: description
+# Usage
 
 ## Installation
-
-Download from http://example.com/FIXME.
+Install Clojure according to the instructions on the Clojure homepage.
 
 ## Running the tests
 ```
@@ -25,31 +25,9 @@ To reload changed code in the repl, use
 (run-tests 'knot-hash.core-test)
 ```
 
-## Usage
-
-FIXME: explanation
-
-    $ java -jar knot-hash-0.1.0-standalone.jar [args]
-
-## Options
-
-FIXME: listing of options this app accepts.
-
-## Examples
-
-...
-
-### Bugs
-
-...
-
-### Any Other Sections
-### That You Think
-### Might be Useful
-
 ## License
 
-Copyright © 2017 FIXME
+Copyright © 2017 Frank Schmitt
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.

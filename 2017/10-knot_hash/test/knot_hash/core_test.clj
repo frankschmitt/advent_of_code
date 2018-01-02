@@ -2,17 +2,6 @@
   (:require [clojure.test :refer :all]
             [knot-hash.core :refer :all]))
 
-(deftest wrap-input-should-wrap-properly
-  (testing "wrapping, second step in example"
-  (let [input '(2 1 0 3 4)
-        lengths '(4 1 5)
-        pos 3
-        skip 1
-        start-state (knot-hash.core/->KnotHashState input pos skip lengths)
-        expected '(3 4 2 1 0)
-        ]
-    (is (= expected (wrap-input start-state))))))
-
 (deftest hash-step-first-iteration
   (testing "hashing, first step in example")
   (let [input '(0 1 2 3 4)
