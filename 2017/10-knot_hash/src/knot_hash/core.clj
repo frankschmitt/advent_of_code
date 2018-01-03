@@ -24,18 +24,13 @@
   [old-state]
   (let [ old-input (:input old-state)
          wrapped-input (cycle old-input)
-         overall_length (count old-input)
-         seg1_length (:position old-state)
-         seg2_length (first (:lengths old-state))
-         ;seg3_length (- overall_length seg1_length seg2_length)
-         ;seg1 (take seg1_length old-input)
-         seg2 (reverse (take seg2_length (drop seg1_length wrapped-input)))
-         ;seg3 (take seg3_length (drop (+ seg1_length seg2_length) wrapped-input))
+         overall-length (count old-input)
+         seg1-length (:position old-state)
+         seg2-length (first (:lengths old-state))
+         seg2 (reverse (take seg2-length (drop seg1-length wrapped-input)))
          ;; indices from seg1_length+1 .. seg1_length+seg2_length, modulo overall_length (= segment we want to replace)
-         ;; TODO: simplify this! (range 0 seg2_length) should suffice!
-         indices-to-switch (map #(mod (+ seg1_length (- %1 1)) overall_length) (range 1 (inc seg2_length)))
+         indices-to-switch (map #(mod (+ seg1-length %1) overall-length) (range 0 seg2-length))
         ]
-        ;(concat seg1 seg2 seg3)))
         (assoc-multiple old-input indices-to-switch seg2)))
 
 (defn step
@@ -66,11 +61,6 @@
       (recur (step new-state)) )
     )
   )
-
-;(loop [[a b] [1 2]]
-;  (println a b)
-;  (if (< a 10)
-;    (recur [(inc a) (inc b)])))
 
 (defn -main
   "solve it"
