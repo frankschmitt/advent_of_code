@@ -83,3 +83,15 @@
     (is (= '(49 44 50 44 51 17 31 73 47 23) (input-to-lengths "1,2,3")))
     )
   )
+
+(deftest xor-for-block-should-return-correct-value-for-example
+  (testing "xor-for-block should return correct value for the example"
+    (is (= 64 (xor-for-block '(65 27 9 1 4 3 40 50 91 7 6 0 2 5 68 22))))
+    )
+  )
+
+(deftest xor-for-block-should-return-correct-value-for-two-values
+  (testing "xor-for-block should return correct value for two values"
+    (is (= 128 (xor-for-block '(0 128))))
+    )
+  )

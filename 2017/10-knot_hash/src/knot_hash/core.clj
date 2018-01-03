@@ -27,6 +27,12 @@
     )
   )
 
+(defn xor-for-block
+  "Compute the XOR for the given inputs"
+  [input]
+  (reduce bit-xor input)
+  )
+
 (defn hash-step
   "Given input, starting pos and length, reverse the substring starting at pos and having the given length (with wrap-around"
   [old-state]
