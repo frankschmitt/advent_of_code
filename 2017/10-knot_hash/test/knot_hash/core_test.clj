@@ -24,7 +24,6 @@
           expected [4 3 0 1 2]
           ]
       (is (= expected (hash-step start-state))))))
-      ;(is (= 1 4 )))))
 
 (deftest step-should-work-for-no-wrap
   (testing "first step in example")
@@ -37,7 +36,6 @@
         expected-state (knot-hash.core/->KnotHashState [2 1 0 3 4] 3 1  '(4 1 5))
         ]
     (is (= expected-state (step start-state)))))
-    ;(is (= 1 3))))
 
 ; The second length, 4, selects a section which wraps: 2 1) 0 ([3] 4.
 ; The sublist 3 4 2 1 is reversed to form 1 2 4 3: 4 3) 0 ([1] 2.
@@ -54,4 +52,26 @@
         expected-state (knot-hash.core/->KnotHashState [4 3 0 1 2] 3 2  '(1 5))
         ]
     (is (= expected-state (step start-state)))))
-    ;(is (= 1 2))))
+
+(deftest solve-should-return-correct-solution-for-sample
+  (testing "solve should return the correct solution for the sample input")
+  (let [input [0 1 2 3 4]
+        lengths '(3 4 1 5)
+        pos 0
+        skip 0
+        start-state (knot-hash.core/->KnotHashState input pos skip lengths)
+        expected-state (knot-hash.core/->KnotHashState [3 4 2 1 0] 4 4  '())
+        ]
+    (is (= expected-state (solve start-state)))))
+
+(deftest solve-should-solve-part-I
+  (testing "solve should return the correct solution for part I")
+  (let [input (into [] (range 0 256))
+        lengths '(197 97 204 108 1 29 5 71 0 50 2 255 248 78 254 63)
+        pos 0
+        skip 0
+        start-state (knot-hash.core/->KnotHashState input pos skip lengths)
+        expected-state (knot-hash.core/->KnotHashState [3 4 2 1 0] 4 4  '())
+        ;expected-state '(1)
+        ]
+    (is (= expected-state (solve start-state)))))

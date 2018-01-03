@@ -25,6 +25,11 @@ To reload changed code in the repl, use
 (run-tests 'knot-hash.core-test)
 ```
 
+## Obtaining the solution
+```
+lein run
+```
+
 ## License
 
 Copyright © 2017 Frank Schmitt
