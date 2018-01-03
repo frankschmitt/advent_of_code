@@ -71,7 +71,8 @@
         pos 0
         skip 0
         start-state (knot-hash.core/->KnotHashState input pos skip lengths)
-        expected-state (knot-hash.core/->KnotHashState [3 4 2 1 0] 4 4  '())
-        ;expected-state '(1)
+        end-state (solve start-state)
+        num1 (first (:input end-state))
+        num2 (first (rest (:input end-state)))
         ]
-    (is (= expected-state (solve start-state)))))
+    (is (= 40132 (* num1 num2)))))
