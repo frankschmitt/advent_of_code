@@ -76,3 +76,10 @@
         num2 (first (rest (:input end-state)))
         ]
     (is (= 40132 (* num1 num2)))))
+
+(deftest input-to-lengths-should-use-ascii-codes-and-append-default-lengths
+  (testing "input-to-lengths should convert the input string to ASCII codes and append the default lengths"
+    (is (= '(49 44 50 17 31 73 47 23) (input-to-lengths "1,2")))
+    (is (= '(49 44 50 44 51 17 31 73 47 23) (input-to-lengths "1,2,3")))
+    )
+  )

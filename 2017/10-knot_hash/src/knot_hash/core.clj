@@ -18,6 +18,14 @@
          (apply assoc v)))
   )
 
+(defn input-to-lengths
+  "Converts each character in the input to its ASCII code to obtain the user-defined lengths, and append the default lengths"
+  [str]
+  (let [ascii (map int str)
+        default-lengths '(17 31 73 47 23)]
+    (concat ascii default-lengths)
+    )
+  )
 
 (defn hash-step
   "Given input, starting pos and length, reverse the substring starting at pos and having the given length (with wrap-around"
