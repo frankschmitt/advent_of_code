@@ -18,6 +18,18 @@
          (apply assoc v)))
   )
 
+;; slice a list into equally-sized chunks
+(defn slice
+  "Slices a list into equally-sized chunks"
+  [chunk-size v]
+  (let [tmp (split-at chunk-size v)
+        head (first tmp)
+        tail (first (rest tmp))]
+    (if (empty? tail)
+      (cons head ()) ;; stupid HACK to get a 1-element list containing head (neither (head) nor '(head) does what I want)
+      (cons head (slice chunk-size tail))))
+  )
+
 (defn input-to-lengths
   "Converts each character in the input to its ASCII code to obtain the user-defined lengths, and append the default lengths"
   [str]
@@ -31,6 +43,13 @@
   "Compute the XOR for the given inputs"
   [input]
   (reduce bit-xor input)
+  )
+
+(defn condense-hash
+  "Condense a sparse hash to a dense hash by XOR-ing groups of 16"
+  [input]
+  (let [chunks (slice 16 input)]
+    (map xor-for-block chunks))
   )
 
 (defn hash-step

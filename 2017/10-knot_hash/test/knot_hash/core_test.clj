@@ -95,3 +95,14 @@
     (is (= 128 (xor-for-block '(0 128))))
     )
   )
+
+(deftest condense-hash-should-use-group-size-16
+  (testing "condense-hash should compute the dense hash by groups of 16"
+    (is (= '(64 128) (condense-hash (concat (repeat 15 0) '(64) (repeat 15 0) '(128)))))
+    )
+  )
+
+(deftest slice-should-work-for-different-chunk-sizes
+  (testing "Custom slice function should work for different chunk sizes"
+    (is (= '((1) (2) (3)) (slice 1 '(1 2 3))))
+    ))
