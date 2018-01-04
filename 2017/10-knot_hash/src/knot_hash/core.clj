@@ -69,13 +69,13 @@
   (let [ old-input (:input old-state)
          wrapped-input (cycle old-input)
          overall-length (count old-input)
-         seg1-length (:position old-state)
-         seg2-length (first (:lengths old-state))
-         seg2 (reverse (take seg2-length (drop seg1-length wrapped-input)))
+         prefix-length (:position old-state)
+         segment-length (first (:lengths old-state))
+         segment (reverse (take segment-length (drop prefix-length wrapped-input)))
          ;; indices from seg1_length+1 .. seg1_length+seg2_length, modulo overall_length (= segment we want to replace)
-         indices-to-switch (map #(mod (+ seg1-length %1) overall-length) (range 0 seg2-length))
+         indices-to-switch (map #(mod (+ prefix-length %1) overall-length) (range 0 segment-length))
         ]
-        (assoc-multiple old-input indices-to-switch seg2)))
+        (assoc-multiple old-input indices-to-switch segment)))
 
 ;; perform a single step in the algorithm (computing new input, position and skip)
 (defn step
@@ -116,6 +116,7 @@
     )
   )
 
+;; compute hash code for the given input (according to part II)
 (defn compute-hash-part-II
   "Given an input string, compute the hash according to part II"
   [str]
@@ -146,6 +147,7 @@
     )
   )
 
+;; print solutions for part I and part II
 (defn -main
   "solve it"
   [& args]

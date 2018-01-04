@@ -1,6 +1,11 @@
 # Synopsis
 Solution for the knot hash challenge, written in [Clojure|https://clojure.org/ ]
 
+# Overall approach
+Pretty straightforward - we use a record for a Knot Hash state (input, position, skip, lengths);
+the implementation closely follows the challenge description, with *lots* of unit tests for the
+helper / intermediary functions.
+
 # Usage
 
 ## Installation
