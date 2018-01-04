@@ -55,6 +55,13 @@
     (map xor-for-block chunks))
   )
 
+;; convert a list of numbers to the corresponding hex string
+(defn list-to-hex-string
+  "Convert a list of numbers to the corresponding hex string"
+  [input]
+  (apply str (map #(format "%02x" %1) input))
+  )
+
 ;; perform a single hash step (input part only)
 (defn hash-step
   "Given input, starting pos and length, reverse the substring starting at pos and having the given length (with wrap-around"
@@ -109,26 +116,34 @@
     )
   )
 
-;; solve part II
-(defn solve2
-  "Given an input string, treat it as a list of lengths, and compute the final state"
+(defn compute-hash-part-II
+  "Given an input string, compute the hash according to part II"
   [str]
   (let [input (into [] (range 0 256))
         pos 0
         skip 0
         lengths (input-to-lengths str)
         start-state (knot-hash.core/->KnotHashState input pos skip lengths)
-        count 64
+        count 0
         ]
-    (loop [tmp-state (solve start-state)]
-      (println(format "count: %d" count))
-      (let [count (dec count)
-            next-state (knot-hash.core/->KnotHashState (:input tmp-state) (:position tmp-state) (:skip tmp-state) lengths)
+    (loop [new-count (inc count)
+           tmp-state (solve start-state)]
+      (let [next-state (knot-hash.core/->KnotHashState (:input tmp-state) (:position tmp-state) (:skip tmp-state) lengths)
             ]
-        (if (= count 0)
+        ;(println (format "count: %d, hash: %s" new-count (list-to-hex-string (condense-hash (:input tmp-state)))))
+        (if (= new-count 64)
           tmp-state
-          (recur (solve next-state))
+          (recur (inc new-count) (solve next-state))
           ))))
+  )
+
+;; solve part II
+(defn solve2
+  "Given an input string, treat it as a list of lengths, and compute the final state"
+  [str]
+  (let [end-state (compute-hash-part-II str)]
+        (list-to-hex-string (condense-hash (:input end-state)))
+    )
   )
 
 (defn -main

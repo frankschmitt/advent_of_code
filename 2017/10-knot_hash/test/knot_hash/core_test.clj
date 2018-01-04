@@ -111,3 +111,8 @@
   (testing "Custom slice function should work for different chunk sizes"
     (is (= '((1) (2) (3)) (slice 1 '(1 2 3))))
     ))
+
+(deftest list-to-hex-string-should-work-for-example
+  (testing "list-to-hex-string should work for the example"
+    (is (= "4007ff" (list-to-hex-string '(64 7 255))))
+    ))
