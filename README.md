@@ -18,7 +18,7 @@ Minikanren
 C#
 Elm
 Purescript
-* Clojure
+* Clojure (2017-10)
 Factor
 Typescript
 Elixir

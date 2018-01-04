@@ -30,6 +30,7 @@
       (cons head (slice chunk-size tail))))
   )
 
+;; convert an input string to a list of lengths
 (defn input-to-lengths
   "Converts each character in the input to its ASCII code to obtain the user-defined lengths, and append the default lengths"
   [str]
@@ -39,12 +40,14 @@
     )
   )
 
+;; compute the XOR for a list of input values
 (defn xor-for-block
   "Compute the XOR for the given inputs"
   [input]
   (reduce bit-xor input)
   )
 
+;; convert a sparse hash into a dense hash (by "folding" it)
 (defn condense-hash
   "Condense a sparse hash to a dense hash by XOR-ing groups of 16"
   [input]
@@ -52,6 +55,7 @@
     (map xor-for-block chunks))
   )
 
+;; perform a single hash step (input part only)
 (defn hash-step
   "Given input, starting pos and length, reverse the substring starting at pos and having the given length (with wrap-around"
   [old-state]
@@ -66,6 +70,7 @@
         ]
         (assoc-multiple old-input indices-to-switch seg2)))
 
+;; perform a single step in the algorithm (computing new input, position and skip)
 (defn step
   "Given the current state and the list of input lengths, compute the next step"
   [old-state]
@@ -85,9 +90,18 @@
         ]
     (->KnotHashState new-input new-pos new-skip new-lengths)))
 
+(defn print-state
+  "Prints a Knot Hash state to STDOUT"
+  [msg state]
+  (println(format "%s, pos: %d, skip: %d" msg (:position state) (:skip state)))
+  (println (concat "    , lengths: " (:lengths state) ", input: " (:input state)))
+  )
+
+;; solve part I
 (defn solve
   "Given the input state, compute the final state"
   [input-state]
+  ;(print-state "start of solve, input: " input-state)
   (loop [new-state (step input-state)]
     (if (empty? (:lengths new-state))
       new-state
@@ -95,9 +109,32 @@
     )
   )
 
+;; solve part II
+(defn solve2
+  "Given an input string, treat it as a list of lengths, and compute the final state"
+  [str]
+  (let [input (into [] (range 0 256))
+        pos 0
+        skip 0
+        lengths (input-to-lengths str)
+        start-state (knot-hash.core/->KnotHashState input pos skip lengths)
+        count 64
+        ]
+    (loop [tmp-state (solve start-state)]
+      (println(format "count: %d" count))
+      (let [count (dec count)
+            next-state (knot-hash.core/->KnotHashState (:input tmp-state) (:position tmp-state) (:skip tmp-state) lengths)
+            ]
+        (if (= count 0)
+          tmp-state
+          (recur (solve next-state))
+          ))))
+  )
+
 (defn -main
   "solve it"
   [& args]
+  (solve2 "")
   (let [input (into [] (range 0 256))
         lengths '(197 97 204 108 1 29 5 71 0 50 2 255 248 78 254 63)
         pos 0
@@ -110,4 +147,5 @@
         num2 (first (rest (:input end-state)))
         ]
     (println (* num1 num2))
+    ;(print-state "end state: " end-state)
     ))

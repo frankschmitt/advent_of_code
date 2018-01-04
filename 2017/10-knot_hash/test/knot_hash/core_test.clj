@@ -77,6 +77,11 @@
         ]
     (is (= 40132 (* num1 num2)))))
 
+(deftest solve2-should-return-correct-solution-for-examples
+  (testing "solve2 should return the correct solution for the examples"
+    (is (= "a2582a3a0e66e6e86e3812dcb672a272" (solve2 "")))
+    ))
+
 (deftest input-to-lengths-should-use-ascii-codes-and-append-default-lengths
   (testing "input-to-lengths should convert the input string to ASCII codes and append the default lengths"
     (is (= '(49 44 50 17 31 73 47 23) (input-to-lengths "1,2")))
