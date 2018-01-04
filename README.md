@@ -18,14 +18,14 @@ Minikanren
 C#
 Elm
 Purescript
-* Clojure (2017-10)
++ Clojure (2017-10)
 Factor
 Typescript
 Elixir
 Scala
 + Rust (2017-02)
 Perl
-Ada
+Ada (because Ada Lovelace rocks)
 Eiffel
 R
 + Julia (2017-06)
@@ -34,6 +34,11 @@ R
 + Crystal (2017-07)
 * Bash / Sed / Awk / grep / ... (2017-07, first part)
 Frank (https://github.com/cmcl/frankjnr)
+Nim
+Io
+Curry (http://www-ps.informatik.uni-kiel.de/currywiki/)
+Racket
+Prolog
 
 ## Future / Fallback
 SQL
