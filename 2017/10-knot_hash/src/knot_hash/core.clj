@@ -149,7 +149,6 @@
 (defn -main
   "solve it"
   [& args]
-  (solve2 "")
   (let [input (into [] (range 0 256))
         lengths '(197 97 204 108 1 29 5 71 0 50 2 255 248 78 254 63)
         pos 0
@@ -160,7 +159,8 @@
         end-state (solve start-state)
         num1 (first (:input end-state))
         num2 (first (rest (:input end-state)))
+        solution1 (* num1 num2)
+        solution2 (solve2 "197,97,204,108,1,29,5,71,0,50,2,255,248,78,254,63")
         ]
-    (println (* num1 num2))
-    ;(print-state "end state: " end-state)
+    (println (format "part I: %d, part II: '%s'" solution1 solution2))
     ))
