@@ -6,3 +6,6 @@ current
 target
 .DS_Store
 .precomp/
+build/
+.idea/
+.gradle/

@@ -24,7 +24,7 @@ Typescript
 Elixir
 Scala
 + Rust (2017-02)
-Perl
++ Perl6 (2017-11)
 Ada (because Ada Lovelace rocks)
 Eiffel
 R
