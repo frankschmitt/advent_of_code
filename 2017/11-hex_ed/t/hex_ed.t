@@ -4,7 +4,7 @@ use Test;
 use lib 'lib';
 use HexDist;
 
-plan 9; # number of tests that we expect to run
+plan 11; # number of tests that we expect to run
 
 # tests for parse_input
 is-deeply parse_input("ne,ne,ne"), [ "ne", "ne", "ne" ], "parse_input ne,ne,ne";
@@ -18,8 +18,8 @@ is-deeply walk_path(["n", "ne", "se", "s", "sw", "nw"]),
                     , Hex.new(x => 1, y => 1, z => -2)  # ne
                     , Hex.new(x => 2, y => 0, z => -2)  # se 
                     , Hex.new(x => 2, y => -1, z => -1) # s
-                    , Hex.new(x => 1, y => -1, z => 0)   # sw
-                    , Hex.new(x => 0, y => 0, z => 0)  # nw
+                    , Hex.new(x => 1, y => -1, z => 0)  # sw
+                    , Hex.new(x => 0, y => 0, z => 0)   # nw
                     ], 
                     "walk_path should handle single steps";
 
@@ -29,13 +29,17 @@ is-deeply hex_dist("ne,ne,sw,sw"), 0, "distance for walking forth and back ne,ne
 is-deeply hex_dist("ne,ne,s,s"),2, "distance for first diagonal and vertical: ne,ne,s,s = 2 (se,se)";
 is-deeply hex_dist("se,sw,se,sw,sw"), 3, "distance for mixed diagonals and vertical: se,sw,se,sw,sw = 3 (s,s,sw)";
 
+# tests for max dist
+is-deeply hex_max_dist("ne,ne,sw,sw"), 2, "max distance for walking forth and back ne,ne,sw,sw = 2";
+
 # solutions
-sub hex_digest_for_puzzle_input() {
+sub puzzle_input() {
   my @input = "input.txt".IO.lines;
-  return hex_dist(@input);
+  return @input;
 }
 
-is-deeply hex_digest_for_puzzle_input(), 764, "solution for part I";
+is-deeply hex_dist(puzzle_input()), 764, "solution for part I";
+is-deeply hex_max_dist(puzzle_input()), 1532, "solution for part II";
 
 done-testing;
 

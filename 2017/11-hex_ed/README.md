@@ -2,11 +2,16 @@
 Solution for the hex-ed challenge, using Perl6 aka Rakudo.
 
 # Overall approach
-We exploit some simple properties of the hex grid:
- - n/s, ne/sw, nw/se cancel each other 
- - ne/nw and se/sw can be shortened to n and s 
+We implement a basic hex grid with cube coordinates (x,y,z). The distance between two hex tiles a and b is then simply
+```
+(abs(a.x - b.x) + abs(a.y - b.y) + abs(a.z - b.z)) / 2
+```
+See e.g. https://www.redblobgames.com/grids/hexagons/ for a nice introduction to hex grids.
 
-Alternatively, we could use a full-blown hex grid implementation with cube coordinates; see e.g. https://www.redblobgames.com/grids/hexagons/ for a nice introduction.
+With this approach, obtaining the solution is trivial: 
+- walk the path, and keep track of all tiles visited
+- final distance = distance of the last tile from the origin
+- max distance = max(distance of all visited tiles)
 
 # Usage
 

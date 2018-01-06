@@ -2,13 +2,15 @@ use v6.c;
 use strict;
 unit module HexDist;
 
+# Hex squares (given by their cube coordinates (x,y,z))
+# see https://www.redblobgames.com/grids/hexagons/ for an introduction
 class Hex is export {
     has $.x; # $: scalar, .: publicly accessible
     has $.y;
     has $.z;  
 }
 
-# parse the input string, and return an array containing the directions
+# parse the input string, and return an array containing the steps
 sub parse_input($input) is export {
   my @a = split(",", $input);
   return @a;
@@ -54,3 +56,14 @@ sub hex_dist($input) is export {
   return round(hex_dist_from_origin(last(@path)));
 }
 
+# compute the maximum hex distance for the visited squares of the given input path
+sub hex_max_dist($input) is export {
+  my @path_arr = parse_input($input);
+  my @path = walk_path(@path_arr);
+  my $max = 0;
+  for (@path) {
+    my $curr = round(hex_dist_from_origin($_));
+    $max = max($max, $curr);
+  }
+  return $max;
+}
