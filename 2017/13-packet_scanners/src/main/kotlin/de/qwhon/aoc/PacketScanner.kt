@@ -24,9 +24,8 @@ data class ScanningLayer(
 }
 
 
-//data class Layer(val range: Int, var direction: Int, var scannerPosition: Int)
-
-data class PacketScanner(var currentLayerOfPacket: Int, var numberOfViolations: Int = 0, val layers: Map<Int, ScanningLayer>) {
+data class PacketScanner(var currentLayerOfPacket: Int, val layers: Map<Int, ScanningLayer>,
+                         var violations: HashMap<Int,Int> = hashMapOf()) {
 
     companion object {
 
@@ -69,13 +68,25 @@ data class PacketScanner(var currentLayerOfPacket: Int, var numberOfViolations: 
      */
     fun step(): Unit {
         movePacket()
-        updateNumberOfViolations()
+        updateViolations()
         moveScanners()
     }
 
-    private fun updateNumberOfViolations() {
+    /** Solve the puzzle, and return the severity
+     *    The severity is the sum of the violation weights; the weight of each violation is its depth multiplied by its range
+     *
+     */
+    fun solve(): Int {
+        val maxLayer = layers.keys.max() ?: -1
+        while (currentLayerOfPacket <= maxLayer) {
+            step()
+        }
+        return violations.toList().fold(initial = 0) { accu, (depth,range) -> accu + depth * range }
+    }
+
+    private fun updateViolations() {
         if (layers.contains(currentLayerOfPacket) && (layers.getValue(currentLayerOfPacket).scannerPosition == 0)) {
-            numberOfViolations += 1
+            violations[currentLayerOfPacket] = layers.getValue(currentLayerOfPacket).range
         }
     }
 
@@ -86,6 +97,7 @@ data class PacketScanner(var currentLayerOfPacket: Int, var numberOfViolations: 
 
 
 fun main(args: Array<String>) {
-    println("do it")
+    val scanner = PacketScanner.getScannerForInputFile("input.txt")
+    println("part I: ${scanner.solve()}")
 }
 
