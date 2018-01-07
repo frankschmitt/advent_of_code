@@ -7,7 +7,7 @@ Solution for the packet scanners challenge in Kotlin.
 
 ## Running the tests
 ```
-gradlew test
+gradle test
 ```
 
 ## Solving the puzzle
