@@ -93,5 +93,19 @@ class PacketScannerTest {
         assertEquals("severity for puzzle input", 1876, scanner.solve())
     }
 
+    @Test
+    fun testMinimumDelayShouldReturn10ForSampleInput() {
+        assertEquals("minimum delay for sample input should be 10",
+                10,
+                PacketScanner.minimumDelayForInputFile("sample_input.txt"))
+    }
+
+    @Test
+    fun testMinimumDelayShouldSolvePartII() {
+        //val scanner = PacketScanner.getScannerForInputFile("sample_input.txt")
+    //    assertEquals("minimum delay for puzzle input",
+    //            10,
+    //            PacketScanner.minimumDelayForInputFile("input.txt"))
+    }
 
 }

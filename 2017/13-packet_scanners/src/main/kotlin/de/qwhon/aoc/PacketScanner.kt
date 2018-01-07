@@ -52,6 +52,20 @@ data class PacketScanner(var currentLayerOfPacket: Int, val layers: Map<Int, Sca
             val layers = input.mapValues { ScanningLayer(range = it.value) }
             return PacketScanner(currentLayerOfPacket = -1, layers = layers)
         }
+
+        /** compute the minimum delay necessary to pass through the firewall without getting caught.
+         *   We simply initialize PacketScanners with currentLayerOfPacket = -1, -2, ..., run them and check for violations
+         */
+        fun minimumDelayForInputFile(fileName: String): Int {
+            val input = parseInputFile(fileName)
+            val layers = input.mapValues { ScanningLayer(range = it.value) }
+            return (0..1000000).find {
+                val scanner = PacketScanner(currentLayerOfPacket = -1 - it, layers = layers)
+                scanner.solve()
+                println("testing delay $it")
+                scanner.violations.isEmpty()
+            }!! - 1
+        }
     }
 
     /** Move the scanners.
