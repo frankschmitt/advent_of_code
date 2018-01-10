@@ -93,6 +93,28 @@ class PacketScannerTest {
         assertEquals("severity for puzzle input", 1876, scanner.solve())
     }
 
+    // Tests for sequence generator
+    @Test
+    fun testGenerateScannerSequenceShouldWorkCorrectlyForDifferentRanges() {
+        assertEquals("sequence for range = 2",
+                     listOf(0, 2, 4, 6, 8),
+                      PacketScanner.generateScannerSequence(2).take(5).toList())
+        assertEquals("sequence for range = 3",
+                listOf(0, 4, 8, 12, 16),
+                PacketScanner.generateScannerSequence(3).take(5).toList())
+    }
+
+    @Test
+    fun testGenerateScannerSequenceShouldWorkCorrectlyForDifferentDepths() {
+        assertEquals("sequence for range = 2 and depth=1",
+                listOf(-1, 1, 3, 5, 7),
+                PacketScanner.generateScannerSequence(range = 2, depth = 1).take(5).toList())
+        assertEquals("sequence for range = 2 and depth=4",
+                listOf(-4, -2, 0, 2, 4),
+                PacketScanner.generateScannerSequence(range = 2, depth = 4).take(5).toList())
+    }
+
+    // Tests for minimum delay
     @Test
     fun testMinimumDelayShouldReturn10ForSampleInput() {
         assertEquals("minimum delay for sample input should be 10",
@@ -100,12 +122,23 @@ class PacketScannerTest {
                 PacketScanner.minimumDelayForInputFile("sample_input.txt"))
     }
 
+    // still too slow: checked numbers up to 150k, took several minutes
     @Test
     fun testMinimumDelayShouldSolvePartII() {
-        //val scanner = PacketScanner.getScannerForInputFile("sample_input.txt")
-    //    assertEquals("minimum delay for puzzle input",
-    //            10,
-    //            PacketScanner.minimumDelayForInputFile("input.txt"))
+        assertEquals("minimum delay for puzzle input",
+                10,
+                PacketScanner.minimumDelayForInputFile("input.txt"))
     }
 
 }
+
+/*
+  depth: 0, range: 3
+  depth: 1, range: 2
+  depth: 4, range: 4
+  depth: 6, range: 4
+  0:       0121012101210
+  1:      0101010101010
+  4:   0123210123210
+  6: 0123454321012
+ */

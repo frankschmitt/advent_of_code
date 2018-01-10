@@ -58,14 +58,37 @@ data class PacketScanner(var currentLayerOfPacket: Int, val layers: Map<Int, Sca
          */
         fun minimumDelayForInputFile(fileName: String): Int {
             val input = parseInputFile(fileName)
-            val layers = input.mapValues { ScanningLayer(range = it.value) }
+         /*   val layers = input.mapValues { ScanningLayer(range = it.value) }
             return (0..1000000).find {
                 val scanner = PacketScanner(currentLayerOfPacket = -1 - it, layers = layers)
                 scanner.solve()
                 println("testing delay $it")
                 scanner.violations.isEmpty()
             }!! - 1
+         */
+            val sequences: List<Sequence<Int>> = input.map { it -> generateScannerSequence(range = it.value, depth = it.key)}
+            return generateSequence(seed = 0) { i -> i + 1}
+                    //.minus(sequences.first()).first()!!
+                    .find { i -> sequences.none { seq -> seq.takeWhile{ j -> j <= i}.contains(i)}}!!
         }
+
+        /** generate the sequence for the given scanner range and depth
+         *   Generates the timestamps at which the scanner is at pos 0
+         *   Example: for a scanner of depth 0 and range 3,
+         *     its positions are:   0-1-2-1-0-1-2-1-0-...
+         *     and the timestamps:  0-1-2-3-4-5-6-7-8-...
+         *     and the sequence is: 0       4       8
+         *   If depth is non-zero, we simply subtract it from the generated sequence (with shift):
+         *     depth = 0, range = 3:   0-1-2-1-0-1-2-1-0
+         *     depth = 1, range = 4: 0-1-2-3-4-3-2-1-0-1
+         *   Every column is then a possible path through the firewall. To find the path that allows us to pass
+         *   without getting caught, we only have to find the leftmost column where no position is 0.
+         *   If transformed to the sequence space, it is equivalent to finding the first number n that is contained
+         *   in none of the shifted sequences.
+         */
+        fun generateScannerSequence(range: Int, depth: Int = 0): Sequence<Int> =
+            generateSequence(seed = -depth) { it -> it + (range-1)*2 }
+
     }
 
     /** Move the scanners.

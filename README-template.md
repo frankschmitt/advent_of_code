@@ -1,5 +1,7 @@
 # Synopsis
 
+# Overall approach
+
 # Usage
 
 ## Installation
