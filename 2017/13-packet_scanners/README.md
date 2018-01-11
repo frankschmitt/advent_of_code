@@ -1,3 +1,7 @@
+# IDEA
+[1 .. infinity[.find { i -> scanners.all {scanner -> i mod scanner.range != scanner.depth } 
+    
+
 # Synopsis
 Solution for the packet scanners challenge in Kotlin.
 
