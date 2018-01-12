@@ -122,11 +122,11 @@ class PacketScannerTest {
                 PacketScanner.minimumDelayForInputFile("sample_input.txt"))
     }
 
-    // still too slow: checked numbers up to 150k, took several minutes
+    // with the right approach, ridiculously fast: 415 ms (whereas checking numbers up to 150k took 3min with the previous approach
     @Test
     fun testMinimumDelayShouldSolvePartII() {
         assertEquals("minimum delay for puzzle input",
-                10,
+                3964778,
                 PacketScanner.minimumDelayForInputFile("input.txt"))
     }
 

@@ -23,6 +23,7 @@ data class ScanningLayer(
     }
 }
 
+data class ScannerRecord(val depth: Int, val range: Int)
 
 data class PacketScanner(var currentLayerOfPacket: Int, val layers: Map<Int, ScanningLayer>,
                          var violations: HashMap<Int,Int> = hashMapOf()) {
@@ -66,10 +67,13 @@ data class PacketScanner(var currentLayerOfPacket: Int, val layers: Map<Int, Sca
                 scanner.violations.isEmpty()
             }!! - 1
          */
-            val sequences: List<Sequence<Int>> = input.map { it -> generateScannerSequence(range = it.value, depth = it.key)}
-            return generateSequence(seed = 0) { i -> i + 1}
+            //val sequences: List<Sequence<Int>> = input.map { it -> generateScannerSequence(range = it.value, depth = it.key)}
+            //return generateSequence(seed = 0) { i -> i + 1}
                     //.minus(sequences.first()).first()!!
-                    .find { i -> sequences.none { seq -> seq.takeWhile{ j -> j <= i}.contains(i)}}!!
+            //        .find { i -> sequences.none { seq -> seq.takeWhile{ j -> j <= i}.contains(i)}}!!
+            val scanners = input.map { ScannerRecord(depth = it.key, range = it.value)}
+            return generateSequence(seed = 0) { i -> i + 1}
+                   .find { i -> scanners.none { scanner -> (i + scanner.depth) % ((scanner.range-1)*2) == 0}}!!
         }
 
         /** generate the sequence for the given scanner range and depth
