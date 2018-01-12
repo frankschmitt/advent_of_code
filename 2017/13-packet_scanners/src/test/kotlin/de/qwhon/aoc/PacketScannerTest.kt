@@ -93,27 +93,6 @@ class PacketScannerTest {
         assertEquals("severity for puzzle input", 1876, scanner.solve())
     }
 
-    // Tests for sequence generator
-    @Test
-    fun testGenerateScannerSequenceShouldWorkCorrectlyForDifferentRanges() {
-        assertEquals("sequence for range = 2",
-                     listOf(0, 2, 4, 6, 8),
-                      PacketScanner.generateScannerSequence(2).take(5).toList())
-        assertEquals("sequence for range = 3",
-                listOf(0, 4, 8, 12, 16),
-                PacketScanner.generateScannerSequence(3).take(5).toList())
-    }
-
-    @Test
-    fun testGenerateScannerSequenceShouldWorkCorrectlyForDifferentDepths() {
-        assertEquals("sequence for range = 2 and depth=1",
-                listOf(-1, 1, 3, 5, 7),
-                PacketScanner.generateScannerSequence(range = 2, depth = 1).take(5).toList())
-        assertEquals("sequence for range = 2 and depth=4",
-                listOf(-4, -2, 0, 2, 4),
-                PacketScanner.generateScannerSequence(range = 2, depth = 4).take(5).toList())
-    }
-
     // Tests for minimum delay
     @Test
     fun testMinimumDelayShouldReturn10ForSampleInput() {
