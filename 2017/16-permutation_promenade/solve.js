@@ -1,5 +1,8 @@
-// some helpers (without Internet connection, you have to build some very basic things yourself ;-) )
+var fs = require("fs");
 
+// -- BORING STUFF (helpers I wrote because I was offline at the time) --- 
+
+// custom conversion to string for printing Javascript objects
 object_to_string = function(o) {
   var s = "{ ";
   for(var p in o) {
@@ -9,7 +12,7 @@ object_to_string = function(o) {
   return s;
 }
 
-// custom conversion to string for printing Javascript objects
+// custom conversion to string for printing Javascript values
 to_string = function(o) {
   var result = "";
   switch(typeof o) {
@@ -34,11 +37,7 @@ assert_equals = function(expected, got, msg) {
   }
 }
 
-/*
-   Spin, written sX, makes X programs move from the end to the front, but maintain their order otherwise. (For example, s3 on abcde produces cdeab).
-   Exchange, written xA/B, makes the programs at positions A and B swap places.
-   Partner, written pA/B, makes the programs named A and B swap places.
- * */
+// -- INTERESTING STUFF STARTS HERE --
 
 /* parse a command string
  *  @returns record of command type and command argument
@@ -65,7 +64,7 @@ parse_command = function(str) {
   return { type: type, arg1: arg1, arg2: arg2 };
 }
 
-// basic steps
+// perform a single step (given by a command)
 step = function(formation, cmd_str) {
   var cmd = parse_command(cmd_str);
   switch(cmd.type) {
@@ -85,19 +84,28 @@ step = function(formation, cmd_str) {
   }
 }
 
+// solve a puzzle, given by the input and the file name containing the commands
+solve = function(formation, cmd_file) {
+  var text = fs.readFileSync(cmd_file, "utf8");
+  var commands = text.split(",");
+  var current = formation;
+  // TODO: use fold / reduce instead of forEach
+  commands.forEach(function(command) {
+    console.log("current: " + to_string(current) + " before applying " + to_string(command));
+    current = step(current, command);
+    console.log("current: " + to_string(current) + " after applying " + to_string(command));
+  });
+  return current; 
+}
+
+// tests for parsing commands
 test_parse_command = function() {
   assert_equals({ type: "s", arg1: 1, arg2: undefined }, parse_command("s1"), "s1");
   assert_equals({ type: "x", arg1: 3, arg2: 4 }, parse_command("x3/4"), "x3/4");
   assert_equals({ type: "p", arg1: "e", arg2: "b" }, parse_command("pe/b"), "pe/b");
 }
 
-/*
-   For example, with only five programs standing in a line (abcde), they could do the following dance:
-
-   s1, a spin of size 1: eabcd.
-   x3/4, swapping the last two programs: eabdc.
-   pe/b, swapping programs e and b: baedc.
- * */
+// tests for the single-step function
 test_step = function () {
   // spin
   assert_equals(['e','a','b','c','d'], step(['a','b','c','d','e'], "s1"), "s1");
@@ -108,6 +116,10 @@ test_step = function () {
   assert_equals(['b','a','e','d','c'], step(['e','a','b','d','c'], "pe/b"), "pe/b");
 }
 
+test_solve = function() {
+  assert_equals(['b','a','e','d','c'], solve(['a','b','c','d','e'], "sample_input.txt"), "sample input"); 
+}
+
 test_parse_command();
 test_step();
-
+test_solve();
