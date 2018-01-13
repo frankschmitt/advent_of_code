@@ -9,7 +9,7 @@ different programming languages as possible; my plan is to use
 + Haskell
 + Python (2017-01)
 Java
-Kotlin
++ Kotlin (2017-13)
 + F# (2017-04)
 OCaml
 Prolog
@@ -38,11 +38,13 @@ Nim
 Io
 Curry (http://www-ps.informatik.uni-kiel.de/currywiki/)
 Racket
+Javascript
 Prolog
 
 ## Future / Fallback
+C
 SQL
 PL/SQL
-Javascript
+Erlang
 Excel
 
