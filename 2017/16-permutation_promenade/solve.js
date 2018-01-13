@@ -70,10 +70,18 @@ step = function(formation, cmd_str) {
   var cmd = parse_command(cmd_str);
   switch(cmd.type) {
     case "s": 
-      //console.log("slicing " + formation + " with " + cmd.type + ", " + cmd.arg);
-      //console.log("result: " + formation.slice(-cmd.arg) + " + " + formation.slice(0, formation.length - cmd.arg));
-      return formation.slice(-cmd.arg1) + formation.slice(0, formation.length - cmd.arg1);
-      break;
+      return formation.slice(-cmd.arg1).concat(formation.slice(0, formation.length - cmd.arg1));
+    case "x":
+      var tmp = formation[cmd.arg1];
+      formation[cmd.arg1] = formation[cmd.arg2];
+      formation[cmd.arg2] = tmp;
+      return formation;
+    case "p":
+      return formation.map(function(x) { 
+        if (x == cmd.arg1) { return cmd.arg2 }
+        else if (x == cmd.arg2) { return cmd.arg1 }
+        else { return x }
+      });
   }
 }
 
@@ -92,10 +100,12 @@ test_parse_command = function() {
  * */
 test_step = function () {
   // spin
-  assert_equals("eabcd", step("abcde", "s1"), "s1");
-  assert_equals("cdeab", step("abcde", "s3"), "s3"); 
+  assert_equals(['e','a','b','c','d'], step(['a','b','c','d','e'], "s1"), "s1");
+  assert_equals(['c','d','e','a','b'], step(['a','b','c','d','e'], "s3"), "s3"); 
   // swap by index
-  assert_equals("eabdc", step("eabcd", "x3/4"), "x3/4");
+  assert_equals(['e','a','b','d','c'], step(['e','a','b','c','d'], "x3/4"), "x3/4");
+  // swap by name
+  assert_equals(['b','a','e','d','c'], step(['e','a','b','d','c'], "pe/b"), "pe/b");
 }
 
 test_parse_command();
