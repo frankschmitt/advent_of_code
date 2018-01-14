@@ -84,16 +84,24 @@ step = function(formation, cmd_str) {
   }
 }
 
+// read an input file, and return the list of command strings
+read_input_file = function(cmd_file) {
+  var text = fs.readFileSync(cmd_file, "utf8");
+  var re = /[^a-z0-9/,]/; // we want only letters, numbers, / and ,
+  return text.replace(re, "").split(",");
+}
+
 // solve a puzzle, given by the input and the file name containing the commands
 solve = function(formation, cmd_file) {
-  var text = fs.readFileSync(cmd_file, "utf8");
-  var commands = text.split(",");
+  //var text = fs.readFileSync(cmd_file, "utf8");
+  //var commands = text.split(",");
+  var commands = read_input_file(cmd_file);
   var current = formation;
   // TODO: use fold / reduce instead of forEach
   commands.forEach(function(command) {
-    console.log("current: " + to_string(current) + " before applying " + to_string(command));
+    //console.log("current: " + to_string(current) + " before applying " + to_string(command));
     current = step(current, command);
-    console.log("current: " + to_string(current) + " after applying " + to_string(command));
+    //console.log("current: " + to_string(current) + " after applying " + to_string(command));
   });
   return current; 
 }
@@ -103,6 +111,13 @@ test_parse_command = function() {
   assert_equals({ type: "s", arg1: 1, arg2: undefined }, parse_command("s1"), "s1");
   assert_equals({ type: "x", arg1: 3, arg2: 4 }, parse_command("x3/4"), "x3/4");
   assert_equals({ type: "p", arg1: "e", arg2: "b" }, parse_command("pe/b"), "pe/b");
+}
+
+// tests for reading input file
+test_read_input_file = function() {
+  assert_equals([ "s1", "x3/4", "pe/b" ],
+      read_input_file("sample_input.txt"), 
+      "parsing sample input");
 }
 
 // tests for the single-step function
@@ -121,5 +136,9 @@ test_solve = function() {
 }
 
 test_parse_command();
+test_read_input_file();
 test_step();
 test_solve();
+console.log("part I: " + 
+      solve(['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p'], 
+            "input.txt").join(""));
