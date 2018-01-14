@@ -59,7 +59,7 @@ parse_command = function(str) {
       a = rest.split("/"); 
       arg1 = a[0];
       arg2 = a[1];
-     break; 
+      break; 
   }
   return { type: type, arg1: arg1, arg2: arg2 };
 }
@@ -92,17 +92,17 @@ read_input_file = function(cmd_file) {
 }
 
 // solve a puzzle, given by the input and the file name containing the commands
-solve = function(formation, cmd_file) {
-  //var text = fs.readFileSync(cmd_file, "utf8");
-  //var commands = text.split(",");
+solve = function(formation, cmd_file, num_iterations) {
   var commands = read_input_file(cmd_file);
   var current = formation;
-  // TODO: use fold / reduce instead of forEach
-  commands.forEach(function(command) {
-    //console.log("current: " + to_string(current) + " before applying " + to_string(command));
-    current = step(current, command);
-    //console.log("current: " + to_string(current) + " after applying " + to_string(command));
-  });
+  num_iterations = num_iterations || 1; // default: one iteration
+  // TODO: detect cycles, and short-circuit the evaluation accordingly
+  for (var i=0; i < num_iterations; i++) {
+    // TODO: use fold / reduce instead of forEach
+    commands.forEach(function(command) {
+      current = step(current, command);
+    });
+  }
   return current; 
 }
 
@@ -140,5 +140,8 @@ test_read_input_file();
 test_step();
 test_solve();
 console.log("part I: " + 
-      solve(['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p'], 
-            "input.txt").join(""));
+    solve(['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p'], 
+      "input.txt").join(""));
+console.log("part I): " + 
+    solve(['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p'], 
+      "input.txt", 300).join(""));
