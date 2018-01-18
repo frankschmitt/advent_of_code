@@ -4,11 +4,11 @@ var fs = require("fs");
 
 // custom conversion to string for printing Javascript objects
 object_to_string = function(o) {
-  var s = "{ ";
+  var s = "{\n ";
   for(var p in o) {
-    s += p + ": " + o[p] + ", "; 
+    s += p + ": " + o[p] + ", \n"; 
   }
-  s += "}";
+  s += "}\n";
   return s;
 }
 
@@ -93,6 +93,7 @@ read_input_file = function(cmd_file) {
 
 // solve a puzzle, given by the input and the file name containing the commands
 solve = function(formation, cmd_file, num_iterations) {
+  var cache = {};
   var commands = read_input_file(cmd_file);
   var current = formation;
   num_iterations = num_iterations || 1; // default: one iteration
@@ -102,7 +103,16 @@ solve = function(formation, cmd_file, num_iterations) {
     commands.forEach(function(command) {
       current = step(current, command);
     });
+    // check for cycle
+    var old_index = cache[current];
+    if (old_index == undefined) { 
+      cache[current] = i;
+    }
+    else {
+      console.log("found cycle at iteration " + to_string(i) + ", old index: " + to_string(old_index));
+    }
   }
+  //console.log(to_string(cache));
   return current; 
 }
 
@@ -142,6 +152,6 @@ test_solve();
 console.log("part I: " + 
     solve(['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p'], 
       "input.txt").join(""));
-console.log("part I): " + 
+console.log("part II, test with 300 iterations: " + 
     solve(['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p'], 
       "input.txt", 300).join(""));
