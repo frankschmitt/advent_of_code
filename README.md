@@ -38,8 +38,9 @@ Nim
 Io
 Curry (http://www-ps.informatik.uni-kiel.de/currywiki/)
 Racket
-Javascript
++ Javascript (2017-16
 Prolog
+Sparkle (Correctness by Construction, Ada subset without "dangerous" operations)
 
 ## Future / Fallback
 C
