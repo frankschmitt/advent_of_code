@@ -2,6 +2,12 @@ var fs = require("fs");
 
 // -- BORING STUFF (helpers I wrote because I was offline at the time) --- 
 
+// Integer division (for reasons unbeknownst to me, Javascript has a 
+// modulo operator, but no div function / operator)
+div = function(x,y) {
+  return Math.floor(x / y);
+}
+
 // custom conversion to string for printing Javascript objects
 object_to_string = function(o) {
   var s = "{\n ";
@@ -106,16 +112,16 @@ solve = function(formation, cmd_file, num_iterations) {
     // check for cycle
     var old_index = cache[current];
     if (old_index == undefined) { 
+      // no cycle found - store new formation
       cache[current] = i;
     }
     else {
+      // cycle detected - compute cycle length, and fast-forward
       var cycle_length = i - old_index;
-      var cycle_count = Math.floor(num_iterations / cycle_length) - 1; // poor man's div()
-      //console.log("found cycle at iteration " + to_string(i) + ", old index: " + to_string(old_index), "short circuiting to " + (i + cycle_count * cycle_length));
-      i += cycle_count * cycle_length; // short-circuit
+      var cycle_count = div(num_iterations, cycle_length) - 1;
+      i += cycle_count * cycle_length; 
     }
   }
-  //console.log(to_string(cache));
   return current; 
 }
 
