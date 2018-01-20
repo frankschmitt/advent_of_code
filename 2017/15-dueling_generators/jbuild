@@ -1,0 +1,5 @@
+(jbuild_version 1)
+
+;; This declares the dueling_generators executable implemented by dueling_generators.ml
+(executable
+ ((name dueling_generators)))
