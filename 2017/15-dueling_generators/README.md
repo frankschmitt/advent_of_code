@@ -6,7 +6,7 @@ Solution for the dueling generators puzzle, in OCaml.
 # Usage
 
 ## Installation
-opam install ounit
+opam install ounit batteries core
 
 ## Running the tests
 jbuilder build dueling_generators.exe

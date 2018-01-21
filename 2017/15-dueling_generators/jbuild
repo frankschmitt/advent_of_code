@@ -3,5 +3,5 @@
 ;; This declares the dueling_generators executable implemented by dueling_generators.ml
 (executable (
  (name dueling_generators)
- (libraries (ounit core))
+ (libraries (ounit core batteries))
 ))
