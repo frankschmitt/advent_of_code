@@ -4,32 +4,30 @@ open OUnit;;
 (*open Batteries.LazyList;;*)
 (*open Batteries;;*)
 
-let unity x = x ;;
-
-
-(* 
-
-The generators both work on the same principle. To create its next value, a generator will take the previous value it produced, multiply it by a factor (generator A uses 16807; generator B uses 48271), and then keep the remainder of dividing that resulting product by 2147483647. That final remainder is the value it produces next.
- *
- * for start values 65 and 8921:
-  *
-   1092455   430625591
-1181022009  1233683848
- 245556042  1431495498
-1744312007   137874439
-1352636452   285222916
- * *)
-
-(*let rec generator factor startValue = 
-  let nextValue =  (factor * startValue) % 2147483647 in
-  [nextValue] @ generator(factor, nextValue) ;; (*[1092455];;*)
-*)
+(* lazy generator for the infinite sequence given by the startValue and factor *)
 let generator factor startValue = 
   Batteries.LazyList.drop 1 (Batteries.LazyList.from_loop startValue (fun n -> (n, (n*factor) % 2147483647)));;
 
+(* generator for sequence A *)
 let generatorA startValue = generator 16807 startValue;; 
+
+(* generator for sequence B *)
 let generatorB startValue = generator 48271 startValue;; 
 
+(* compare lowest 16 bits; return true if those are equal, false otherwise *)
+let sameLowest16 a b = 
+  let a' = a land (int_of_float(2.0 ** 16.0) - 1) in
+  let b' = b land (int_of_float(2.0 ** 16.0) - 1) in
+  phys_equal a' b';;
+
+(* judge: compute the number of equalities of genA and genB (lowest 16 bits) for num_rounds *) 
+let judge num_rounds genA genB = 
+  let lst_a = Batteries.LazyList.to_list(Batteries.LazyList.take num_rounds genA) in
+  let lst_b = Batteries.LazyList.to_list(Batteries.LazyList.take num_rounds genB) in
+  let zipped = List.zip_exn lst_a lst_b in
+  List.fold zipped ~init:0 ~f:(fun accu (a,b) -> if sameLowest16 a b then accu + 1 else accu);;
+
+(* UNIT TESTS *)
 let testGeneratorA test_ctxt = assert_equal 
   [1092455; 1181022009; 245556042; 1744312007; 1352636452 ] 
   (Batteries.LazyList.to_list(Batteries.LazyList.take 5 (generatorA 65)));;  
@@ -38,12 +36,17 @@ let testGeneratorB test_ctxt = assert_equal
   [430625591; 1233683848; 1431495498; 137874439; 285222916]
   (Batteries.LazyList.to_list(Batteries.LazyList.take 5 (generatorB 8921)));;  
 
+let testJudge test_ctxt = 
+  let genA = generatorA 65 in
+  let genB = generatorB 8921 in
+    assert_equal 1 (judge 5 genA genB);;
 
-(* Name the test cases and group them together *)
+(* unit tests *)
 let suite =
 "suite">:::
  ["generator A, first 5 values">:: testGeneratorA;
-  "generator B, first 5 values">:: testGeneratorB]
+  "generator B, first 5 values">:: testGeneratorB;
+  "judge A B, first 5 rounds">:: testJudge]
 ;;
 
 let _ = run_test_tt_main suite
