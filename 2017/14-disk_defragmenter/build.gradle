@@ -1,69 +1,21 @@
-
-buildscript {
-    repositories {
-        jcenter()
-        maven { url 'http://clojars.org/repo' }
-    }
-    dependencies {
-        classpath "com.netflix.nebula:nebula-clojure-plugin:4.4.0"
-    }
-}
-
-
 plugins {
-    id "nebula.clojure" version "4.4.0"
+    id 'nebula.clojure' version '4.4.0'
+    id 'application'
 }
-
-apply plugin: 'java'
-apply plugin: 'idea'
-apply plugin: 'application'
-
-
-group 'de.qwhon.aoc'
-def artifactName = 'disk-defragmenter'
-version = 1.0
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
+version = 1.0
 
-
-compileJava {
-    classpath = project.files(
-            project.compileClojure.outputs,
-            classpath
-    )
-}
-
-compileClojure {
-    jvmOptions {
-        jvmArgs '-Djava.awt.headless=true'
-    }
-}
+mainClassName = 'de.qwhon.aoc.DiskDefragmenter'
 
 repositories {
     jcenter()
-    maven { url 'http://clojars.org/repo' }
-}
-
-jar {
-    baseName = "${artifactName}"
-    version = 1.0
-}
-
-mainClassName = "de.qwhon.aoc.DiskDefragmenter"
-
-clojure.aotCompile = true
-
-configurations{
-    dev
+    maven {
+        url 'http://clojars.org/repo'
+    }
 }
 
 dependencies {
-
     compile 'org.clojure:clojure:1.9.0'
-
-}
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.1'
 }
