@@ -2,7 +2,9 @@ package de.qwhon.aoc;
 
 import clojure.java.api.Clojure;
 import clojure.lang.IFn;
+//import clojure.lang.AFn;
 //import knot_hash.core;
+//import knot_hash.core.KnotHashState;
 
 public class DiskDefragmenter {
 
@@ -19,10 +21,13 @@ public class DiskDefragmenter {
         computeHash.invoke("xyz");
         // TODO: how can we get the result? We get back a knot_hash.core.KnotHashState
         //       but Java doesn't know this type
-        //knot_hash.core.KnotHashState state = computeHash.invoke("xyz");
+        //knot_hash.core.KnotHashState state = (knot_hash.core.KnotHashState) computeHash.invoke("xyz");
+
+        IFn solve2 = Clojure.var("knot-hash.core", "solve2");
+        String s = (String) solve2.invoke("197,97,204,108,1,29,5,71,0,50,2,255,248,78,254,63");
         //clojure.lang.IFn plus = Clojure.var("clojure.core", "+");
         //plus.invoke(1, 2);
-        System.out.println("It works!");
+        System.out.println("It works!" + s);
     }
   }
 
