@@ -1,13 +1,11 @@
 # Synopsis
-Solution for the disk defragmenter puzzle, using the Frank language (https://github.com/cmcl/frankjnr).
+Solution for the disk defragmenter puzzle, using Java (re-using the KnotHash implementation in Clojure)
 
 # Usage
 
 ## Installation
-Follow the installation instructions on the homepage; in essence:
-- clone the Github Repo
-- run ```stack setup```
-- run ```stack install```
+- install Gradle
+- run ./gradlew build
 
 ## Running the tests
 
