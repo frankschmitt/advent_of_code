@@ -16,6 +16,8 @@ repositories {
     }
 }
 
+clojure.aotCompile = true
+
 dependencies {
     compile 'org.clojure:clojure:1.9.0'
 }
