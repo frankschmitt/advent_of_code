@@ -36,7 +36,7 @@ public class DiskDefragmenter {
 
         //String s = (String) defragmenter.solve2_.invoke("197,97,204,108,1,29,5,71,0,50,2,255,248,78,254,63");
         //System.out.println("It works!" + s);
-        System.out.println("part I: " + defragmenter.gridFor("jzgqcdpd").getCount());
+        System.out.println("part I: " + defragmenter.gridFor("jzgqcdpd").getOccupiedCellCount());
     }
 
     public String computeHash(String input) {

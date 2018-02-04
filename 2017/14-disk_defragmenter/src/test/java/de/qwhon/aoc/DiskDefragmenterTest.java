@@ -4,17 +4,18 @@ import java.util.List;
 
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
+import org.junit.Ignore;
 import static org.junit.Assert.assertNotNull;
 
 public class DiskDefragmenterTest {
 
     @Test
-    public void testCountBitsInHexString() {
+    public void countBitsInHexStringShouldReturn9ForSampleInput() {
         // 10100000110000100000000101110000
         assertEquals(9, Grid.countBitsInHexString("a0c2017"));
     }
-   @Test
-    public void testGridForSampleInput() {
+   @Test @Ignore
+    public void gridForSampleInputShouldBuildTheGridCorrectly() {
        DiskDefragmenter defragmenter = new DiskDefragmenter();
        String input = "flqrgnkx";
        Grid grid = defragmenter.gridFor(input);
@@ -26,6 +27,6 @@ public class DiskDefragmenterTest {
        String expected127 = defragmenter.computeHash(input + "-127");
        assertEquals(expected127, contents.get(127));
        // check grid count
-       assertEquals(8108, grid.getCount());
+       assertEquals(8108, grid.getOccupiedCellCount());
    }
 }
