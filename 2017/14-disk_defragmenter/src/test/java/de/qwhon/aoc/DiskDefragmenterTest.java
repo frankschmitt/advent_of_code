@@ -14,7 +14,7 @@ public class DiskDefragmenterTest {
         // 10100000110000100000000101110000
         assertEquals(9, Grid.countBitsInHexString("a0c2017"));
     }
-   @Test @Ignore
+   @Test
     public void gridForSampleInputShouldBuildTheGridCorrectly() {
        DiskDefragmenter defragmenter = new DiskDefragmenter();
        String input = "flqrgnkx";
@@ -28,5 +28,7 @@ public class DiskDefragmenterTest {
        assertEquals(expected127, contents.get(127));
        // check grid count
        assertEquals(8108, grid.getOccupiedCellCount());
+       // check component count
+       assertEquals(1242, grid.getConnectedComponentCount());
    }
 }

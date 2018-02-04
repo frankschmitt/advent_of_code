@@ -14,7 +14,7 @@ public class GridTest {
     // A grid consisting of two disconnected cells
     @Test
     public void componentCountShouldReturn2For4x4GridWithTwoDisconnectedCells() {
-        List<String> contents = Arrays.asList("1", "0", "0", "1");
+        List<String> contents = Arrays.asList("8", "0", "0", "8");
         Grid grid = new Grid(contents);
         assertEquals(2, grid.getConnectedComponentCount());
     }
