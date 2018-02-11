@@ -38,4 +38,14 @@ public class GridTest {
         grid.writeToFile("U-shaped-grid.txt");
         assertEquals(1, got);
     }
+
+    // distinct points
+    @Test
+    public void componentCountShouldReturn8For4x4GridWithDisconnectedPoints() {
+        List<String> contents = Arrays.asList("a", "5", "a", "5");
+        Grid grid = new Grid(contents);
+        int got = grid.getConnectedComponentCount();
+        grid.writeToFile("disconnected-grid.txt");
+        assertEquals(8, got);
+    }
 }

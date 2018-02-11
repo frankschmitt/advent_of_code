@@ -69,7 +69,7 @@ public class Grid {
             System.err.println("File not found: " + e.toString());
         }
     }
-    
+
     /**
      * Convert a hex string to its binary representation (as int array)
      *
@@ -81,7 +81,7 @@ public class Grid {
         //   since it has too many restrictions, e.g. no reduce :: Stream<T> -> U -> fn: U, T -> U -> U, i.e. you
         //   cannot reduce a Stream to a different type, and many more
         StringBuilder res = new StringBuilder();
-        for (char ch : s.toCharArray()) {
+        for (char ch : s.toUpperCase().toCharArray()) {
             switch (ch) {
                 case '0':
                     res.append("0000");
