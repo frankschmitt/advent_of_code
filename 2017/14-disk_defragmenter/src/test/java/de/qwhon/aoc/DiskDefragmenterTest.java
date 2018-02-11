@@ -29,6 +29,8 @@ public class DiskDefragmenterTest {
        // check grid count
        assertEquals(8108, grid.getOccupiedCellCount());
        // check component count
-       assertEquals(1242, grid.getConnectedComponentCount());
+       int got = grid.getConnectedComponentCount();
+       grid.writeToFile(("sample-grid.txt"));
+       assertEquals(1242, got);
    }
 }

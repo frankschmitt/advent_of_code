@@ -1,8 +1,11 @@
 package de.qwhon.aoc;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.stream.*;
@@ -23,6 +26,7 @@ public class Grid {
     /**
      * Get the grid contents as a list of hexadecimal strings.
      * Each string represents one row in the grid.
+     *
      * @return List of grid rows in hexadecimal notation
      */
     public List<String> getContents() {
@@ -38,42 +42,119 @@ public class Grid {
         return contents.stream().map(s -> Grid.countBitsInHexString(s)).reduce(0, (accu, val) -> accu + val);
     }
 
-    private String printGrid(int[][] grid) {
-        return Arrays.stream(grid).map(row -> Arrays.toString(row)).reduce("", (accu, val) -> accu + "\n" + val);
-    }
-
-    private String leftPadWithZeros(String s) {
-        String result;
-        if (s.length() % 8 != 0) {
-            result = "00000000".substring(s.length() % 8) + s;
-        } else {
-            result = s;
+    private String printRow(int[] row) {
+        //return Arrays.stream(row).reduce("",
+        //                                 (accu, val) -> accu + ((Integer)val).toString(),
+        //                                 (accu1, accu2) -> accu1 + accu2);
+        // this is stupid. Why is the Java8 stream API so broken?
+        String s = "";
+        for (int i : row) {
+            s += ((Integer) i).toString() + ",";
         }
-        return result;
+        return s;
     }
 
-    private int[] hexToBinary(String s, int length) {
-        String binary = new BigInteger(s, 16)
-                // convert to binary representation
-                .toString(2);
-        String padded = leftPadWithZeros(binary);
-        return  padded.chars()
-                // 48 = ASCII code of zero, i.e. we map '0' -> 0, '1' -> 1
-                .map(i-> i - 48)
-                .toArray();
+    public String printGrid() {
+        //return Arrays.stream(this.matrix).map(row -> Arrays.toString(row)).reduce("", (accu, val) -> accu + "\n" + val);
+        return Arrays.stream(this.matrix)
+                //.map(row -> Arrays.stream(row).reduce("", (accu, val) -> accu + ((Integer)val).toString()))
+                .map(row -> printRow(row))
+                .reduce("", (accu, val) -> accu + "\n" + val);
     }
 
-    /** Convert our grid contents from a list of hex strings to a 2D-Array of ints
+    public void writeToFile(String fileName) {
+        try (PrintWriter out = new PrintWriter(fileName)) {
+            out.println(printGrid());
+        } catch (FileNotFoundException e) {
+            System.err.println("File not found: " + e.toString());
+        }
+    }
+    
+    /**
+     * Convert a hex string to its binary representation (as int array)
+     *
+     * @param s
+     * @return
+     */
+    public static int[] hexToBinary(String s) {
+        // this is stupid - Streams would have been much nicer, but I gave up on it
+        //   since it has too many restrictions, e.g. no reduce :: Stream<T> -> U -> fn: U, T -> U -> U, i.e. you
+        //   cannot reduce a Stream to a different type, and many more
+        StringBuilder res = new StringBuilder();
+        for (char ch : s.toCharArray()) {
+            switch (ch) {
+                case '0':
+                    res.append("0000");
+                    break;
+                case '1':
+                    res.append("0001");
+                    break;
+                case '2':
+                    res.append("0010");
+                    break;
+                case '3':
+                    res.append("0011");
+                    break;
+                case '4':
+                    res.append("0100");
+                    break;
+                case '5':
+                    res.append("0101");
+                    break;
+                case '6':
+                    res.append("0110");
+                    break;
+                case '7':
+                    res.append("0111");
+                    break;
+                case '8':
+                    res.append("1000");
+                    break;
+                case '9':
+                    res.append("1001");
+                    break;
+                case 'A':
+                    res.append("1010");
+                    break;
+                case 'B':
+                    res.append("1011");
+                    break;
+                case 'C':
+                    res.append("1100");
+                    break;
+                case 'D':
+                    res.append("1101");
+                    break;
+                case 'E':
+                    res.append("1110");
+                    break;
+                case 'F':
+                    res.append("1111");
+                    break;
+                default:
+                    // stupidly return nonsense, since Java is too brain-dead to recognize its exception handlers
+                    res.append("XXXX");
+                    break;
+            }
+        }
+        //return res.toString().chars()
+        //        .map(c -> if (c == '0') { 0 } else { 1 })
+        //           .toArray(int[][]::new);
+        // 48: ASCII code of '0'
+        return res.toString().chars().map(c -> c - 48).toArray();
+    }
+
+    /**
+     * Convert our grid contents from a list of hex strings to a 2D-Array of ints
      *
      * @return A NxN 2D array containing 1s and 0s containing the binary representation of our grid
      */
     private int[][] getGridAsIntMatrix() {
-        int cnt = contents.size();
-        //java.text.DecimalFormat decimalFormat = new java.text.DecimalFormat();
-        //decimalFormat.setMinimumIntegerDigits(cnt);
+        // this is the most stupid language restriction ever - I declare that the function may throw an Exception,
+        //   but the Java compiler still complains? WTF?
         return contents.stream()
                 // convert each hex string to a binary string
-                .map(s -> hexToBinary(s, cnt)
+                .map(s -> hexToBinary(s)
                 )
                 //.map(s -> s.toArray())
                 .toArray(int[][]::new);
@@ -90,8 +171,8 @@ public class Grid {
         }
         // not leftmost col? add neighbour at left if it isn't zero
         if (col > 0) {
-            if (matrix[row][col-1] != 0) {
-                result.add(matrix[row][col-1]);
+            if (matrix[row][col - 1] != 0) {
+                result.add(matrix[row][col - 1]);
             }
         }
         // no need to check right / bottom neighbour - these weren't visited yet
@@ -99,17 +180,18 @@ public class Grid {
     }
 
     private void renumberGridCells(Integer[] neighbourComponents, int uptoRow, int uptoCol) {
-      for (int i = 0; i <= uptoRow; ++i) {
-          for (int j = 0; j <= uptoCol; ++j) {
-              if (this.matrix[i][j] == neighbourComponents[1]) {
-                  this.matrix[i][j] = neighbourComponents[0];
-              }
-          }
-      }
+        for (int i = 0; i <= uptoRow; ++i) {
+            for (int j = 0; j <= uptoCol; ++j) {
+                if (this.matrix[i][j] == neighbourComponents[1]) {
+                    this.matrix[i][j] = neighbourComponents[0];
+                }
+            }
+        }
     }
 
     /**
      * Get the number of connected components
+     *
      * @return the number of connected components
      */
     public int getConnectedComponentCount() {
@@ -120,7 +202,7 @@ public class Grid {
         //Set<Integer> components = new Set<Integer();
         int currIndex = 1;
         int cnt = 0;
-        for(int i = 0; i < matrix.length; ++i) {
+        for (int i = 0; i < matrix.length; ++i) {
             int[] row = matrix[i];
             for (int j = 0; j < row.length; ++j) {
                 // ignore 0 cells
@@ -151,6 +233,7 @@ public class Grid {
 
     /**
      * Count the number of 1 bits in a hex string
+     *
      * @param input Number in hexadecimal notation
      * @return Number of 1 bits in the input
      */

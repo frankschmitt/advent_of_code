@@ -27,7 +27,7 @@ public class DiskDefragmenter {
         solve2_ = Clojure.var("knot-hash.core", "solve2");
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         DiskDefragmenter defragmenter = new DiskDefragmenter();
         //defragmenter.computeHash_.invoke("xyz");
         // TODO: how can we get the result? We get back a knot_hash.core.KnotHashState
@@ -36,7 +36,9 @@ public class DiskDefragmenter {
 
         //String s = (String) defragmenter.solve2_.invoke("197,97,204,108,1,29,5,71,0,50,2,255,248,78,254,63");
         //System.out.println("It works!" + s);
-        System.out.println("part I: " + defragmenter.gridFor("jzgqcdpd").getOccupiedCellCount());
+        Grid grid = defragmenter.gridFor("jzgqcdpd");
+        System.out.println("part I: " + grid.getOccupiedCellCount());
+        System.out.println("part II: " + grid.getConnectedComponentCount());
     }
 
     public String computeHash(String input) {
