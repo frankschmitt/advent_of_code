@@ -39,32 +39,46 @@ public class Grid {
      * @return Number of 1 bits in the binary notation of the grid contents
      */
     public int getOccupiedCellCount() {
-        return contents.stream().map(s -> Grid.countBitsInHexString(s)).reduce(0, (accu, val) -> accu + val);
+        // quick variant: count bits in hex strings
+        //return contents.stream().map(s -> Grid.countBitsInHexString(s)).reduce(0, (accu, val) -> accu + val);
+        // slow variant: build int matrix, count non-0 cells
+        buildGridAsIntMatrix();
+        int cnt = 0;
+        for (int[] row: matrix) {
+            for (int val: row) {
+                if (val != 0) {
+                    ++cnt;
+                }
+            }
+        }
+        return cnt;
     }
 
-    private String printRow(int[] row) {
+    private String printRow(int[] row, int width) {
         //return Arrays.stream(row).reduce("",
         //                                 (accu, val) -> accu + ((Integer)val).toString(),
         //                                 (accu1, accu2) -> accu1 + accu2);
         // this is stupid. Why is the Java8 stream API so broken?
         String s = "";
+        String format = "%0" + ((Integer)width).toString() + "d.";
         for (int i : row) {
-            s += ((Integer) i).toString() + ",";
+            //s += ((Integer) i).toString() + ".";
+            s += String.format(format, i);
         }
         return s;
     }
 
-    public String printGrid() {
+    public String printGrid(int width) {
         //return Arrays.stream(this.matrix).map(row -> Arrays.toString(row)).reduce("", (accu, val) -> accu + "\n" + val);
         return Arrays.stream(this.matrix)
                 //.map(row -> Arrays.stream(row).reduce("", (accu, val) -> accu + ((Integer)val).toString()))
-                .map(row -> printRow(row))
-                .reduce("", (accu, val) -> accu + "\n" + val);
+                .map(row -> printRow(row, width))
+                .reduce("", (accu, val) -> accu + val + "\n");
     }
 
-    public void writeToFile(String fileName) {
+    public void writeToFile(String fileName, int width) {
         try (PrintWriter out = new PrintWriter(fileName)) {
-            out.println(printGrid());
+            out.println(printGrid(width));
         } catch (FileNotFoundException e) {
             System.err.println("File not found: " + e.toString());
         }
@@ -147,19 +161,17 @@ public class Grid {
     /**
      * Convert our grid contents from a list of hex strings to a 2D-Array of ints
      *
-     * @return A NxN 2D array containing 1s and 0s containing the binary representation of our grid
      */
-    private int[][] getGridAsIntMatrix() {
+    private void buildGridAsIntMatrix() {
         // this is the most stupid language restriction ever - I declare that the function may throw an Exception,
         //   but the Java compiler still complains? WTF?
-        return contents.stream()
+        this.matrix = contents.stream()
                 // convert each hex string to a binary string
                 .map(s -> hexToBinary(s)
                 )
                 //.map(s -> s.toArray())
                 .toArray(int[][]::new);
     }
-
 
     private Integer[] getNeighbourComponents(int[][] matrix, int row, int col) {
         Set<Integer> result = new HashSet<Integer>();
@@ -176,9 +188,18 @@ public class Grid {
             }
         }
         // no need to check right / bottom neighbour - these weren't visited yet
-        return result.toArray(new Integer[0]);
+        // sort the components to ensure components with lower indices come first
+        Integer[] tmp = result.toArray(new Integer[0]);
+        Arrays.sort(tmp);
+        return tmp;
     }
 
+    /** Renumber the grid cells (merge two distinct areas)
+     *
+     * @param neighbourComponents Grid areas we want to merge (#1 gets renumbered to #0)
+     * @param uptoRow we renumber all grid rows from 0 .. uptoRow
+     * @param uptoCol we renumber all grid cols from 0 .. uptoCol
+     */
     private void renumberGridCells(Integer[] neighbourComponents, int uptoRow, int uptoCol) {
         for (int i = 0; i <= uptoRow; ++i) {
             for (int j = 0; j <= uptoCol; ++j) {
@@ -196,7 +217,7 @@ public class Grid {
      */
     public int getConnectedComponentCount() {
         //List<String> contentsInBinary = contents.stream().map(s -> new BigInteger(s, 16).toString(2)).collect(Collectors.toList());
-        this.matrix = getGridAsIntMatrix();
+        buildGridAsIntMatrix();
         //System.out.println("matrix before: " + printGrid(matrix));
 
         //Set<Integer> components = new Set<Integer();
@@ -212,23 +233,37 @@ public class Grid {
                     if (neighbourComponents.length == 0) {
                         matrix[i][j] = currIndex++;
                         cnt++;
+                        if (i == 127) writeToFile(String.format("debug/sample-%03d-%03d_standalone.txt", i, j), 4);
                     }
                     // one neighbour component: use its component
                     else if (neighbourComponents.length == 1) {
                         matrix[i][j] = neighbourComponents[0];
+                        if (i == 127) writeToFile(String.format("debug/sample-%03d-%03d_neighbour-%03d.txt", i, j,
+                                neighbourComponents[0]), 4);
                     }
                     // two neighbour components: use the first component, and re-number all neighbours to use this component
                     else {
                         matrix[i][j] = neighbourComponents[0];
                         renumberGridCells(neighbourComponents, i, j);
                         cnt--;
+                        if (i == 127) writeToFile(String.format("debug/sample-%03d-%03d_merged-%03d-%03d.txt", i, j,
+                                neighbourComponents[0], neighbourComponents[1]), 4);
                     }
                 }
             }
         }
         //System.out.println("matrix after: " + printGrid(matrix));
-
-        return cnt;
+        // count the disjunct areas
+        Set<Integer> result = new  HashSet<Integer>();
+        for (int[] row: matrix) {
+            for (int val: row) {
+                if (val != 0) {
+                    result.add(val);
+                }
+            }
+        }
+        return result.size();
+        //return cnt;
     }
 
     /**
