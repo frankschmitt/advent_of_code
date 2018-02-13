@@ -44,8 +44,8 @@ public class Grid {
         // slow variant: build int matrix, count non-0 cells
         buildGridAsIntMatrix();
         int cnt = 0;
-        for (int[] row: matrix) {
-            for (int val: row) {
+        for (int[] row : matrix) {
+            for (int val : row) {
                 if (val != 0) {
                     ++cnt;
                 }
@@ -60,7 +60,7 @@ public class Grid {
         //                                 (accu1, accu2) -> accu1 + accu2);
         // this is stupid. Why is the Java8 stream API so broken?
         String s = "";
-        String format = "%0" + ((Integer)width).toString() + "d.";
+        String format = "%0" + ((Integer) width).toString() + "d.";
         for (int i : row) {
             //s += ((Integer) i).toString() + ".";
             s += String.format(format, i);
@@ -160,7 +160,6 @@ public class Grid {
 
     /**
      * Convert our grid contents from a list of hex strings to a 2D-Array of ints
-     *
      */
     private void buildGridAsIntMatrix() {
         // this is the most stupid language restriction ever - I declare that the function may throw an Exception,
@@ -194,11 +193,12 @@ public class Grid {
         return tmp;
     }
 
-    /** Renumber the grid cells (merge two distinct areas)
+    /**
+     * Renumber the grid cells (merge two distinct areas)
      *
      * @param neighbourComponents Grid areas we want to merge (#1 gets renumbered to #0)
-     * @param uptoRow we renumber all grid rows from 0 .. uptoRow
-     * @param uptoCol we renumber all grid cols from 0 .. uptoCol
+     * @param uptoRow             we renumber all grid rows from 0 .. uptoRow
+     * @param uptoCol             we renumber all grid cols from 0 .. uptoCol
      */
     private void renumberGridCells(Integer[] neighbourComponents, int uptoRow, int uptoCol) {
         for (int i = 0; i <= uptoRow; ++i) {
@@ -221,8 +221,8 @@ public class Grid {
         //System.out.println("matrix before: " + printGrid(matrix));
 
         //Set<Integer> components = new Set<Integer();
-        int currIndex = 1;
-        int cnt = 0;
+        // first index used for renumbering (we don't use 1, since 1 marks the occupied cells we don't have visited yet)
+        int currIndex = 2;
         for (int i = 0; i < matrix.length; ++i) {
             int[] row = matrix[i];
             for (int j = 0; j < row.length; ++j) {
@@ -231,21 +231,19 @@ public class Grid {
                     Integer[] neighbourComponents = getNeighbourComponents(matrix, i, j);
                     // no neighbour set? use current index + increase it
                     if (neighbourComponents.length == 0) {
-                        matrix[i][j] = currIndex++;
-                        cnt++;
+                        row[j] = currIndex++;
                         if (i == 127) writeToFile(String.format("debug/sample-%03d-%03d_standalone.txt", i, j), 4);
                     }
                     // one neighbour component: use its component
                     else if (neighbourComponents.length == 1) {
-                        matrix[i][j] = neighbourComponents[0];
+                        row[j] = neighbourComponents[0];
                         if (i == 127) writeToFile(String.format("debug/sample-%03d-%03d_neighbour-%03d.txt", i, j,
                                 neighbourComponents[0]), 4);
                     }
                     // two neighbour components: use the first component, and re-number all neighbours to use this component
                     else {
-                        matrix[i][j] = neighbourComponents[0];
+                        row[j] = neighbourComponents[0];
                         renumberGridCells(neighbourComponents, i, j);
-                        cnt--;
                         if (i == 127) writeToFile(String.format("debug/sample-%03d-%03d_merged-%03d-%03d.txt", i, j,
                                 neighbourComponents[0], neighbourComponents[1]), 4);
                     }
@@ -254,9 +252,9 @@ public class Grid {
         }
         //System.out.println("matrix after: " + printGrid(matrix));
         // count the disjunct areas
-        Set<Integer> result = new  HashSet<Integer>();
-        for (int[] row: matrix) {
-            for (int val: row) {
+        Set<Integer> result = new HashSet<Integer>();
+        for (int[] row : matrix) {
+            for (int val : row) {
                 if (val != 0) {
                     result.add(val);
                 }
