@@ -37,8 +37,8 @@ public class DiskDefragmenter {
         //String s = (String) defragmenter.solve2_.invoke("197,97,204,108,1,29,5,71,0,50,2,255,248,78,254,63");
         //System.out.println("It works!" + s);
         Grid grid = defragmenter.gridFor("jzgqcdpd");
-        System.out.println("part I: " + grid.getOccupiedCellCount());
-        System.out.println("part II: " + grid.getConnectedComponentCount());
+        System.out.println("part I: " + grid.getOccupiedCellCount()); // 8074
+        System.out.println("part II: " + grid.getConnectedComponentCount()); // 1212
     }
 
     public String computeHash(String input) {

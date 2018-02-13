@@ -11,6 +11,10 @@ import java.util.HashSet;
 import java.util.stream.*;
 import java.util.stream.Collectors;
 
+import org.jgrapht.*;
+import org.jgrapht.graph.*;
+import org.jgrapht.alg.ConnectivityInspector;
+
 /**
  * Created by frank on 03.02.18.
  */
@@ -210,6 +214,56 @@ public class Grid {
         }
     }
 
+    private int nodeLabel(int row, int col) {
+        return row*1000 + col;
+    }
+
+    private Graph<Integer, DefaultEdge> createGraph()
+    {
+        Graph<Integer, DefaultEdge> g = new SimpleGraph<>(DefaultEdge.class);
+
+        /*String v1 = "v1";
+        String v2 = "v2";
+        String v3 = "v3";
+        String v4 = "v4";
+
+        // add the vertices
+        g.addVertex(v1);
+        g.addVertex(v2);
+        g.addVertex(v3);
+        g.addVertex(v4);
+
+        // add edges to create a circuit
+        g.addEdge(v1, v2);
+        g.addEdge(v2, v3);
+        g.addEdge(v3, v4);
+        g.addEdge(v4, v1);
+*/
+        for (int i = 0; i < this.matrix.length; ++i) {
+            int[] row = this.matrix[i];
+            for (int j = 0; j < row.length; ++j) {
+                //if (this.matrix[i][j] == neighbourComponents[1]) {
+                //    this.matrix[i][j] = neighbourComponents[0];
+                //}
+                // Ignore 0 cells
+                if (row[j] != 0) {
+                    // add node
+                    g.addVertex(nodeLabel(i, j));
+                    // not topmost row? check top neighbour + add edge if it's present
+                    if ((i > 0) && (matrix[i-1][j] != 0)) {
+                        g.addEdge(nodeLabel(i,j), nodeLabel(i-1,j));
+                    }
+                    // not leftmost column? check left neighbour + add edge if it's present
+                    if ((j > 0) && (matrix[i][j-1] != 0)) {
+                        g.addEdge(nodeLabel(i,j), nodeLabel(i, j-1));
+                    }
+                }
+            }
+        }
+
+        return g;
+    }
+
     /**
      * Get the number of connected components
      *
@@ -219,7 +273,33 @@ public class Grid {
         //List<String> contentsInBinary = contents.stream().map(s -> new BigInteger(s, 16).toString(2)).collect(Collectors.toList());
         buildGridAsIntMatrix();
         //System.out.println("matrix before: " + printGrid(matrix));
+        /*buildConnectedComponents();
 
+
+        //System.out.println("matrix after: " + printGrid(matrix));
+        // count the disjunct areas
+        Set<Integer> result = countConnectedComponents();
+        return result.size();
+        */
+        Graph<Integer, DefaultEdge> g = createGraph();
+        ConnectivityInspector<Integer, DefaultEdge> inspector = new ConnectivityInspector<>(g);
+        return inspector.connectedSets().size();
+        //return cnt;
+    }
+
+    private Set<Integer> countConnectedComponents() {
+        Set<Integer> result = new HashSet<Integer>();
+        for (int[] row : matrix) {
+            for (int val : row) {
+                if (val != 0) {
+                    result.add(val);
+                }
+            }
+        }
+        return result;
+    }
+
+    private void buildConnectedComponents() {
         //Set<Integer> components = new Set<Integer();
         // first index used for renumbering (we don't use 1, since 1 marks the occupied cells we don't have visited yet)
         int currIndex = 2;
@@ -232,36 +312,24 @@ public class Grid {
                     // no neighbour set? use current index + increase it
                     if (neighbourComponents.length == 0) {
                         row[j] = currIndex++;
-                        if (i == 127) writeToFile(String.format("debug/sample-%03d-%03d_standalone.txt", i, j), 4);
+                        //if (i == 127) writeToFile(String.format("debug/sample-%03d-%03d_standalone.txt", i, j), 4);
                     }
                     // one neighbour component: use its component
                     else if (neighbourComponents.length == 1) {
                         row[j] = neighbourComponents[0];
-                        if (i == 127) writeToFile(String.format("debug/sample-%03d-%03d_neighbour-%03d.txt", i, j,
-                                neighbourComponents[0]), 4);
+                        //if (i == 127) writeToFile(String.format("debug/sample-%03d-%03d_neighbour-%03d.txt", i, j,
+                        //        neighbourComponents[0]), 4);
                     }
                     // two neighbour components: use the first component, and re-number all neighbours to use this component
                     else {
                         row[j] = neighbourComponents[0];
                         renumberGridCells(neighbourComponents, i, j);
-                        if (i == 127) writeToFile(String.format("debug/sample-%03d-%03d_merged-%03d-%03d.txt", i, j,
-                                neighbourComponents[0], neighbourComponents[1]), 4);
+                        //if (i == 127) writeToFile(String.format("debug/sample-%03d-%03d_merged-%03d-%03d.txt", i, j,
+                        //        neighbourComponents[0], neighbourComponents[1]), 4);
                     }
                 }
             }
         }
-        //System.out.println("matrix after: " + printGrid(matrix));
-        // count the disjunct areas
-        Set<Integer> result = new HashSet<Integer>();
-        for (int[] row : matrix) {
-            for (int val : row) {
-                if (val != 0) {
-                    result.add(val);
-                }
-            }
-        }
-        return result.size();
-        //return cnt;
     }
 
     /**
