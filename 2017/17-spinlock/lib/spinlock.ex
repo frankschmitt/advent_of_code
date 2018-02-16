@@ -38,6 +38,9 @@ defmodule Spinlock do
   end
 
   def step_n(state, width, n) do
+    if (rem(n, 1000) == 0) do
+      IO.puts(n)
+    end
     step_n(step(state, width), width, n-1)
   end
 end

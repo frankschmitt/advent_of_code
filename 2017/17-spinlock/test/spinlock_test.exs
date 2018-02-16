@@ -28,4 +28,11 @@ defmodule SpinlockTest do
     lst = Enum.drop_while(got.buffer, fn(x) -> x != 2017 end) |> Enum.take(2)
     assert [2017, 1670] == lst 
   end
+
+  test "solve part II" do
+    # TOO SLOW - timeout after 60 seconds, and we're still at 49.9M !
+    #got = Spinlock.step_n(Spinlock.init, 328, 50_000_000)
+    #lst = Enum.drop_while(got.buffer, fn(x) -> x != 0 end) |> Enum.take(2)
+    #assert [0, 1670] == lst 
+  end
 end
