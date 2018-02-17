@@ -17,8 +17,6 @@ defmodule SpinlockTest do
 
   test "2017 steps should return correct result for sample" do
     got = Spinlock.step_n(Spinlock.init, 3, 2017)
-    #index = Enum.find(got, fn(x) -> x == 1512)
-    # 1512  1134  151 (2017) 638  1513  851
     lst = Enum.drop_while(got.buffer, fn(x) -> x != 1512 end) |> Enum.take(7)
     assert [1512,1134,151,2017,638,1513,851] == lst 
   end
@@ -30,9 +28,7 @@ defmodule SpinlockTest do
   end
 
   test "solve part II" do
-    # TOO SLOW - timeout after 60 seconds, and we're still at 49.9M !
-    #got = Spinlock.step_n(Spinlock.init, 328, 50_000_000)
-    #lst = Enum.drop_while(got.buffer, fn(x) -> x != 0 end) |> Enum.take(2)
-    #assert [0, 1670] == lst 
+    got = Spinlock.step_n2(Spinlock.init2, 328, 50_000_000)
+    assert 2316253 == got.value_after_0
   end
 end
