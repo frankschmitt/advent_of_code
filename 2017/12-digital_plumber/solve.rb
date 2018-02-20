@@ -1,8 +1,19 @@
+# Solves the digital plumber puzzle.
 class DigitalPlumber
   attr_reader :edges
 
   def initialize(input)
     parse_input(input)
+  end
+
+  # given a node and its neighbours, adds the corresponding edges
+  def add_edges(node, neighbours)
+    # we store edges and (for easier lookup) always use the lower index first
+    neighbours.each do |n|
+      v1 = [node, n].min
+      v2 = [node, n].max
+      @edges.push([v1, v2])
+    end
   end
 
   def parse_input(input)
@@ -12,12 +23,7 @@ class DigitalPlumber
       md = re.match(line)
       node = md[1].to_i
       neighbours = md[2].split(',').map(&:to_i)
-      # we store edges and (for easier lookup) always use the lower index first
-      neighbours.each do |n|
-        v1 = [node, n].min
-        v2 = [node, n].max
-        @edges.push([v1, v2])
-      end
+      add_edges(node, neighbours)
     end
     @edges.uniq!
   end
@@ -83,15 +89,16 @@ describe 'Digital Plumber' do
     conns = IO.readlines('sample_input.txt')
     dp = DigitalPlumber.new(conns)
     expect(dp.edges).to eq(
-    [
-      [0, 2],
-      [1, 1],
-      [2, 3],
-      [2, 4],
-      [3, 4],
-      [4, 6],
-      [5, 6]
-    ])
+      [
+        [0, 2],
+        [1, 1],
+        [2, 3],
+        [2, 4],
+        [3, 4],
+        [4, 6],
+        [5, 6]
+      ]
+    )
   end
 
   it 'returns a one-element group for a single input' do
