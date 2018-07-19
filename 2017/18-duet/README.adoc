@@ -1,0 +1,15 @@
+= Synopsis
+Solution for the Duet challenge, using the Crystal language.
+
+= Overall approach
+
+= Usage
+
+== Installation
+Just follow the installation instructions on the Crystal homepage
+
+== Running the tests
+Crystal comes with a built-in BDD framework; to run the tests:
+```crystal spec```
+
+
