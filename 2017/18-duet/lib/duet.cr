@@ -1,5 +1,9 @@
 class Duet
-  #@@re_node = /([a-z]+) \(([0-9]+)\)/ # matches eg. fwft (72) 
+  @@re_instruction = /^([a-z]+) ([a-z])( -?[0-9]+)?$/
+
+  @registers = Hash(String, Int32).new
+
+  property registers
 
 #  # parse a node line, and return a new Node instance
 #  def parse_node(input : String)
@@ -28,7 +32,39 @@ class Duet
 #    nodes
 #  end
 #
-  def registers
-    [] of String
+
+  def set(reg : String, value : Int32)
+    @registers[reg] = value
   end
+
+  def add(reg : String, value : Int32)
+    @registers[reg] += value
+  end
+
+  def mul(reg : String, value : Int32)
+    @registers[reg] *= value
+  end
+
+  def mod(reg : String, value : Int32)
+    @registers[reg] = @registers[reg] % value
+  end
+
+  def parse(input)
+    input.each do |line|
+      puts "parsing '#{line}'"
+      md = @@re_instruction.match(line) 
+      if md
+        cmd = md[1]
+        reg = md[2]
+        if md[3]
+          val = md[3].to_i 
+          set(reg, val) if cmd == "set"
+          add(reg, val) if cmd == "add"
+          mul(reg, val) if cmd == "mul"
+          mod(reg, val) if cmd == "mod"
+        end
+      end
+    end 
+  end
+
 end
