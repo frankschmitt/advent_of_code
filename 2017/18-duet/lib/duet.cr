@@ -1,9 +1,18 @@
 class Duet
-  @@re_instruction = /^([a-z]+) ([a-z])( -?[0-9]+)?$/
+  @@re_instruction_2 = /^([a-z]+) ([a-z])$/
+  @@re_instruction_3 = /^([a-z]+) ([a-z]) (-?[0-9]+)$/
 
   @registers = Hash(String, Int32).new
+  @last_played = -1
+  @instruction_pointer = -1
 
   property registers
+  property last_played
+  property instruction_pointer
+
+  def debug(msg)
+    puts msg
+  end
 
 #  # parse a node line, and return a new Node instance
 #  def parse_node(input : String)
@@ -49,19 +58,36 @@ class Duet
     @registers[reg] = @registers[reg] % value
   end
 
+  def snd(reg : String)
+    @last_played = @registers[reg]
+  end
+
+  def instruction_2(match_data)
+    cmd = match_data[1]
+    reg = match_data[2]
+    snd(reg) if cmd == "snd"
+  end
+
+  def instruction_3(match_data)
+    cmd = match_data[1]
+    reg = match_data[2]
+    val = match_data[3].to_i 
+    set(reg, val) if cmd == "set"
+    add(reg, val) if cmd == "add"
+    mul(reg, val) if cmd == "mul"
+    mod(reg, val) if cmd == "mod"
+  end
+
   def parse(input)
     input.each do |line|
-      puts "parsing '#{line}'"
-      md = @@re_instruction.match(line) 
-      if md
-        cmd = md[1]
-        reg = md[2]
-        if md[3]
-          val = md[3].to_i 
-          set(reg, val) if cmd == "set"
-          add(reg, val) if cmd == "add"
-          mul(reg, val) if cmd == "mul"
-          mod(reg, val) if cmd == "mod"
+      debug "parsing '#{line}'"
+      md3 = @@re_instruction_3.match(line) 
+      if md3
+        instruction_3(md3)
+      else
+        md2 = @@re_instruction_2.match(line) 
+        if md2
+          instruction_2(md2) 
         end
       end
     end 
