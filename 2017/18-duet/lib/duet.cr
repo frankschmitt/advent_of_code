@@ -4,7 +4,7 @@ class Duet
 
   @registers = Hash(String, Int32).new
   @last_played = -1
-  @instruction_pointer = -1
+  @instruction_pointer = 0
 
   property registers
   property last_played
@@ -61,9 +61,11 @@ class Duet
     end
   end
 
-  # parse the input list of instructions
-  def parse(input)
-    input.each do |line|
+  # parse the input list of instructions, and run the program
+  def run(input)
+    while @instruction_pointer >= 0 && @instruction_pointer < input.count { |e| true } 
+      #input.each do |line|
+      line = input[@instruction_pointer]
       debug "parsing '#{line}'"
       md3 = @@re_instruction_3.match(line) 
       if md3
