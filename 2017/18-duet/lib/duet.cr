@@ -14,34 +14,7 @@ class Duet
     puts msg
   end
 
-#  # parse a node line, and return a new Node instance
-#  def parse_node(input : String)
-#    # parse name + weight
-#    node_md = @@re_node.match(input)
-#    name, weight = "?", 0
-#    if node_md 
-#      name = node_md[1]
-#      weight = node_md[2].to_i
-#    end 
-#    # parse children
-#    children = [] of String
-#    if input.includes?("->")
-#      _, x = input.split("->")
-#      children = x.delete(" ").split(",")
-#    end 
-#    Node.new(name, weight, children)
-#  end
-#
-#  # parse input, returning the list of Node instances (no tree building so far)
-#  def parse_input(input)
-#    nodes = [] of Node
-#    input.each do |line|
-#      nodes.push(parse_node(line))
-#    end     
-#    nodes
-#  end
-#
-
+  # handlers for specific instructions
   def set(reg : String, value : Int32)
     @registers[reg] = value
   end
@@ -66,6 +39,7 @@ class Duet
     cmd = match_data[1]
     reg = match_data[2]
     snd(reg) if cmd == "snd"
+    @instruction_pointer += 1
   end
 
   def instruction_3(match_data)
@@ -76,8 +50,18 @@ class Duet
     add(reg, val) if cmd == "add"
     mul(reg, val) if cmd == "mul"
     mod(reg, val) if cmd == "mod"
+    if cmd == "jgz"
+      if @registers[reg] > 0
+        @instruction_pointer += val
+      else
+        @instruction_pointer += 1
+      end
+    else
+      @instruction_pointer += 1
+    end
   end
 
+  # parse the input list of instructions
   def parse(input)
     input.each do |line|
       debug "parsing '#{line}'"
