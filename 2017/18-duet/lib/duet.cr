@@ -1,17 +1,21 @@
 class Duet
   @@re_instruction_2 = /^([a-z]+) ([a-z])$/
-  #@@re_instruction_3 = /^([a-z]+) ([a-z]) (-?[0-9]+)$/
   @@re_instruction_3 = /^([a-z]+) ([a-z]) ([a-z]|-?[0-9]+)$/
 
   @registers = Hash(String, Int64).new(Int64.new(0))
   @last_played = Int64.new(-1)
   @last_received = Int64.new(-1)
   @instruction_pointer = Int64.new(0)
+  @snd_count = Int64.new(0)
+  @input = [] of String
+  @partner : (Duet | Nil) = nil
 
   property registers
   property last_played
   property last_received
   property instruction_pointer
+  property snd_count
+  property partner
 
   def debug(msg)
     #puts msg
@@ -36,6 +40,7 @@ class Duet
 
   def snd(reg : String)
     @last_played = @registers[reg]
+    @snd_count += 1
   end
 
   def rcv(reg : String)
@@ -80,8 +85,8 @@ class Duet
     end
   end
 
-  def step(input)
-    line = input[@instruction_pointer]
+  def step()
+    line = @input[@instruction_pointer]
     debug "executing '#{line}'"
     md3 = @@re_instruction_3.match(line) 
     if md3
@@ -95,10 +100,15 @@ class Duet
     debug "  #{self.to_s}"
   end
 
+  def has_valid_instruction_pointer
+    @instruction_pointer >= 0 && @instruction_pointer < @input.count { |e| true } 
+  end
+
   # parse the input list of instructions, and run the program
   def run(input)
-    while @instruction_pointer >= 0 && @instruction_pointer < input.count { |e| true } 
-      step(input)
+    @input = input
+    while has_valid_instruction_pointer 
+      step()
     end 
   end
 
@@ -108,4 +118,18 @@ class Duet
 
 end
 
+class DuetRunner
+  @duet0 = Duet.new()
+  @duet1 = Duet.new()
+   
+  getter duet0
+  getter duet1 
+  
+  def run(input)
+    @duet0.partner = @duet1
+    @duet1.partner = @duet0
 
+    @duet0.run(input)
+    @duet1.run(input)
+  end
+end

@@ -101,5 +101,15 @@ describe "Duet" do
     duet.run(File.read_lines("input.txt"))
     duet.last_received.should eq 3423
   end
+end
+
+
+describe "DuetRunner" do
+
+  it "returns 3 for the snd count of prog 1 for the sample duet" do
+    runner = DuetRunner.new()
+    runner.run(File.read_lines("input.txt"))
+    runner.duet0.snd_count.should eq 3
+  end 
 
 end
