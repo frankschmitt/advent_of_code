@@ -80,22 +80,25 @@ class Duet
     end
   end
 
+  def step(input)
+    line = input[@instruction_pointer]
+    debug "executing '#{line}'"
+    md3 = @@re_instruction_3.match(line) 
+    if md3
+      instruction_3(md3)
+    else
+      md2 = @@re_instruction_2.match(line) 
+      if md2
+        instruction_2(md2) 
+      end
+    end
+    debug "  #{self.to_s}"
+  end
+
   # parse the input list of instructions, and run the program
   def run(input)
     while @instruction_pointer >= 0 && @instruction_pointer < input.count { |e| true } 
-      #input.each do |line|
-      line = input[@instruction_pointer]
-      debug "executing '#{line}'"
-      md3 = @@re_instruction_3.match(line) 
-      if md3
-        instruction_3(md3)
-      else
-        md2 = @@re_instruction_2.match(line) 
-        if md2
-          instruction_2(md2) 
-        end
-      end
-      debug "  #{self.to_s}"
+      step(input)
     end 
   end
 
