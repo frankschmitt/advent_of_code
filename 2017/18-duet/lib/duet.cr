@@ -41,6 +41,9 @@ class Duet
   def snd(reg : String)
     @last_played = @registers[reg]
     @snd_count += 1
+    if @partner
+      @partner.snd_msg(@registers[reg])
+    end
   end
 
   def rcv(reg : String)
