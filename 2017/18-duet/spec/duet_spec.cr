@@ -1,6 +1,9 @@
 require "spec"
 require "duet"
 
+def describex(s, &b)
+end
+
 describe "Duet" do
 
   it "initializes the set of registers to empty" do
@@ -104,11 +107,11 @@ describe "Duet" do
 end
 
 
-describe "DuetRunner" do
+describex "DuetRunner" do
 
   it "returns 3 for the snd count of prog 1 for the sample duet" do
     runner = DuetRunner.new()
-    runner.run(File.read_lines("input.txt"))
+    runner.run(File.read_lines("sample_duet_input.txt"))
     runner.duet0.snd_count.should eq 3
   end 
 

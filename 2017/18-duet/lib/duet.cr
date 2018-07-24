@@ -9,6 +9,7 @@ class Duet
   @snd_count = Int64.new(0)
   @input = [] of String
   @partner : (Duet | Nil) = nil
+  @inbox = [] of Int64
 
   property registers
   property last_played
@@ -16,9 +17,10 @@ class Duet
   property instruction_pointer
   property snd_count
   property partner
+  property input
 
   def debug(msg)
-    #puts msg
+    puts msg
   end
 
   # handlers for specific instructions
@@ -41,16 +43,32 @@ class Duet
   def snd(reg : String)
     @last_played = @registers[reg]
     @snd_count += 1
-    if @partner
-      @partner.snd_msg(@registers[reg])
+    case p = @partner 
+      when Duet then
+        p.to_inbox(@registers[reg])
     end
+  end
+ 
+  def to_inbox(val : Int64)
+    @inbox.push(val) 
   end
 
   def rcv(reg : String)
-    if @registers[reg] != 0
-      @last_received = @last_played
-      @instruction_pointer = -10 #terminate
-    end
+    case p = @partner
+      # Duet mode: wait for message in inbox to arrive
+      when Duet then
+        if @inbox.empty?
+          @instruction_pointer -= 1 # HACK (since it's incremented in the calling function afterwards
+        else
+          @registers[reg] = @inbox.pop
+        end
+      # running standalone - check register, terminate if it's not equal zero
+      else
+        if @registers[reg] != 0
+          @last_received = @last_played
+          @instruction_pointer = -10 #terminate
+        end
+      end
   end
 
   def instruction_2(match_data)
@@ -103,14 +121,24 @@ class Duet
     debug "  #{self.to_s}"
   end
 
-  def has_valid_instruction_pointer
+  def has_valid_instruction_pointer?
     @instruction_pointer >= 0 && @instruction_pointer < @input.count { |e| true } 
   end
 
+  def receiving?
+    b = has_valid_instruction_pointer? && (@partner != nil) && (@input[@instruction_pointer][0,3] == "rcv")
+    debug("receiving? #{b}")
+    b
+  end
+
+  def is_running?
+    has_valid_instruction_pointer? && !receiving?
+  end
+ 
   # parse the input list of instructions, and run the program
   def run(input)
     @input = input
-    while has_valid_instruction_pointer 
+    while is_running?
       step()
     end 
   end
@@ -129,10 +157,16 @@ class DuetRunner
   getter duet1 
   
   def run(input)
+    @duet0.registers = { "p" => Int64.new(0) }
+    @duet1.registers = { "p" => Int64.new(1) }
     @duet0.partner = @duet1
     @duet1.partner = @duet0
+    @duet0.input = input
+    @duet1.input = input
 
-    @duet0.run(input)
-    @duet1.run(input)
+    while @duet0.is_running? && @duet1.is_running?
+      @duet0.step
+      @duet1.step
+    end
   end
 end
