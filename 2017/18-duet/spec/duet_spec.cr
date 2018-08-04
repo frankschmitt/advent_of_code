@@ -1,7 +1,11 @@
 require "spec"
 require "duet"
 
+# dummy methods to easily ignore tests
 def describex(s, &b)
+end
+
+def itx(s, &b)
 end
 
 describe "Duet" do
@@ -111,8 +115,13 @@ describe "DuetRunner" do
 
   it "returns 3 for the snd count of prog 1 for the sample duet" do
     runner = DuetRunner.new()
-    runner.run(File.read_lines("sample_duet_input.txt"), 10)
+    runner.run(File.read_lines("sample_duet_input.txt"), -1)
     runner.duet0.snd_count.should eq 3
   end 
 
+  it "solves part II" do
+    runner = DuetRunner.new()
+    runner.run(File.read_lines("input.txt"), -1)
+    runner.duet1.snd_count.should eq 7493
+  end
 end

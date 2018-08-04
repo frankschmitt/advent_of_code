@@ -1,6 +1,10 @@
+def debug(msg)
+  # puts msg
+end
+
 class Duet
   @@re_instruction_2 = /^([a-z]+) ([a-z]|-?[0-9]+)$/
-  @@re_instruction_3 = /^([a-z]+) ([a-z]) ([a-z]|-?[0-9]+)$/
+  @@re_instruction_3 = /^([a-z]+) ([a-z]|-?[0-9]+) ([a-z]|-?[0-9]+)$/
 
   @registers = Hash(String, Int64).new(Int64.new(0))
   @last_played = Int64.new(-1)
@@ -22,10 +26,6 @@ class Duet
 
   def initialize(id = -1)
     @id = id
-  end
-
-  def debug(msg)
-    puts msg
   end
 
   # handlers for specific instructions
@@ -72,7 +72,8 @@ class Duet
           debug("  decreasing ip")
           @instruction_pointer -= 1 # HACK (since it's incremented in the calling function afterwards
         else
-          @registers[reg] = @inbox.pop
+          #@registers[reg] = @inbox.pop
+          @registers[reg] = @inbox.shift
         end
       # running standalone - check register, terminate if it's not equal zero
       else
@@ -108,7 +109,12 @@ class Duet
     mul(reg, val) if cmd == "mul"
     mod(reg, val) if cmd == "mod"
     if cmd == "jgz"
-      if @registers[reg] > 0
+      if is_numeric(reg)
+        val2 = Int64.new(reg.to_i)
+      else
+        val2 = @registers[reg]
+      end
+      if val2 > 0 
         @instruction_pointer += val
       else
         @instruction_pointer += 1
@@ -147,7 +153,7 @@ class Duet
   end
 
   def is_running?
-    has_valid_instruction_pointer? && !receiving?
+    has_valid_instruction_pointer? && (!receiving? || !@inbox.empty?)
   end
  
   # parse the input list of instructions, and run the program
@@ -180,7 +186,9 @@ class DuetRunner
     @duet1.input = input
     
     i = 0
-    while @duet0.is_running? && @duet1.is_running? && (i < max_iterations)
+    # while @duet0.is_running? && @duet1.is_running? && (i < max_iterations || max_iterations < 0)
+    while (@duet0.is_running? || @duet1.is_running? ) && (i < max_iterations || max_iterations < 0)
+      debug("Iteration # #{i}")
       @duet0.step
       @duet1.step
       i += 1
