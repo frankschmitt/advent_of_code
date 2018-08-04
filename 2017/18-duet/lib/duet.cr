@@ -3,7 +3,9 @@ def debug(msg)
 end
 
 class Duet
+  # matches instruction with one argument, e.g. 'rcv a'
   @@re_instruction_2 = /^([a-z]+) ([a-z]|-?[0-9]+)$/
+  # matches instruction with two arguments, e.g. 'jgz 1 7'
   @@re_instruction_3 = /^([a-z]+) ([a-z]|-?[0-9]+) ([a-z]|-?[0-9]+)$/
 
   @registers = Hash(String, Int64).new(Int64.new(0))
@@ -177,7 +179,7 @@ class DuetRunner
   getter duet0
   getter duet1 
   
-  def run(input, max_iterations)
+  def run(input)
     @duet0.registers = { "p" => Int64.new(0) }
     @duet1.registers = { "p" => Int64.new(1) }
     @duet0.partner = @duet1
@@ -185,13 +187,10 @@ class DuetRunner
     @duet0.input = input
     @duet1.input = input
     
-    i = 0
-    # while @duet0.is_running? && @duet1.is_running? && (i < max_iterations || max_iterations < 0)
-    while (@duet0.is_running? || @duet1.is_running? ) && (i < max_iterations || max_iterations < 0)
-      debug("Iteration # #{i}")
+    # terminate if both partners are in the receiving state and have an empty inbox
+    while (@duet0.is_running? || @duet1.is_running? )
       @duet0.step
       @duet1.step
-      i += 1
     end
   end
 end
