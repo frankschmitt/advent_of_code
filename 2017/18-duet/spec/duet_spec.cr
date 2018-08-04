@@ -107,11 +107,11 @@ describe "Duet" do
 end
 
 
-describex "DuetRunner" do
+describe "DuetRunner" do
 
   it "returns 3 for the snd count of prog 1 for the sample duet" do
     runner = DuetRunner.new()
-    runner.run(File.read_lines("sample_duet_input.txt"))
+    runner.run(File.read_lines("sample_duet_input.txt"), 10)
     runner.duet0.snd_count.should eq 3
   end 
 

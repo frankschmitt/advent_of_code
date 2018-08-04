@@ -1,5 +1,5 @@
 class Duet
-  @@re_instruction_2 = /^([a-z]+) ([a-z])$/
+  @@re_instruction_2 = /^([a-z]+) ([a-z]|-?[0-9]+)$/
   @@re_instruction_3 = /^([a-z]+) ([a-z]) ([a-z]|-?[0-9]+)$/
 
   @registers = Hash(String, Int64).new(Int64.new(0))
@@ -10,6 +10,7 @@ class Duet
   @input = [] of String
   @partner : (Duet | Nil) = nil
   @inbox = [] of Int64
+  @id = -1
 
   property registers
   property last_played
@@ -18,6 +19,10 @@ class Duet
   property snd_count
   property partner
   property input
+
+  def initialize(id = -1)
+    @id = id
+  end
 
   def debug(msg)
     puts msg
@@ -41,11 +46,17 @@ class Duet
   end
 
   def snd(reg : String)
-    @last_played = @registers[reg]
+    if is_numeric(reg)
+      val = Int64.new(reg.to_i)
+    else
+      val = @registers[reg]
+    end
+
+    @last_played = val 
     @snd_count += 1
     case p = @partner 
       when Duet then
-        p.to_inbox(@registers[reg])
+        p.to_inbox(val)
     end
   end
  
@@ -58,6 +69,7 @@ class Duet
       # Duet mode: wait for message in inbox to arrive
       when Duet then
         if @inbox.empty?
+          debug("  decreasing ip")
           @instruction_pointer -= 1 # HACK (since it's incremented in the calling function afterwards
         else
           @registers[reg] = @inbox.pop
@@ -109,6 +121,7 @@ class Duet
   def step()
     line = @input[@instruction_pointer]
     debug "executing '#{line}'"
+    debug "  before: #{self.to_s}"
     md3 = @@re_instruction_3.match(line) 
     if md3
       instruction_3(md3)
@@ -116,9 +129,11 @@ class Duet
       md2 = @@re_instruction_2.match(line) 
       if md2
         instruction_2(md2) 
+      else
+        debug "UNKNOWN INSTRUCTION: #{line}"
       end
     end
-    debug "  #{self.to_s}"
+    debug "  after:  #{self.to_s}"
   end
 
   def has_valid_instruction_pointer?
@@ -144,29 +159,31 @@ class Duet
   end
 
   def to_s
-    "ip: #{@instruction_pointer} registers: #{@registers} last_played: #{@last_played}"
+    "#{@id} ip: #{@instruction_pointer} registers: #{@registers} last_played: #{@last_played} inbox: #{@inbox}"
   end
 
 end
 
 class DuetRunner
-  @duet0 = Duet.new()
-  @duet1 = Duet.new()
+  @duet0 = Duet.new(0)
+  @duet1 = Duet.new(1)
    
   getter duet0
   getter duet1 
   
-  def run(input)
+  def run(input, max_iterations)
     @duet0.registers = { "p" => Int64.new(0) }
     @duet1.registers = { "p" => Int64.new(1) }
     @duet0.partner = @duet1
     @duet1.partner = @duet0
     @duet0.input = input
     @duet1.input = input
-
-    while @duet0.is_running? && @duet1.is_running?
+    
+    i = 0
+    while @duet0.is_running? && @duet1.is_running? && (i < max_iterations)
       @duet0.step
       @duet1.step
+      i += 1
     end
   end
 end
