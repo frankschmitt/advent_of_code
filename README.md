@@ -31,7 +31,7 @@ R
 + Julia (2017-06)
 + Go (2017-03)
 + Lua (2017-08)
-+ Crystal (2017-07)
++ Crystal (2017-07, 2017-18)
 Nim
 Io
 Curry (http://www-ps.informatik.uni-kiel.de/currywiki/)

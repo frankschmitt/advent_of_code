@@ -1,0 +1,6 @@
+[package]
+name = "a_series_of_tubes"
+version = "0.1.0"
+authors = ["frank <frank@qwhon.de>"]
+
+[dependencies]
