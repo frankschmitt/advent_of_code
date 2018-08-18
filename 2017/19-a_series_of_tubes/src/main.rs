@@ -20,7 +20,7 @@ mod tests {
   struct Grid {
     num_rows: i32,
     num_cols: i32,
-    cells: Vec<String>
+    cells: Vec<Vec<char>>
   }
 
   impl Grid {
@@ -30,17 +30,14 @@ mod tests {
         return CellType::Empty;
       }
       let line = &self.cells[row as usize];
-      let byte = &line.into_bytes()[col as usize];
-      match char::from_u32(*byte as u32) { 
-        Some(ch) => match ch {
+      let ch= &line[col as usize];
+      match ch {
           ' ' => CellType::Empty,
           '|' => CellType::Vertical,
           '-' => CellType::Horizontal,
           '+' => CellType::Corner,
-          c   => CellType::Letter { letter: c }
-       },
-       None => CellType::Empty
-      }
+          c   => CellType::Letter { letter: *c }
+       }
     }
   }
 
@@ -52,11 +49,13 @@ mod tests {
     let mut cells = Vec::new();
     for line in lines {
       match line {
-        Ok(s) => cells.push(s),
+        Ok(s) => {
+          let chars: Vec<char> = s.chars().collect();
+          cells.push(chars);
+        },
         Err(_) => println!("error!"), // ignore errors for now
       }
     }
-    // let input = fs::read_to_string(filename).expect("Unable to read file");
     let grid = Grid { num_rows: cells.len() as i32, 
                       num_cols: cells[0].len() as i32,
                       cells: cells };
