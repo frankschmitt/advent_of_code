@@ -8,6 +8,14 @@ mod tests {
   use std::char;
     
   #[derive(Debug, PartialEq)]
+  enum Direction { 
+    North,
+    East,
+    South,
+    West
+  }
+
+  #[derive(Debug, PartialEq)]
   enum CellType {
     Empty,
     Vertical,
@@ -39,6 +47,21 @@ mod tests {
           c   => CellType::Letter { letter: *c }
        }
     }
+
+    fn row(&self, row: i32) -> Vec<CellType> {
+      if row >= self.num_rows {
+        return Vec::new();
+      }
+      let line = &self.cells[row as usize];
+      return line.iter().map(|&ch| match ch {
+                              ' ' => CellType::Empty,
+                              '|' => CellType::Vertical,
+                              '-' => CellType::Horizontal,
+                              '+' => CellType::Corner,
+                              c   => CellType::Letter { letter: c }
+                            }).collect::<Vec<_>>();
+    }
+
   }
 
   fn read_grid_from_file<P>(filename: P) -> Result<Grid, io::Error>  
@@ -62,6 +85,36 @@ mod tests {
     return Ok(grid);
   }
 
+  fn walk_grid(grid: Grid) -> String
+  {
+     let mut row = 0;
+     let mut col = grid.cells[row].iter().position(|&r| r == '|').unwrap();
+     // println!("{}", match(start) { Some(x) => x, None => &'?'});
+     println!("{}", col); 
+     let mut done = false;
+     let mut direction = Direction::South;
+     let mut result = String::new();
+     while(!done) {
+       // determine next cell
+       match direction {
+         Direction::South => {
+           row += 1;
+           } 
+         Direction::East => {
+           col += 1;
+         }
+         Direction::North => {
+           row -= 1;
+         }
+         Direction::West => {
+           col -= 1;
+         }
+       }
+       done = true; 
+     }
+     return result;
+  }
+
   #[test]
   fn it_creates_grid_from_input() {
     let res = read_grid_from_file("sample_input.txt");
@@ -77,6 +130,17 @@ mod tests {
     }
   } 
 
+  #[test]
+  fn it_walks_the_sample_grid() {
+    let input = read_grid_from_file("sample_input.txt");
+    match input {
+      Ok(grid) => {
+                    let res = walk_grid(grid);
+                    assert_eq!("ABCDEF", res);
+                  },
+      Err(_) => assert!(false),
+    }
+  }
 }
 
 fn main() {
