@@ -33,8 +33,12 @@ mod tests {
 
   impl Grid {
 
+    // get the cell for the given row and column; if indices are out of bounds:
+    //    returns empty
     fn cell(&self, row: i32, col: i32) -> CellType {
-      if row >= self.num_rows || col >= self.num_cols {
+      println!("getting cell at {} {}", row, col);
+      if row < 0 || row >= self.num_rows || col < 0 || col >= self.num_cols {
+        println!("  out of bounds!");
         return CellType::Empty;
       }
       let line = &self.cells[row as usize];
@@ -48,6 +52,7 @@ mod tests {
        }
     }
 
+    // get the grid row for the given index
     fn row(&self, row: i32) -> Vec<CellType> {
       if row >= self.num_rows {
         return Vec::new();
@@ -61,6 +66,35 @@ mod tests {
                               c   => CellType::Letter { letter: c }
                             }).collect::<Vec<_>>();
     }
+
+    fn find_next_horizontal_direction(&self, row: i32, col: i32) -> Direction {
+      // try western neighbour; if it's empty, we need to go East, otherwise West
+      match self.cell(row, col-1) {
+         CellType::Empty => Direction::East,
+         _ => Direction::West 
+      }
+    }
+
+    fn find_next_vertical_direction(&self, row: i32, col: i32) -> Direction {
+      // try southern neighbour; if it's empty, we need to go North, otherwise South 
+      match self.cell(row+1, col) {
+         CellType::Empty => Direction::North,
+         _ => Direction::South 
+      }
+    }
+
+    // find the new direction for a corner cell
+    fn find_next_direction(&self, direction: Direction, row: i32, col: i32) -> Direction {
+      let result = match direction {
+        // we were walking vertically -> check horizontal neighbours
+        Direction::South => self.find_next_horizontal_direction(row, col),
+        Direction::North => self.find_next_horizontal_direction(row, col),
+        // we were walking horizontally -> check vertical neighbours
+        Direction::West => self.find_next_vertical_direction(row, col), 
+        Direction::East => self.find_next_vertical_direction(row, col),
+      };
+      return result;
+    } 
 
   }
 
@@ -87,14 +121,14 @@ mod tests {
 
   fn walk_grid(grid: Grid) -> String
   {
-     let mut row = 0;
-     let mut col = grid.cells[row].iter().position(|&r| r == '|').unwrap();
+     let mut row : i32 = 0;
+     let mut col : i32 = grid.cells[row as usize].iter().position(|&r| r == '|').unwrap() as i32;
      // println!("{}", match(start) { Some(x) => x, None => &'?'});
-     println!("{}", col); 
+     println!("found start at: {}", col); 
      let mut done = false;
      let mut direction = Direction::South;
      let mut result = String::new();
-     while(!done) {
+     while !done  {
        // determine next cell
        match direction {
          Direction::South => {
@@ -110,7 +144,17 @@ mod tests {
            col -= 1;
          }
        }
-       done = true; 
+       let cell = grid.cell(row, col);
+       match cell {
+         CellType::Empty  => { done = true; }
+         CellType::Letter { letter: c} => { result.push(c); }
+         // Vertical and Horizontal bars are ignored - they never indicate a turn
+         CellType::Vertical => {}
+         CellType::Horizontal => {}
+         CellType::Corner => {
+           direction = grid.find_next_direction(direction, row, col);
+         }
+       }
      }
      return result;
   }
@@ -120,10 +164,11 @@ mod tests {
     let res = read_grid_from_file("sample_input.txt");
     match res {
       Ok(grid) => { 
-                    assert_eq!(7, grid.num_rows);
+                    assert_eq!(6, grid.num_rows);
                     assert_eq!(16, grid.num_cols);
                     assert_eq!(CellType::Vertical, grid.cell(0, 5));
                     assert_eq!(CellType::Vertical, grid.cell(1, 5));
+                    assert_eq!(CellType::Letter { letter: 'A' }, grid.cell(2, 5));
                     assert_eq!(CellType::Letter { letter: 'A' }, grid.cell(2, 5));
                   },
       Err(_) => assert!(false),
@@ -137,6 +182,18 @@ mod tests {
       Ok(grid) => {
                     let res = walk_grid(grid);
                     assert_eq!("ABCDEF", res);
+                  },
+      Err(_) => assert!(false),
+    }
+  }
+
+  #[test]
+  fn it_solves_part_I() {
+    let input = read_grid_from_file("input.txt");
+    match input {
+      Ok(grid) => {
+                    let res = walk_grid(grid);
+                    assert_eq!("SXPZDFJNRL", res);
                   },
       Err(_) => assert!(false),
     }
