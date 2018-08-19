@@ -128,8 +128,8 @@ mod tests {
   fn walk_grid(grid: Grid) -> GridPath
   {
      let mut row : i32 = 0;
-     let mut col : i32 = grid.cells[row as usize].iter().position(|&r| r == '|').unwrap() as i32;
-     // println!("{}", match(start) { Some(x) => x, None => &'?'});
+     // find the starting point (vertical bar in first row)
+     let mut col : i32 = grid.row(row).iter().position(|ref r| r == &&CellType::Vertical).unwrap() as i32;
      println!("found start at: {}", col); 
      let mut done = false;
      let mut direction = Direction::South;
@@ -195,7 +195,7 @@ mod tests {
   }
 
   #[test]
-  fn it_solves_part_I() {
+  fn it_solves_part_1_and_2() {
     let input = read_grid_from_file("input.txt");
     match input {
       Ok(grid) => {
