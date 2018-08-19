@@ -1,6 +1,12 @@
 = Synopsis
 This solution uses Rust. For Rust installation instructions, see https://doc.rust-lang.org/book/second-edition/ch01-01-installation.html
 
+= Overall approach
+Pretty straightforward:
+- read input into a 2D array
+- find the starting point in the first row
+- walk the path, keeping track of letters we encountered and the number of steps we took
+
 = Installation of additional frameworks / libraries
 <none>
 
