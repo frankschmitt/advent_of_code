@@ -31,6 +31,12 @@ mod tests {
     cells: Vec<Vec<char>>
   }
 
+  #[derive(Debug, PartialEq)]
+  struct GridPath {
+    path: String,
+    steps: usize
+  }
+
   impl Grid {
 
     // get the cell for the given row and column; if indices are out of bounds:
@@ -119,7 +125,7 @@ mod tests {
     return Ok(grid);
   }
 
-  fn walk_grid(grid: Grid) -> String
+  fn walk_grid(grid: Grid) -> GridPath
   {
      let mut row : i32 = 0;
      let mut col : i32 = grid.cells[row as usize].iter().position(|&r| r == '|').unwrap() as i32;
@@ -127,8 +133,9 @@ mod tests {
      println!("found start at: {}", col); 
      let mut done = false;
      let mut direction = Direction::South;
-     let mut result = String::new();
+     let mut result = GridPath { path: String::new(), steps: 0};
      while !done  {
+       result.steps = result.steps + 1;
        // determine next cell
        match direction {
          Direction::South => {
@@ -147,7 +154,7 @@ mod tests {
        let cell = grid.cell(row, col);
        match cell {
          CellType::Empty  => { done = true; }
-         CellType::Letter { letter: c} => { result.push(c); }
+         CellType::Letter { letter: c} => { result.path.push(c); }
          // Vertical and Horizontal bars are ignored - they never indicate a turn
          CellType::Vertical => {}
          CellType::Horizontal => {}
@@ -181,7 +188,7 @@ mod tests {
     match input {
       Ok(grid) => {
                     let res = walk_grid(grid);
-                    assert_eq!("ABCDEF", res);
+                    assert_eq!(GridPath { path: "ABCDEF".to_string(), steps: 38}, res);
                   },
       Err(_) => assert!(false),
     }
@@ -193,7 +200,7 @@ mod tests {
     match input {
       Ok(grid) => {
                     let res = walk_grid(grid);
-                    assert_eq!("SXPZDFJNRL", res);
+                    assert_eq!(GridPath { path: "SXPZDFJNRL".to_string(), steps: 18126}, res);
                   },
       Err(_) => assert!(false),
     }
