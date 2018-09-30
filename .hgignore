@@ -10,3 +10,4 @@ build/
 .idea/
 .gradle/
 .curry/
+elm-stuff/
