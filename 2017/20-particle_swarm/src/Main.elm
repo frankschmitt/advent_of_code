@@ -59,6 +59,11 @@ step { index, position, velocity, acceleration } =
     }
 
 
+stepList : List Particle -> List Particle
+stepList lst =
+    List.map step lst
+
+
 type alias Model =
     {}
 
