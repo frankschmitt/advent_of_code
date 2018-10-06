@@ -1,7 +1,10 @@
 module Tests exposing (..)
 
+import DemoModel
 import Expect
 import Main
+import Model
+import SimulationModel
 import Test exposing (..)
 
 
@@ -49,22 +52,42 @@ particle_system_1 =
     }
 
 
+solutionForPart1 : Int
+solutionForPart1 =
+    let
+        model =
+            SimulationModel.simulationModel
+
+        solution =
+            Model.runSystem model.system
+    in
+    case solution.closestToOrigin of
+        Nothing ->
+            -1
+
+        Just p ->
+            p.index
+
+
 all : Test
 all =
     describe "A Test Suite"
         [ test "adding a vector with v(1,2,3) should increase it by x=1, y=2, z=3" <|
             \_ ->
-                Expect.equal { x = 5, y = 7, z = 9 } (Main.move { x = 1, y = 2, z = 3 } { x = 4, y = 5, z = 6 })
+                Expect.equal { x = 5, y = 7, z = 9 } (Model.move { x = 1, y = 2, z = 3 } { x = 4, y = 5, z = 6 })
         , test "step for a particle should update its position and velocity" <|
             \_ ->
-                Expect.equal p0_1 (Main.step p0_0)
+                Expect.equal p0_1 (Model.step p0_0)
         , test "step for a particle list should update all positions and velocities" <|
             \_ ->
-                Expect.equal particles_1 (Main.stepList particles_0)
+                Expect.equal particles_1 (Model.stepList particles_0)
         , test "initParticleList should set the closestToOrigin" <|
             \_ ->
                 Expect.equal particle_system_0
-                    (Main.initParticleList particles_0)
+                    (Model.initParticleList particles_0)
         , test "step for a particle system should update closestToOrigin and particles" <|
-            \_ -> Expect.equal particle_system_1 (Main.stepSystem particle_system_0)
+            \_ -> Expect.equal particle_system_1 (Model.stepSystem particle_system_0)
+
+        -- , test "solve part I" <|
+        --    \_ -> Expect.equal 364 solutionForPart1
         ]

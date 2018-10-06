@@ -1,22 +1,18 @@
 module Main exposing (..)
 
+import DemoModel exposing (..)
 import Html exposing (Html, button, div, h1, h2, h3, h4, img, text)
 import Html.Attributes exposing (src)
 import Html.Events exposing (onClick)
 import List.Extra exposing (minimumBy)
 import Model exposing (..)
+import SimulationModel exposing (..)
 
 
 init : ( Model, Cmd Msg )
 init =
-    let
-        p0_0 =
-            { index = 0, position = { x = 3, y = 0, z = 0 }, velocity = { x = 2, y = 0, z = 0 }, acceleration = { x = -1, y = 0, z = 0 } }
-
-        p0_1 =
-            { index = 1, position = { x = 4, y = 0, z = 0 }, velocity = { x = 1, y = 0, z = 0 }, acceleration = { x = -1, y = 0, z = 0 } }
-    in
-    ( { system = initParticleList [ p0_0, p0_1 ] }, Cmd.none )
+    -- ( demoModel, Cmd.none )
+    ( simulationModel, Cmd.none )
 
 
 
