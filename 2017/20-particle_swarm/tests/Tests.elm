@@ -29,8 +29,24 @@ particles_0 =
     [ p0_0, p1_0 ]
 
 
+particle_system_0 =
+    { particles = particles_0
+    , closestToOrigin = Just p0_0
+    , iteration = 0
+    , iterationsSinceLastCTOChange = 0
+    }
+
+
 particles_1 =
     [ p0_1, p1_1 ]
+
+
+particle_system_1 =
+    { particles = particles_1
+    , closestToOrigin = Just p1_1
+    , iteration = 1
+    , iterationsSinceLastCTOChange = 0
+    }
 
 
 all : Test
@@ -47,6 +63,8 @@ all =
                 Expect.equal particles_1 (Main.stepList particles_0)
         , test "initParticleList should set the closestToOrigin" <|
             \_ ->
-                Expect.equal { particles = particles_0, closestToOrigin = Just p0_0 }
+                Expect.equal particle_system_0
                     (Main.initParticleList particles_0)
+        , test "step for a particle system should update closestToOrigin and particles" <|
+            \_ -> Expect.equal particle_system_1 (Main.stepSystem particle_system_0)
         ]
