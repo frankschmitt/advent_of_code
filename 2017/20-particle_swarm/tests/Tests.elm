@@ -45,4 +45,8 @@ all =
         , test "step for a particle list should update all positions and velocities" <|
             \_ ->
                 Expect.equal particles_1 (Main.stepList particles_0)
+        , test "initParticleList should set the closestToOrigin" <|
+            \_ ->
+                Expect.equal { particles = particles_0, closestToOrigin = Just p0_0 }
+                    (Main.initParticleList particles_0)
         ]
