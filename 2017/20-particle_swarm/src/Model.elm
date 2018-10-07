@@ -6,6 +6,7 @@ import List.Extra exposing (minimumBy)
 type Msg
     = Step
     | Run
+    | ToggleRemoveColliders
 
 
 type alias Vector3D =
@@ -129,11 +130,14 @@ removeCollidedParticles lst =
 
 {-| Compute the next step for a given particle system
 -}
-stepSystem : ParticleSystem -> ParticleSystem
-stepSystem system =
+stepSystem : ParticleSystem -> Bool -> ParticleSystem
+stepSystem system removeColliders =
     let
         newParticles =
-            removeCollidedParticles (stepList system.particles)
+            if removeColliders then
+                removeCollidedParticles (stepList system.particles)
+            else
+                stepList system.particles
 
         newClosestToOrigin =
             findClosestToOrigin newParticles
@@ -161,12 +165,12 @@ stepSystem system =
 
 {-| Run the particle system until CTO hasn't changed for at least 10 iterations
 -}
-runSystem : ParticleSystem -> ParticleSystem
-runSystem system =
+runSystem : ParticleSystem -> Bool -> ParticleSystem
+runSystem system removeColliders =
     if system.iterationsSinceLastCTOChange > 10 then
         system
     else
-        runSystem (stepSystem system)
+        runSystem (stepSystem system removeColliders) removeColliders
 
 
 {-| find particle closest to origin
@@ -188,4 +192,6 @@ initParticleList particles =
 
 
 type alias Model =
-    { system : ParticleSystem }
+    { system : ParticleSystem
+    , removeColliders : Bool
+    }

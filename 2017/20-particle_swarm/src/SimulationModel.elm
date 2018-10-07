@@ -1009,4 +1009,6 @@ simulationModel =
             , { index = 1000, position = { x = 2597, y = 690, z = -1251 }, velocity = { x = 368, y = 100, z = -177 }, acceleration = { x = -22, y = -3, z = 15 } }
             ]
     in
-    { system = initParticleList particles }
+    { system = initParticleList particles
+    , removeColliders = False
+    }

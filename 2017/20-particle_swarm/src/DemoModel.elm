@@ -12,4 +12,6 @@ demoModel =
         p0_1 =
             { index = 1, position = { x = 4, y = 0, z = 0 }, velocity = { x = 1, y = 0, z = 0 }, acceleration = { x = -1, y = 0, z = 0 } }
     in
-    { system = initParticleList [ p0_0, p0_1 ] }
+    { system = initParticleList [ p0_0, p0_1 ]
+    , removeColliders = False
+    }

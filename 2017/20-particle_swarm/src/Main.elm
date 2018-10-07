@@ -23,10 +23,13 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Step ->
-            ( { model | system = stepSystem model.system }, Cmd.none )
+            ( { model | system = stepSystem model.system model.removeColliders }, Cmd.none )
 
         Run ->
-            ( { model | system = runSystem model.system }, Cmd.none )
+            ( { model | system = runSystem model.system model.removeColliders }, Cmd.none )
+
+        ToggleRemoveColliders ->
+            ( { model | removeColliders = not model.removeColliders }, Cmd.none )
 
 
 
@@ -35,11 +38,21 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
+    let
+        label =
+            case model.removeColliders of
+                True ->
+                    "Remove colliders: ON"
+
+                False ->
+                    "Remove colliders: OFF"
+    in
     div []
         [ img [ src "/logo.svg" ] []
         , h1 [] [ text "Your Elm App is working!" ]
         , button [ onClick Step ] [ text "Step" ]
         , button [ onClick Run ] [ text "Run" ]
+        , button [ onClick ToggleRemoveColliders ] [ text label ]
         , viewSystemState model
         ]
 
