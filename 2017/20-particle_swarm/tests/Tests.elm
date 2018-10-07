@@ -59,7 +59,7 @@ solutionForPart1 =
             SimulationModel.simulationModel
 
         solution =
-            Model.runSystem model.system
+            Model.runSystem model.system False
     in
     case solution.closestToOrigin of
         Nothing ->
@@ -86,7 +86,7 @@ all =
                 Expect.equal particle_system_0
                     (Model.initParticleList particles_0)
         , test "step for a particle system should update closestToOrigin and particles" <|
-            \_ -> Expect.equal particle_system_1 (Model.stepSystem particle_system_0)
+            \_ -> Expect.equal particle_system_1 (Model.stepSystem particle_system_0 False)
 
         -- , test "solve part I" <|
         --    \_ -> Expect.equal 364 solutionForPart1

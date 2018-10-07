@@ -177,7 +177,7 @@ runSystem system removeColliders =
 -}
 findClosestToOrigin : List Particle -> Maybe Particle
 findClosestToOrigin particles =
-    minimumBy (\p -> p.position.x * p.position.x + p.position.y * p.position.y + p.position.z * p.position.z) particles
+    minimumBy (\p -> abs p.position.x + abs p.position.y + abs p.position.z) particles
 
 
 {-| Initialize a particle list
