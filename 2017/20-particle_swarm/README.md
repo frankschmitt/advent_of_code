@@ -1,3 +1,24 @@
+# Synopsis
+Solution for 2017-20 Advent of Code: particle system
+
+# Overall approach
+We use a field iterationsSinceLastCTOChange to keep track of the number of iterations since
+the Closest To Origin last changed. As soon as this number reaches a given threshold (we use 10), we consider the system stable and stop the simulation.
+
+The simulation itself is pretty straightforward:
+- initialize the list of particles
+- in each iteration:
+    - compute new velocity + position for each particle
+    - sort the particles by their position
+    - group particles by their position
+    - remove groups with more than one number (those are the collision groups)
+    - concatenate the remaining groups; this becomes our new list of particles
+    - determine the particle closest to the origin
+
+# Running it
+```elm-app reactor```
+ 
+# Technical Background
 This project is bootstrapped with [Create Elm App](https://github.com/halfzebra/create-elm-app).
 
 Below you will find some information on how to perform basic tasks.
