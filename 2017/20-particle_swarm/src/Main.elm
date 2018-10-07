@@ -89,6 +89,7 @@ viewSystemState model =
             ++ [ h4 [] [ text ("Iteration: " ++ toString system.iteration) ]
                , h4 [] [ text ("CTO: " ++ maybeParticleToString system.closestToOrigin) ]
                , h4 [] [ text ("Iterations since last CTO change: " ++ toString system.iterationsSinceLastCTOChange) ]
+               , h4 [] [ text ("#Particles left: " ++ toString (List.length system.particles)) ]
                ]
         )
 

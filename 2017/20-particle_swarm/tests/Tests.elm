@@ -90,4 +90,6 @@ all =
 
         -- , test "solve part I" <|
         --    \_ -> Expect.equal 364 solutionForPart1
+        -- , test "solve part II" <|
+        --    \_ -> Expect.equal 420 solutionForPart2
         ]

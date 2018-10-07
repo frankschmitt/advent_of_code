@@ -79,13 +79,61 @@ stepList lst =
     List.map step lst
 
 
+{-| -}
+compareParticles : Particle -> Particle -> Order
+compareParticles p q =
+    let
+        a =
+            p.position
+
+        b =
+            q.position
+    in
+    if a.x < b.x then
+        LT
+    else if a.x > b.x then
+        GT
+    else if a.y < b.y then
+        LT
+    else if a.y > b.y then
+        GT
+    else if a.z < b.z then
+        LT
+    else if a.z > b.z then
+        GT
+    else
+        EQ
+
+
+areParticlesEqual : Particle -> Particle -> Bool
+areParticlesEqual a b =
+    compareParticles a b == EQ
+
+
+{-| Remove all particles involved in a collision, and return the remaining ones
+-}
+removeCollidedParticles : List Particle -> List Particle
+removeCollidedParticles lst =
+    let
+        sorted =
+            List.sortWith compareParticles lst
+
+        grouped =
+            List.Extra.groupWhile areParticlesEqual sorted
+
+        filtered =
+            List.filter (\lst -> List.length lst == 1) grouped
+    in
+    List.concat filtered
+
+
 {-| Compute the next step for a given particle system
 -}
 stepSystem : ParticleSystem -> ParticleSystem
 stepSystem system =
     let
         newParticles =
-            stepList system.particles
+            removeCollidedParticles (stepList system.particles)
 
         newClosestToOrigin =
             findClosestToOrigin newParticles
@@ -103,9 +151,6 @@ stepSystem system =
                         system.iterationsSinceLastCTOChange + 1
                     else
                         0
-
-        _ =
-            Debug.log ("new Index: " ++ toString newIterationsSinceLastCTOChange)
     in
     { particles = newParticles
     , closestToOrigin = newClosestToOrigin
