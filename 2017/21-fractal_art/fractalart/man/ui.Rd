@@ -1,10 +1,10 @@
 \name{ui}
 \alias{ui}
 \docType{data}
-\title{
+\title{ui
 %%   ~~ data name/kind ... ~~
 }
-\description{
+\description{UI function for the Shiny app
 %%  ~~ A concise (1-5 lines) description of the dataset. ~~
 }
 \usage{data("ui")}

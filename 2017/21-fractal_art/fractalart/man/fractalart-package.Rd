@@ -1,24 +1,24 @@
-\name{fractal-art-package}
-\alias{fractal-art-package}
-\alias{fractal-art}
+\name{fractalart-package}
+\alias{fractalart-package}
+\alias{fractalart}
 \docType{package}
-\title{
-\packageTitle{fractal-art}
+\title{fractalart
+\packageTitle{fractalart}
 }
 \description{
-\packageDescription{fractal-art}
+\packageDescription{fractalart}
 }
 \details{
 
 The DESCRIPTION file:
-\packageDESCRIPTION{fractal-art}
-\packageIndices{fractal-art}
+\packageDESCRIPTION{fractalart}
+\packageIndices{fractalart}
 ~~ An overview of how to use the package, including the most important functions ~~
 }
 \author{
-\packageAuthor{fractal-art}
+\packageAuthor{fractalart}
 
-Maintainer: \packageMaintainer{fractal-art}
+Maintainer: \packageMaintainer{fractalart}
 }
 \references{
 ~~ Literature or other references for background information ~~
@@ -30,5 +30,4 @@ Maintainer: \packageMaintainer{fractal-art}
 ~~ \code{\link[<pkg>:<pkg>-package]{<pkg>}} ~~
 }
 \examples{
-~~ simple examples of the most important functions ~~
 }

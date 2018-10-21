@@ -1,10 +1,10 @@
 \name{server}
 \alias{server}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{
+\title{server
 %%  ~~function to do ... ~~
 }
-\description{
+\description{Server function for the Shiny App
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{

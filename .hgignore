@@ -16,3 +16,4 @@ packrat/
 .RData
 .Rhistory
 .Rprofile
+.*.Rcheck
