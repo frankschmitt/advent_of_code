@@ -1,0 +1,6 @@
+linters: with_defaults(
+    #trailing_whitespace_linter = NULL, # 7
+    single_quotes_linter = NULL, # 2
+    camel_case_linter = NULL, # 1
+    trailing_blank_lines_linter = NULL # 1
+  )
