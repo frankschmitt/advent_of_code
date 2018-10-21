@@ -11,3 +11,8 @@ build/
 .gradle/
 .curry/
 elm-stuff/
+packrat/
+.Rproj.user/
+.RData
+.Rhistory
+.Rprofile
