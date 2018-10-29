@@ -39,6 +39,7 @@ Racket
 + Javascript (2017-16)
 Prolog
 Sparkle (Correctness by Construction, Ada subset without "dangerous" operations)
+ReasonML (OCaml for the web)
 
 ## Future / Fallback
 * Bash / Sed / Awk / grep / ... (2017-07, first part)
