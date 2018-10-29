@@ -1,0 +1,7 @@
+= Synopsis
+Solution for the 2017-21 AoC challenge
+
+= Running tests
+== In RStudio
+- open the R project
+- run 'devtools::test()'
