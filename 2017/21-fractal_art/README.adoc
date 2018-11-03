@@ -5,3 +5,6 @@ Solution for the 2017-21 AoC challenge
 == In RStudio
 - open the R project
 - run 'devtools::test()'
+
+= Overall approach
+- rules are stored as a simple 2-element vector (input and output)
