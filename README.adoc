@@ -1,10 +1,10 @@
 Challenges and solutions for the [Advent of code|http://adventofcode.com/] fun programming challenge.
 
-# Meta-Challenge
+= Meta-Challenge
 Instead of using one of my favourite languages for all challenges, I challenge myself to use as many
 different programming languages as possible; my plan is to use
 
-## 2017
+== 2017
 + Ruby (2017-12)
 + Haskell
 + Python (2017-01)
@@ -41,7 +41,7 @@ Prolog
 Sparkle (Correctness by Construction, Ada subset without "dangerous" operations)
 ReasonML (OCaml for the web)
 
-## Future / Fallback
+== Future / Fallback
 * Bash / Sed / Awk / grep / ... (2017-07, first part)
 Frank (https://github.com/cmcl/frankjnr)
 C
