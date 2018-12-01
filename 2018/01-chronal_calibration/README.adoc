@@ -1,4 +1,17 @@
-= app
+= Overall approach
+Part I is pretty straightforward:
+ - read the input file into one large string
+ - remove the '+' signs (I'm too lazy to parse unary + operators)
+ - split the input into a list of lines
+ - convert each line to an integer
+ - sum all integers
+
+Part II is a little bit more involved; after parsing the input and putting it into a list, do
+ - initialize an empty Set to keep track of the frequencies encountered so far
+ - apply the next frequency change, and check whether we've seen the new frequency before
+ - if yes, we're finished
+ - if not, put it into the Set, and proceed with the next frequency
+ - wrap around if we're at the end of the frequency change list 
 
 == Installation
 We use Haskell with HUnit for the tests.

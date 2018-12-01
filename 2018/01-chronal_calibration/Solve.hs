@@ -6,12 +6,14 @@ frequency = foldl (+) 0
 toInt :: String -> Int
 toInt s = read s
 
-frequencyStr :: String -> Int
-frequencyStr input =
-  frequency xs 
+parseInput :: String -> [Int]
+parseInput input =
+  map toInt x2
   where x1 = filter (\ch -> ch /= '+') input 
         x2 = lines x1
-        xs = map toInt x2
+
+solveI :: String -> Int
+solveI input = frequency $ parseInput input
 
 solve = undefined
 
@@ -19,6 +21,6 @@ solve = undefined
 #if defined(STANDALONE)
 main = do
     input <- readFile "input.txt"
-    putStrLn $ show $ frequencyStr input  -- (16021, 7685)
+    putStrLn $ show $ solveI input  -- (16021, 7685)
 #endif
 
