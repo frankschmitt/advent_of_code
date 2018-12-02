@@ -1,12 +1,15 @@
 module Solve where
 
 
-solve = undefined
+solveI = undefined
+
+solveII = undefined
 
 
 #if defined(STANDALONE)
 main = do
     input <- readFile "input.txt"
-    putStrLn $ show $ score input  -- (16021, 7685)
+    putStrLn $ show $ solveI  input 
+    putStrLn $ show $ solveII input 
 #endif
 

@@ -4,9 +4,11 @@ import Data.List
 import Test.HUnit
 import Solve
 
-testSolvePartI  = test [ "solves part I" ~: 1 ~=? solve  ]
+testSolveThem  = test [ "solves part I" ~: 1 ~=? solveI
+                      , "solves part II" ~: 1 ~=? solveII
+                      ]
 
-tests = TestList [ testSolvePartI
+tests = TestList [ testSolveThem
                  ] 
 
 main = do runTestTT tests

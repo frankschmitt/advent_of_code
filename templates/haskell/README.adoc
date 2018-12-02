@@ -1,9 +1,9 @@
-= app
+= Approach
 
-== Installation
+= Installation
 We use Haskell with HUnit for the tests.
 
-== Usage
+= Usage
 Running the tests (note the \_ in the filename!):
 ```
 runhaskell -cpp \_Solve.hs
