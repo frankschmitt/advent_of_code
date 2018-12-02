@@ -1,0 +1,17 @@
+= Approach
+Part I:  compute the 2- and 3-count for each word as a tuple, sum the list of tuples, and multiply the tuple elements
+Part II: take the first word, and check whether a similar word exists in the remainder of the list. If yes, return the common part, otherwise, recursively check the remainder of the list.  
+
+= Installation
+We use Haskell with HUnit for the tests.
+
+= Usage
+Running the tests (note the \_ in the filename!):
+```
+runhaskell -cpp \_Solve.hs
+```
+
+Solving the problem:
+```
+runhaskell -cpp -DSTANDALONE Solve.hs
+```
