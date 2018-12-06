@@ -1,0 +1,19 @@
+= Approach
+
+= Installation
+We use Haskell with HUnit for the tests. Additionally, you'll need the matrix package:
+```
+cabal update
+cabal install matrix
+```
+
+= Usage
+Running the tests (note the \_ in the filename!):
+```
+runhaskell -cpp \_Solve.hs
+```
+
+Solving the problem:
+```
+runhaskell -cpp -DSTANDALONE Solve.hs
+```
