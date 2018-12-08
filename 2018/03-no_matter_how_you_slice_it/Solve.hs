@@ -114,8 +114,24 @@ applyClaims (x:xs) m =
     --Right x' -> applyClaims xs (DT.trace ("applyClaim " ++ (show $ index x')) (applyClaim x' m))
     Left _   -> applyClaims xs m -- leave m unchanged for erroneous claim
 
+-- count the elements in the given matrix that are equal to the given value
+countElems :: Matrix Int64 -> Int64 -> Int
+countElems m val = length $ filter (\x -> x == val) $ toList $ flatten m 
+
 countClashes :: Matrix Int64 -> Int
-countClashes m = length $ filter (\x -> x == -1) $ toList $ flatten m 
+--countClashes m = length $ filter (\x -> x == -1) $ toList $ flatten m 
+countClashes m = countElems m (-1)
+
+prepSolution:: String -> ([Claim], Matrix Int64)
+prepSolution input = (validClaims, applyClaims claims m)
+  where claims = map (\line -> regularParse claimParser line) $ lines input
+        m = (1001><1001) (repeat 0) -- 1001x1001, all elements are 0
+        m2 = applyClaims claims m
+        validClaims = map (\(Right x) -> x) $ filter (\x -> case x of Right _ -> True) claims
+
+findIntactClaim :: ([Claim], Matrix Int64) -> Claim
+findIntactClaim (claims, m) = head $ filter (\c -> area c == countElems m (fromIntegral (index c))) claims
+  where area c' = width (dimensions (rectangle c')) * height (dimensions (rectangle c'))
 
 solveI :: String -> Int
 --solveI input = DT.trace "counting clashes" (countClashes m2)
@@ -126,11 +142,11 @@ solveI input = countClashes m2
         --m2 = DT.trace ("applying claims " ++ (show $ length claims)) (applyClaims claims m)
 
 solveII :: String -> Int
-solveII = undefined
+solveII = index . findIntactClaim . prepSolution 
 
 #if defined(STANDALONE)
 main = do
     input <- readFile "input.txt"
     putStrLn $ show $ solveI  input 
-    --putStrLn $ show $ solveII input 
+    putStrLn $ show $ solveII input 
 #endif

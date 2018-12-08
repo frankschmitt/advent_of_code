@@ -9,7 +9,7 @@ sampleClaim = "#1 @ 1,3: 4x5"
 
 
 testSolveThem  = test [ "solves part I" ~: 4 ~=? solveI(sampleInput)
-                      , "solves part II" ~: 1 ~=? solveII(sampleInput)
+                      , "solves part II" ~: 3 ~=? solveII(sampleInput)
                       , "parses Claim" ~: Right (MkClaim 1 (MkRectangle (MkPoint 1 3) (MkDimensions 4 5))) ~=? (regularParse claimParser sampleClaim)
                       ]
 
