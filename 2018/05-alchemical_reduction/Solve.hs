@@ -7,9 +7,9 @@ import qualified Debug.Trace as DT
 reduce :: String -> String
 reduce inp = case inp of
   []  -> [] 
-  [x] -> [x]
-  x : y : ys -> if x == y then [x] ++ (reduce (y : ys))
-                else if toUpper(x) == toUpper(y) then reduce ys
+  [x] -> if x == '\n' then [] else [x] -- omit trailing newline
+  x : y : ys -> if x == y then [x] ++ (reduce (y : ys)) -- do not reduce same characters
+                else if toUpper(x) == toUpper(y) then reduce ys -- reduce pair
                 else [x] ++ reduce (y : ys)    
 
 fullyReduce :: String -> String
@@ -22,8 +22,7 @@ fullyReduce input =
 
 solveI :: String -> Int 
 -- solveI input = (length $ DT.trace ("fullyReduced: >>" ++ s ++ "<<") s) - 1
-solveI input = (length s) - 1
-   where s = fullyReduce input 
+solveI = length . fullyReduce
 
 solveII = undefined
 
