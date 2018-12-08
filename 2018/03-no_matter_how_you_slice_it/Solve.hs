@@ -1,12 +1,12 @@
 module Solve where
 
-import qualified Data.Matrix as DM
-import qualified Data.Vector as DV
 import Data.List
 import Control.Applicative ((<|>), many)
 import Control.Monad (void)
 import Data.Char (isLetter, isDigit)
 import qualified Debug.Trace as DT
+import Numeric.LinearAlgebra.Data
+import Data.Int
 
 import Text.ParserCombinators.Parsec
 import qualified Text.ParserCombinators.Parsec.Token as P
@@ -87,13 +87,12 @@ claim3 = MkClaim 3 (MkRectangle (MkPoint 797 105) (MkDimensions 10 13))
 
 -- MAIN routines
 --
--- create a 1001x1001 matrix for the given claim
--- the matrix elements equal the claim's index in the claim's area 
--- and 0 everywhere else
-toMatrix :: Claim -> DM.Matrix Int
-toMatrix c = foldl' (\m (i,j) -> DM.setElem (index c) (i,j) m) (DM.zero 1001 1001) indices
---   where indices = [(1,1)]
-  where r = rectangle c
+-- create an association list for the given claim
+-- the association list contains a list of (x,y) coordinates plus the value (which equals the claim's index)
+toAssocList :: Claim -> [((Int, Int), Int64)]
+toAssocList c = map (\(i,j) -> ((i,j), (fromIntegral idx))) indices 
+  where idx = index c 
+        r = rectangle c
         x' = x $ upperLeft r
         y' = y $ upperLeft r
         width' = width $ dimensions r
@@ -102,35 +101,12 @@ toMatrix c = foldl' (\m (i,j) -> DM.setElem (index c) (i,j) m) (DM.zero 1001 100
                            j <- [(y'+1) .. (y' + height')]]
 
 
--- apply the given claim to the given matrix
--- we mark each square with claim's index; if the square is already occupied,
--- it is marked with a -1 instead
--- applyClaim :: Claim -> Matrix Int -> Matrix Int
-applyClaim2 :: Claim -> DM.Matrix Int -> DM.Matrix Int
-applyClaim2 c m = DM.elementwise combine m (toMatrix c) 
-  where combine oldElem claimElem = case (oldElem, claimElem) of
-          (o1, 0)  -> o1 -- square unaffected by new claim -> keep old claim
-          (0 , c1) -> c1 -- square was not occupied -> set to new claim
-          (_ , _ ) -> -1 -- square was occupied, mark with -1 
-
-updateElem :: Int -> (Int,Int) -> DM.Matrix Int -> DM.Matrix Int
-updateElem idx (i,j) m = case DM.getElem i j m of
-  0  -> DM.setElem idx (i,j) m -- square was not occupied -> set to new claim
-  -1 -> m -- square was already marked with -1 -> do nothing
-  _  -> DM.setElem (-1) (i,j) m  -- square was already occupied -> set to -1
-
-applyClaim :: Claim -> DM.Matrix Int -> DM.Matrix Int
-applyClaim c m = foldl' (\m' (i,j) -> updateElem (index c) (i,j) m') m indices 
-  where r = rectangle c
-        x' = x $ upperLeft r
-        y' = y $ upperLeft r
-        width' = width $ dimensions r
-        height' = height $ dimensions r
-        indices = [(i,j) | i <- [(x'+1) .. (x' + width')],
-                           j <- [(y'+1) .. (y' + height')]]
+-- apply the given claim to the given matrxi
+applyClaim :: Claim -> Matrix Int64 -> Matrix Int64
+applyClaim c m = accum m (\new old -> if old == 0 then new else -1) (toAssocList c)
 
 -- apply the given claims to the given matrix
-applyClaims :: [Either ParseError Claim ] -> DM.Matrix Int -> DM.Matrix Int
+applyClaims :: [Either ParseError Claim ] -> Matrix Int64 -> Matrix Int64
 applyClaims [] m = m
 applyClaims (x:xs) m = 
   case x of
@@ -138,15 +114,16 @@ applyClaims (x:xs) m =
     Right x' -> applyClaims xs (DT.trace ("applyClaim " ++ (show $ index x')) (applyClaim x' m))
     Left _   -> applyClaims xs m -- leave m unchanged for erroneous claim
 
-countClashes :: DM.Matrix Int -> Int
+countClashes :: Matrix Int64 -> Int
 --countClashes m = length $ filter (\x -> x == -1) $ toList m
-countClashes m = DV.length $ DV.filter (\x -> x == -1) $ DM.getMatrixAsVector m
+--countClashes m = DV.length $ DV.filter (\x -> x == -1) $ DM.getMatrixAsVector m
+countClashes m = length $ filter (\x -> x == -1) $ toList $ flatten m 
 
 solveI :: String -> Int
 --solveI input = DT.trace ("counting clashes") (countClashes m2)
 solveI input = DT.trace "counting clashes" (countClashes m2)
   where claims = map (\line -> regularParse claimParser line) $ lines input
-        m = DM.zero 1001 1001 -- 1001x1001, all elements are 0
+        m = (1001><1001) (repeat 0) -- 1001x1001, all elements are 0
         -- m2 = applyClaims claims m
         m2 = DT.trace ("applying claims " ++ (show $ length claims)) (applyClaims claims m)
 
