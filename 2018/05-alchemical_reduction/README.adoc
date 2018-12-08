@@ -1,6 +1,10 @@
 = Approach
 Part I: scan through the string two chars at a time, discard both if their uppercase versions are equal but they are different, otherwise keep the first and proceed with the second and its successor
 
+Part II: simple - just iterate through all characters of the ASCII alphabet, remove all occurrences of the current character from the input string, fully reduce it, remember the length of the result, and in the end, return the minimum length.
+
+Our approach works, but is somewhat inefficient (running the non-optimized version takes ~5min on my MacBook Air) 
+
 = Installation
 We use Haskell with HUnit for the tests.
 
