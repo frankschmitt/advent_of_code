@@ -1,4 +1,10 @@
 = Approach
+We use a 1001x1001 matrix to keep track of the claims. Parsing the input list is done with Parsec (using a regular expression would have been easier, but I've always wanted to try Parsec, and building parsers is kind of fun :-)
+
+After parsing the input and populating the list of claims, each claim is applied to the matrix. For each square occupied by the claim, it is checked whether the square is already occupied; if yes, it is marked with -1, otherwise, it is marked with the claim's index.
+
+Part I:  Count the number of squares marked with -1
+Part II: For each square, compare its area, and check whether the number of squares in the matrix marked with the square's index equals it. If yes, the claim is intact, and we found our solution.   
 
 = Installation
 We use Haskell with HUnit for the tests. Additionally, you'll need the matrix package:

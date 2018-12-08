@@ -37,7 +37,6 @@ data Claim  = MkClaim {
 -- PARSING
 -- of course, we could simply use a regular expression, but I've always wanted to play 
 -- around with the Parsec library for generating parsers, so bear with me :-)
--- myClaim = MkClaim 1 (MkRectangle (MkPoint 1 1) (MkDimensions 5 5) )
 numParser :: Parser Int
 numParser = do
     n <- many1 digit
@@ -75,15 +74,10 @@ claimParser = do
     rect <- rectangleParser
     return (MkClaim idx rect)
 
+-- helper function to apply a parser
 regularParse :: Parser a -> String -> Either ParseError a
 regularParse p = parse p ""
 
--- TEST DATA
--- claim1 :: Claim
--- claim1 = MkClaim 1 (MkRectangle (MkPoint 2 3) (MkDimensions 4 5)) 
-claim1 = MkClaim 1 (MkRectangle (MkPoint 509 796) (MkDimensions 18 15))
-claim2 = MkClaim 2 (MkRectangle (MkPoint 724 606) (MkDimensions 23 15))
-claim3 = MkClaim 3 (MkRectangle (MkPoint 797 105) (MkDimensions 10 13))
 
 -- MAIN routines
 --
@@ -111,17 +105,17 @@ applyClaims [] m = m
 applyClaims (x:xs) m = 
   case x of
     Right x' -> applyClaims xs (applyClaim x' m)
-    --Right x' -> applyClaims xs (DT.trace ("applyClaim " ++ (show $ index x')) (applyClaim x' m))
     Left _   -> applyClaims xs m -- leave m unchanged for erroneous claim
 
 -- count the elements in the given matrix that are equal to the given value
 countElems :: Matrix Int64 -> Int64 -> Int
 countElems m val = length $ filter (\x -> x == val) $ toList $ flatten m 
 
+-- count the clashes (squares with overlapping claims)
 countClashes :: Matrix Int64 -> Int
---countClashes m = length $ filter (\x -> x == -1) $ toList $ flatten m 
 countClashes m = countElems m (-1)
 
+-- prepare solution: parse input, build a 1001x1001 matrix, and apply all claims to it
 prepSolution:: String -> ([Claim], Matrix Int64)
 prepSolution input = (validClaims, applyClaims claims m)
   where claims = map (\line -> regularParse claimParser line) $ lines input
@@ -129,17 +123,14 @@ prepSolution input = (validClaims, applyClaims claims m)
         m2 = applyClaims claims m
         validClaims = map (\(Right x) -> x) $ filter (\x -> case x of Right _ -> True) claims
 
+-- find the single claim that is intact
+-- our approach is kind of brute force - for n claims, we check all matrix elements n times
 findIntactClaim :: ([Claim], Matrix Int64) -> Claim
 findIntactClaim (claims, m) = head $ filter (\c -> area c == countElems m (fromIntegral (index c))) claims
   where area c' = width (dimensions (rectangle c')) * height (dimensions (rectangle c'))
 
 solveI :: String -> Int
---solveI input = DT.trace "counting clashes" (countClashes m2)
-solveI input = countClashes m2 
-  where claims = map (\line -> regularParse claimParser line) $ lines input
-        m = (1001><1001) (repeat 0) -- 1001x1001, all elements are 0
-        m2 = applyClaims claims m
-        --m2 = DT.trace ("applying claims " ++ (show $ length claims)) (applyClaims claims m)
+solveI = countClashes . snd . prepSolution
 
 solveII :: String -> Int
 solveII = index . findIntactClaim . prepSolution 
