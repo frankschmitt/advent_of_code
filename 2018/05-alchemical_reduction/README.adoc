@@ -1,0 +1,16 @@
+= Approach
+Part I: scan through the string two chars at a time, discard both if their uppercase versions are equal but they are different, otherwise keep the first and proceed with the second and its successor
+
+= Installation
+We use Haskell with HUnit for the tests.
+
+= Usage
+Running the tests (note the \_ in the filename!):
+```
+runhaskell -cpp \_Solve.hs
+```
+
+Solving the problem:
+```
+runhaskell -cpp -DSTANDALONE Solve.hs
+```
