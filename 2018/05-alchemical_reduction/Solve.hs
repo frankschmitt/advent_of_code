@@ -17,10 +17,12 @@ fullyReduce input =
   let 
      reduced = reduce(input) in 
   if length(reduced) == length(input) then reduced
-  else DT.trace ("fullyReduce, len: " ++ show (length reduced)) (fullyReduce(reduced))
+  -- else DT.trace ("fullyReduce, len: " ++ show (length reduced)) (fullyReduce(reduced))
+  else fullyReduce reduced
 
 solveI :: String -> Int 
-solveI input = (length $ DT.trace ("fullyReduced: >>" ++ s ++ "<<") s) - 1
+-- solveI input = (length $ DT.trace ("fullyReduced: >>" ++ s ++ "<<") s) - 1
+solveI input = (length s) - 1
    where s = fullyReduce input 
 
 solveII = undefined
