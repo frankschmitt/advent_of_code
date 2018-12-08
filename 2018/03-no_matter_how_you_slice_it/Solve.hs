@@ -2,6 +2,7 @@ module Solve where
 
 import qualified Data.Matrix as DM
 import qualified Data.Vector as DV
+import Data.List
 import Control.Applicative ((<|>), many)
 import Control.Monad (void)
 import Data.Char (isLetter, isDigit)
@@ -77,15 +78,20 @@ claimParser = do
 regularParse :: Parser a -> String -> Either ParseError a
 regularParse p = parse p ""
 
-claim1 :: Claim
-claim1 = MkClaim 1 (MkRectangle (MkPoint 2 3) (MkDimensions 4 5)) 
+-- TEST DATA
+-- claim1 :: Claim
+-- claim1 = MkClaim 1 (MkRectangle (MkPoint 2 3) (MkDimensions 4 5)) 
+claim1 = MkClaim 1 (MkRectangle (MkPoint 509 796) (MkDimensions 18 15))
+claim2 = MkClaim 2 (MkRectangle (MkPoint 724 606) (MkDimensions 23 15))
+claim3 = MkClaim 3 (MkRectangle (MkPoint 797 105) (MkDimensions 10 13))
+
 -- MAIN routines
 --
 -- create a 1001x1001 matrix for the given claim
 -- the matrix elements equal the claim's index in the claim's area 
 -- and 0 everywhere else
 toMatrix :: Claim -> DM.Matrix Int
-toMatrix c = foldl (\m (i,j) -> DM.setElem (index c) (i,j) m) (DM.zero 1001 1001) indices
+toMatrix c = foldl' (\m (i,j) -> DM.setElem (index c) (i,j) m) (DM.zero 1001 1001) indices
 --   where indices = [(1,1)]
   where r = rectangle c
         x' = x $ upperLeft r
@@ -114,7 +120,7 @@ updateElem idx (i,j) m = case DM.getElem i j m of
   _  -> DM.setElem (-1) (i,j) m  -- square was already occupied -> set to -1
 
 applyClaim :: Claim -> DM.Matrix Int -> DM.Matrix Int
-applyClaim c m = foldl (\m' (i,j) -> updateElem (index c) (i,j) m') m indices 
+applyClaim c m = foldl' (\m' (i,j) -> updateElem (index c) (i,j) m') m indices 
   where r = rectangle c
         x' = x $ upperLeft r
         y' = y $ upperLeft r
@@ -138,19 +144,19 @@ countClashes m = DV.length $ DV.filter (\x -> x == -1) $ DM.getMatrixAsVector m
 
 solveI :: String -> Int
 --solveI input = DT.trace ("counting clashes") (countClashes m2)
-solveI input = countClashes m2
+solveI input = DT.trace "counting clashes" (countClashes m2)
   where claims = map (\line -> regularParse claimParser line) $ lines input
         m = DM.zero 1001 1001 -- 1001x1001, all elements are 0
-        m2 = applyClaims claims m
+        -- m2 = applyClaims claims m
+        m2 = DT.trace ("applying claims " ++ (show $ length claims)) (applyClaims claims m)
 
 solveII :: String -> Int
 solveII = undefined
 
-{-
 #if defined(STANDALONE)
 main = do
+    --input <- readFile "input2.txt"
     input <- readFile "input.txt"
     putStrLn $ show $ solveI  input 
     --putStrLn $ show $ solveII input 
 #endif
--}
