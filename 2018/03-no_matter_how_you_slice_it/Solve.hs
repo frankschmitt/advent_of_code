@@ -101,38 +101,35 @@ toAssocList c = map (\(i,j) -> ((i,j), (fromIntegral idx))) indices
                            j <- [(y'+1) .. (y' + height')]]
 
 
--- apply the given claim to the given matrxi
+-- apply the given claim to the given matrix
 applyClaim :: Claim -> Matrix Int64 -> Matrix Int64
 applyClaim c m = accum m (\new old -> if old == 0 then new else -1) (toAssocList c)
 
--- apply the given claims to the given matrix
+-- apply the given list of claims to the given matrix
 applyClaims :: [Either ParseError Claim ] -> Matrix Int64 -> Matrix Int64
 applyClaims [] m = m
 applyClaims (x:xs) m = 
   case x of
-    --Right x' -> applyClaims xs (applyClaim x' m)
-    Right x' -> applyClaims xs (DT.trace ("applyClaim " ++ (show $ index x')) (applyClaim x' m))
+    Right x' -> applyClaims xs (applyClaim x' m)
+    --Right x' -> applyClaims xs (DT.trace ("applyClaim " ++ (show $ index x')) (applyClaim x' m))
     Left _   -> applyClaims xs m -- leave m unchanged for erroneous claim
 
 countClashes :: Matrix Int64 -> Int
---countClashes m = length $ filter (\x -> x == -1) $ toList m
---countClashes m = DV.length $ DV.filter (\x -> x == -1) $ DM.getMatrixAsVector m
 countClashes m = length $ filter (\x -> x == -1) $ toList $ flatten m 
 
 solveI :: String -> Int
---solveI input = DT.trace ("counting clashes") (countClashes m2)
-solveI input = DT.trace "counting clashes" (countClashes m2)
+--solveI input = DT.trace "counting clashes" (countClashes m2)
+solveI input = countClashes m2 
   where claims = map (\line -> regularParse claimParser line) $ lines input
         m = (1001><1001) (repeat 0) -- 1001x1001, all elements are 0
-        -- m2 = applyClaims claims m
-        m2 = DT.trace ("applying claims " ++ (show $ length claims)) (applyClaims claims m)
+        m2 = applyClaims claims m
+        --m2 = DT.trace ("applying claims " ++ (show $ length claims)) (applyClaims claims m)
 
 solveII :: String -> Int
 solveII = undefined
 
 #if defined(STANDALONE)
 main = do
-    --input <- readFile "input2.txt"
     input <- readFile "input.txt"
     putStrLn $ show $ solveI  input 
     --putStrLn $ show $ solveII input 
