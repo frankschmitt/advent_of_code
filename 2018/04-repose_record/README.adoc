@@ -1,4 +1,9 @@
 = Approach
+Simple, brute force: 
+  - sort the input lines by timestamp
+  - initialize the system state (a list of guard indices with their associated timestamps when they were asleep; multiple occurrences of the same minute are simply appended to the list of timestamps for this guard)
+  - for each input line: parse it, and update the system state accordingly 
+  - at the end, find the guard index / timestamp matching strategy I or II, and return their product
 
 = Installation
 We use Haskell with HUnit for the tests.

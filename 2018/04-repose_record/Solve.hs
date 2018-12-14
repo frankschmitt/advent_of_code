@@ -18,7 +18,6 @@ type GuardIndex = Int
 data Action = BeginsShift GuardIndex | FallsAsleep | WakeUp
   deriving (Show,Eq)
 
-
 data Event = MkEvent {
   timestamp :: Timestamp,
   action :: Action
@@ -56,12 +55,6 @@ nextState oldState event = case (guardState oldState, action event) of
 -- [1518-07-20 00:53] wakes up
 -- [1518-04-02 00:10] falls asleep
 parseLine :: String -> Event
-{-parseLine line = MkEvent 0 FallAsleep 
-  where regex = [re|.*${minute}([0-9]{2}) ${action}(falls asleep|wakes up|Guard #${index}([0-9]+) begins shift)|]
-        (_, _, _, groups)  = line =~ regex :: (String, String, String, [String]) -- before, match, after, [groups]
-        minute = groups !! 0
-        action = groups !! 1
--}
 parseLine line =
   case action of
     "falls asleep" -> MkEvent minute FallsAsleep
@@ -69,7 +62,6 @@ parseLine line =
     _              -> MkEvent minute (BeginsShift guardIdx) 
   where regex = [re|\[.*${minute}([0-9]{2})\] ${action}(falls asleep|wakes up|Guard #${index}([0-9]+) begins shift)|]
         (_, _, _, groups)  = line =~ regex :: (String, String, String, [String]) -- before, match, after, [groups]
-        g = DT.trace (" parsing " ++ (show line) ++ ", match: " ++ (show groups))
         minute = read (groups !! 0) :: Timestamp
         action = groups !! 1
         guardIdx = read (groups !! 2) :: Int
