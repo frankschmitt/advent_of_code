@@ -3,10 +3,10 @@
 
 module Solve where
 
-
 import qualified Data.IntMap as IM
 import qualified GHC.Arr as A
 import Data.List
+import Data.Function
 import Text.RE.Replace
 import Text.RE.TDFA.String
 import qualified Debug.Trace as DT
@@ -73,34 +73,53 @@ parseLine line =
         minute = read (groups !! 0) :: Timestamp
         action = groups !! 1
         guardIdx = read (groups !! 2) :: Int
-       
+      
+-- prepare solution by applying all events to the initial system state, returning the end state
+-- before we apply them, we have to sort them by their timestamp 
 prepSolution :: String -> SystemState
 prepSolution input = prep' initState (sort (lines input))
  where prep' currentState [] = currentState
        prep' currentState (x:xs) = prep' (nextState currentState (parsed x)) xs
-       parsed x = DT.trace ("parsing " ++ (show x)) (parseLine x)
+       -- parsed x = DT.trace ("parsing " ++ (show x)) (parseLine x)
+       parsed x = parseLine x
 
+-- given a map of guard indices and their asleep timestamps, return the guard that was the longest time asleep overall
 findSleepiestGuard :: IM.IntMap [Timestamp]-> (Int, [Timestamp])  
-findSleepiestGuard sleepTimes = head $ reverse $ sortBy (\(_,times1) (_,times2) -> compare (length times1) (length times2)) $ IM.assocs sleepTimes
+findSleepiestGuard sleepTimes = last $ sortBy (\(_,times1) (_,times2) -> compare (length times1) (length times2)) $ IM.assocs sleepTimes
 
-findMostFrequent :: [Timestamp] -> Timestamp
-findMostFrequent ts = head $ map fst $ sortedByCount 
+-- given a list of timestamps, return the most frequent one
+findMostFrequentTimestamp :: [Timestamp] -> Timestamp
+findMostFrequentTimestamp ts = head $ map fst $ sortedByCount 
   where sorted = sort ts
         grouped = groupBy (==) sorted
         keyWithCount = map (\lst -> (head lst, length lst)) grouped
         sortedByCount = sortBy (\(_,cnt1) (_,cnt2) -> compare cnt2 cnt1) $ keyWithCount
-  
+ 
+-- given a map of guard indices and their asleep timestamps, return the (guard, timestamp) tuple that occured most frequently
+-- we convert our map to a list of (idx, [timestamp]) pairs, expand this to a list of lists of (key, timestamp), flatten this list with concat, sort it, group it, compute the count (which is the length of the sub-list), sort by the count, and take the element with the highest count
+findMostFrequentGuardWithTimestamp :: IM.IntMap [Timestamp]-> (Int, Timestamp)  
+findMostFrequentGuardWithTimestamp sleepTimes = fst $ last $ sortBy (compare `on` snd) $ map (\lst -> (head lst, length lst)) $ grouped
+  where asList = IM.toList sleepTimes
+        zipped = map (\(idx, ts) -> zip (repeat idx) ts) asList
+        asFlatList = concat zipped
+        grouped = group $ sort asFlatList
+
+-- solve part I: parse input, prep solution, find most sleep guard, find the minute they were most asleep at, and return the product 
 solveI :: String -> Int
 solveI input = guardIdx * minute 
   where solution = prepSolution input
         (guardIdx, sleepTimes) = findSleepiestGuard (guards solution)
-        minute = findMostFrequent sleepTimes
+        minute = findMostFrequentTimestamp sleepTimes
 
-solveII = undefined
+-- solve part II: parse input, prep solution, find the tuple (guardIdx, asleepMinute) that occurs most frequently, and return its product
+solveII :: String -> Int
+solveII input = guardIdx * minute
+  where solution = prepSolution input
+        (guardIdx, minute) = findMostFrequentGuardWithTimestamp (guards solution)
 
 #if defined(STANDALONE)
 main = do
     input <- readFile "input.txt"
     putStrLn $ show $ solveI input
-    -- putStrLn $ show $ (solveII input )
+    putStrLn $ show $ solveII input
 #endif

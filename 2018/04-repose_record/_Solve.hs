@@ -25,7 +25,7 @@ sampleInput = unlines [
   ]
 
 testSolveThem  = test [ "solves part I" ~: 240 ~=? solveI sampleInput
-                      , "solves part II" ~: 1 ~=? solveII sampleInput
+                      , "solves part II" ~: 4455 ~=? solveII sampleInput
                       , "parses wake up" ~: (MkEvent 55 WakeUp) ~=? (parseLine "[1518-11-05 00:55] wakes up")  
                       , "parses falls asleep" ~: (MkEvent 45 FallsAsleep) ~=? (parseLine "[1518-11-05 00:45] falls asleep")  
                       , "parses begins shift" ~: (MkEvent 0 (BeginsShift 10)) ~=? (parseLine "[1518-11-01 00:00] Guard #10 begins shift")  
