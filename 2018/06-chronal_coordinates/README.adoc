@@ -1,4 +1,11 @@
 = Approach
+== Part I
+- compute the boundaries of the grid ( (0,0) and (max_x, max_y))
+- for each square within the boundaries: compute the nearest location, and mark it
+- count the number of squares per location
+- remove all locations that own at least one square at the border (since these extend infinitely)
+- from the remaining locations, take the one with the most squares
+
 
 = Installation
 We use Haskell with HUnit for the tests.
