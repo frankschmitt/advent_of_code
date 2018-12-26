@@ -1,4 +1,9 @@
 = Approach
+0) build a directed acyclic graph for the instructions; the nodes are the Steps, and an edge from Node "Step X" to "Step Y" means that "Step X must be finished before step Y can begin"
+1) find the node(s) with no incoming edges
+2) take the first one alphabetically
+3) append it to the solution, and remove it and its associated edges from the DAG
+4) repeat 1) until all nodes have been removed
 
 = Installation
 We use Haskell with HUnit for the tests.
