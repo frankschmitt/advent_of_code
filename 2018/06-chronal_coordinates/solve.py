@@ -133,15 +133,54 @@ def print_grid(grid):
         s += str(grid[rowidx][colidx])#chr(65 + grid[rowidx][colidx])
     print(s)
 
-
 def solve_partI(filename):
   coords = read_input(filename)
   grid = build_grid(coords)
-  #print_grid(grid)  
-  #print(coords)
   candidate_coords = find_candidate_coords(grid, coords)
   area = find_largest_area(grid, candidate_coords)
   return area
 
+def is_safe_square(coords, (x,y), threshold):
+  sum = 0
+  #print("--- computing sum for (" + str(x) + "," + str(y) + ") -----------")
+  for (k,v) in coords.items():
+    dist = manhattan_distance((x,y), (v[0], v[1]))
+    sum += dist
+    #print(" distance from (" + str(v[0]) + "," + str(v[1]) + ") = " + str(dist) + ", sum = " + str(sum))
+    if sum > threshold:
+      #print("  sum for (" + str(x) + "," + str(y) + ") exceeds threshold, discarded early") 
+      return False
+  #print("  sum for (" + str(x) + "," + str(y) + ") = " + str(sum))
+  result = (sum < threshold)
+  #if result:
+    #print(" SAFE")
+  #else:
+    #print(" DANGEROUS")
+  return result
+
+def find_safe_squares(coords, overall_threshold):
+  # the sum of manhattan distances from n points is at least n * min(distance)
+  #   therefore, we only consider points within overall_treshold / n distance from the outermost points
+  threshold = overall_threshold / len(coords) + 1
+  min_x = -threshold
+  min_y = -threshold
+  max_x = max(get_x(coords)) + threshold 
+  max_y = max(get_y(coords)) + threshold 
+  result = []
+  for x in range(min_x, max_x + 1):
+    for y in range(min_y, max_y + 1):
+      if is_safe_square(coords, (x,y), overall_threshold):
+        result.append((x,y,))
+  return result
+
+def solve_partII(filename, overall_threshold):
+  coords = read_input(filename)
+  grid = build_grid(coords)
+  safe_squares = find_safe_squares(coords, overall_threshold)
+  return len(safe_squares) 
+
 #print(solve_partI("sample_input.txt"))
-print(solve_partI("input.txt"))
+#print(solve_partI("input.txt"))
+#print(solve_partII("sample_input.txt", 32))
+print(solve_partII("input.txt", 10000))
+

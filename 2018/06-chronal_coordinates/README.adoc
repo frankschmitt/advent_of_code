@@ -6,6 +6,14 @@
 - remove all locations that own at least one square at the border (since these extend infinitely)
 - from the remaining locations, take the one with the most squares
 
+== Part II
+- set the threshold to max_overall_treshold / num_locations
+  (since a location at x = min_x - threshold has a overall distance of at least
+     threshold * num_locations = max_overall_threshold / num_locations * num_locations = max_overall_threshold
+   and the same applies to locations whose x is at max_x + threshold; each location farther away is out of the safe region. The same applies to y values)
+- for each square within (min_x - threshold, max_x + threshold, min_y - threshold, max_y + threshold): check whether it is within the safe region (i.e. the sum of the manhattan distances from the given coords is <= max_overall_threshold)
+- return the number of safe squares
+
 
 = Installation
 We use Haskell with HUnit for the tests.
