@@ -7,17 +7,12 @@ def read_input(filename):
     lines = input.readlines()
     for i in range(len(lines)):
       a = string.split(lines[i], ',')
-      #print(lines[i])
-      #print(a)
-      #coords.append( (int(a[0]), int(a[1])))
       coords[i] = (int(a[0]), int(a[1]))
   return coords
 
 # extract the x coordinates from a list of (x,y) coordinate pairs
 def get_x(coords):
   result = []
-  #for i in range(len(coords)):
-  #  result.append(coords[i][0])
   for v in coords.values(): 
     result.append(v[0])
   return result
@@ -25,8 +20,6 @@ def get_x(coords):
 # extract the y coordinates from a list of (x,y) coordinate pairs
 def get_y(coords):
   result = []
-  #for i in range(len(coords)):
-  #  result.append(coords[i][1])
   for v in coords.values(): 
     result.append(v[1])
   return result
@@ -48,10 +41,8 @@ def find_nearest_location(coords, (x, y)):
       if dist == best_dist: # tie
         best.append(k)
   if len(best) == 1:
-    #print("  best for (" + str(x) + "," + str(y) + "): " + str(best[0]))
     return best[0]
   else:
-    #print("NO best for (" + str(x) + "," + str(y) + ")")
     return -1 
 
 # given a list of coordinates (x,y), build the grid
@@ -78,18 +69,14 @@ def occupies_border_square(idx, grid):
   # check first and last row
   for i in range(0,last_col+1): 
     if (grid[0][i] == idx): 
-      #print(str(idx) + " occupies square in first row at (0," + str(i) + ")")
       return True
     if (grid[last_row][i] == idx): 
-      #print(str(idx) + " occupies square in last row at (" + str(last_row) + "," + str(i) + ")")
       return True
   # check first and last column
   for i in range(0, last_row + 1):
     if (grid[i][0] == idx): 
-      #print(str(idx) + " occupies square in first col at (" + str(i) + ",0)")
       return True
     if (grid[i][last_col] == idx):
-      #print(str(idx) + " occupies square in last col at (" + str(i) + "," + str(last_col) + ")")
       return True
   return False
 
@@ -99,7 +86,6 @@ def find_candidate_coords(grid, coords):
   for (k,v) in coords.items():
     if not occupies_border_square(k, grid):
       result[k] = v
-  #print("candidate coords: " + str(result))
   return result
 
 # get the area occupied by a idx
@@ -130,7 +116,7 @@ def print_grid(grid):
       if grid[rowidx][colidx] == -1:
         s += "."
       else:
-        s += str(grid[rowidx][colidx])#chr(65 + grid[rowidx][colidx])
+        s += str(grid[rowidx][colidx])
     print(s)
 
 def solve_partI(filename):
@@ -142,21 +128,12 @@ def solve_partI(filename):
 
 def is_safe_square(coords, (x,y), threshold):
   sum = 0
-  #print("--- computing sum for (" + str(x) + "," + str(y) + ") -----------")
   for (k,v) in coords.items():
     dist = manhattan_distance((x,y), (v[0], v[1]))
     sum += dist
-    #print(" distance from (" + str(v[0]) + "," + str(v[1]) + ") = " + str(dist) + ", sum = " + str(sum))
     if sum > threshold:
-      #print("  sum for (" + str(x) + "," + str(y) + ") exceeds threshold, discarded early") 
       return False
-  #print("  sum for (" + str(x) + "," + str(y) + ") = " + str(sum))
-  result = (sum < threshold)
-  #if result:
-    #print(" SAFE")
-  #else:
-    #print(" DANGEROUS")
-  return result
+  return (sum < threshold)
 
 def find_safe_squares(coords, overall_threshold):
   # the sum of manhattan distances from n points is at least n * min(distance)
@@ -180,7 +157,7 @@ def solve_partII(filename, overall_threshold):
   return len(safe_squares) 
 
 #print(solve_partI("sample_input.txt"))
-#print(solve_partI("input.txt"))
+print(solve_partI("input.txt"))
 #print(solve_partII("sample_input.txt", 32))
 print(solve_partII("input.txt", 10000))
 
