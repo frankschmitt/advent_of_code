@@ -16,7 +16,7 @@ sampleInput = unlines [
   ]
 
 testSolveThem  = test [ "solves part I" ~: "CABDFE" ~=? (solveI sampleInput)
-                      , "solves part II" ~: 1 ~=? solveII
+                      , "solves part II" ~: 15 ~=? (solveII sampleInput 2 0)
                       ]
 
 tests = TestList [ testSolveThem

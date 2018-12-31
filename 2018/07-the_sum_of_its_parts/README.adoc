@@ -1,9 +1,25 @@
 = Approach
+== Part I
 0) build a directed acyclic graph for the instructions; the nodes are the Steps, and an edge from Node "Step X" to "Step Y" means that "Step X must be finished before step Y can begin"
 1) find the node(s) with no incoming edges
 2) take the first one alphabetically
 3) append it to the solution, and remove it and its associated edges from the DAG
 4) repeat 1) until all nodes have been removed
+5) return the solution
+
+== Part II
+0) build a directed acyclic graph for the instructions; the nodes are the Steps, and an edge from Node "Step X" to "Step Y" means that "Step X must be finished before step Y can begin"
+1) initialize a Hashmap for the nodes that are currently being processed (one entry for each worker; keeps track of the node plus the remaining time) 
+2) simulate one second of elapsed time
+3) check whether a worker has finished
+   if yes, append the node to the solution, and remove it and its associated edges from the DAG, and assign a new node to the worker
+4) repeat 2) until no more nodes are available and all workers have finished
+5) return the elapsed time
+
+= Additional information
+Part I is a simple topological sort (see https://en.wikipedia.org/wiki/Topological_sorting ).
+Part II looks suspiciously like the [Maximum flow problem|https://en.wikipedia.org/wiki/Maximum_flow_problem] or the [Minimum spanning tree problem|https://neo4j.com/docs/graph-algorithms/current/algorithms/minimum-weight-spanning-tree/].
+
 
 = Installation
 We use Haskell with HUnit for the tests.
