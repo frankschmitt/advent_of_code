@@ -2,6 +2,7 @@ module Solve where
 
 import Data.List
 import Data.Char
+import qualified Debug.Trace as DT
 
 type NodeLabel = String
 -- a node is defined by its label and its delay
@@ -96,29 +97,31 @@ assignNextTask (graph, workers, second) =
     nextTask = nextCandidateNode graph
     nextWorker = head $ availableWorkers workers
     (nwID, _)  = nextWorker
+    newWorker = (nwID, Working nextTask 0)
     updatedWorkers = map (\(id, state) -> 
                        if id /= nwID then (id, state)
-                       else (id, Working nextTask 0)
+                       else newWorker 
                      ) workers       
   in
-    (removeNode graph nextTask, updatedWorkers, second)    
+    DT.trace ("assignNextTask: task = " ++ (show nextTask) ++ ", worker: " ++ (show newWorker)) (removeNode graph nextTask, updatedWorkers, second)    
 
 nextStepWorkers :: [Worker] -> [Worker]
-nextStepWorkers workers = map nextStep workers
+nextStepWorkers workers = DT.trace ("nextStepWorkers, before: " ++ (show workers) ++ ", after: " ++ (show newWorkers)) newWorkers
   where nextStep (id, state) = case state of
                                  Idle -> (id, state)
                                  Done _ -> (id, state)
                                  Working (lbl, delay) since -> if delay == since then (id, Done (lbl, delay))
                                                                else (id, Working (lbl, delay) (since + 1))
+        newWorkers = (map nextStep workers)
          
 
 -- run simulation for part II step-by-step; terminate if work has been completed
 solveII' :: SystemState -> Int
 solveII' (graph, workers, second) = 
-   case (graph, availableWorkers workers) of
-     (([], _), _) -> second + getMaxRemainingWork workers -- all nodes finished or being processed  
-     ((nodes', edges'), []) -> solveII' (graph, nextStepWorkers workers, second + 1)
-     ((nodes', edges'), w)  -> solveII' (assignNextTask (graph, workers, second))
+  DT.trace ("solveII', second: " ++ (show second))(case (graph, availableWorkers workers) of
+                                                     (([], _), _) -> second + getMaxRemainingWork workers -- all nodes finished or being processed  
+                                                     ((nodes', edges'), []) -> solveII' (graph, nextStepWorkers workers, second + 1)
+                                                     ((nodes', edges'), w)  -> solveII' (assignNextTask (graph, workers, second)))
 
 -- solve part II: parse input, build graph with offsets, run simulation step-by-step
 solveII :: String -> Int -> Int -> Int
