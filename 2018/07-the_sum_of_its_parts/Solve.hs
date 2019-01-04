@@ -2,7 +2,6 @@ module Solve where
 
 import Data.List
 import Data.Char
--- import qualified Data.Graph as G
 import qualified Data.Graph.Inductive as GI
 import qualified Debug.Trace as DT
 
@@ -16,7 +15,7 @@ newtype EdgeRecord = LEdge EdgeLabel
 
 type EdgeRecordHelper = (NodeLabel, NodeLabel)
 
--- parse the input, and return a list of edges
+-- parse the input, and return a list of edges (= tuples of node labels)
 parseInput :: String -> [EdgeRecordHelper]
 parseInput input = map makeEdge (lines input)
   where makeEdge line = (start line, end line)
@@ -35,9 +34,11 @@ nodeIndexToNodeLabel idx = chr (idx + (ord 'A') - 1)
 nodeLabelToNode :: NodeLabel -> NodeRecord
 nodeLabelToNode lbl = (nodeLabelToNodeIndex lbl, lbl)
 
+-- given a list of node labels, construct the nodes
 nodeLabelsToNodes :: [NodeLabel] -> [NodeRecord]
 nodeLabelsToNodes nodeLabels = map nodeLabelToNode nodeLabels 
 
+-- given a list of edge records (= tupels of node labels), get the list of unique node labels
 edgesToNodeLabels :: [EdgeRecordHelper] -> [NodeLabel]
 edgesToNodeLabels edges =  
   let 
@@ -48,20 +49,14 @@ edgesToNodeLabels edges =
 
 
 -- given a list of edges and an offset, extract the nodes, and build the DAG
--- buildGraph :: [Edge] -> Graph
 buildGraph :: [EdgeRecordHelper] -> GI.Gr NodeLabel EdgeLabel -- Graph with node and edge label type
 buildGraph edges = 
   let 
     nodeLabels = edgesToNodeLabels edges 
     nodes = nodeLabelsToNodes nodeLabels 
-    edgeList = map (\(start, end) -> (nodeLabelToNodeIndex start, nodeLabelToNodeIndex end, "")) edges
+    edges' = map (\(start, end) -> (nodeLabelToNodeIndex start, nodeLabelToNodeIndex end, "")) edges
   in
-    GI.mkGraph nodes edgeList
-
-
--- check whether a given node has no incoming edges in the given graph
-hasNoIncomingEdges :: GI.LNode NodeLabel -> GI.Gr NodeLabel EdgeLabel -> Bool
-hasNoIncomingEdges (idx, _) graph = GI.indeg graph idx == 0
+    GI.mkGraph nodes edges'
 
 -- custom topological sort that - if more than one node is available - always uses the alphanumerically first one, i.e. if A and B are nodes with indegree = 0, take A first
 myTopsort' :: GI.Gr NodeLabel EdgeLabel -> String
@@ -70,6 +65,7 @@ myTopsort' graph =
     [] -> ""
     (idx,lbl):xs -> [lbl] ++ (myTopsort' (GI.delNode idx graph) )
   where candidates = filter (\lnode -> hasNoIncomingEdges lnode graph) $ GI.labNodes graph
+        hasNoIncomingEdges (idx, _) graph = GI.indeg graph idx == 0
 
 -- solve part I: parse input, build graph, find the path and return it
 solveI :: String -> String
