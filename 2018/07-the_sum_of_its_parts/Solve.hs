@@ -12,7 +12,7 @@ type NodeIndex = Int
 type NodeRecord = (NodeIndex, NodeLabel)
 -- an edge is defined by the indicies of its start and end nodes and a label
 type EdgeLabel = String
-type EdgeRecord = (NodeIndex, NodeIndex, EdgeLabel)
+newtype EdgeRecord = LEdge EdgeLabel
 
 type EdgeRecordHelper = (NodeLabel, NodeLabel)
 
@@ -54,16 +54,7 @@ buildGraph edges =
   let 
     nodeLabels = edgesToNodeLabels edges 
     nodes = nodeLabelsToNodes nodeLabels 
-    --neighbourLabels nodeLabel = map (\n -> snd n) $ filter (\(start, end) -> start == nodeLabel) edges
-    --neighbours nodeLabel = map snd $ map nodeLabelToNode $ neighbourLabels nodeLabel
     edgeList = map (\(start, end) -> (nodeLabelToNodeIndex start, nodeLabelToNodeIndex end, "")) edges
-    {-edgeList = [
-      (4, 8, ""),  
-      (7, 4, ""),
-      (5, 1, ""),
-      (5, 7, ""),
-      (1, 4, "")
-     ] -}
   in
     GI.mkGraph nodes edgeList
 
@@ -72,7 +63,7 @@ buildGraph edges =
 hasNoIncomingEdges :: GI.LNode NodeLabel -> GI.Gr NodeLabel EdgeLabel -> Bool
 hasNoIncomingEdges (idx, _) graph = GI.indeg graph idx == 0
 
--- topological sort that - if more than one node is available - always uses the alphanumerically first one, i.e. if A and B are nodes with indegree = 0, take A first
+-- custom topological sort that - if more than one node is available - always uses the alphanumerically first one, i.e. if A and B are nodes with indegree = 0, take A first
 myTopsort' :: GI.Gr NodeLabel EdgeLabel -> String
 myTopsort' graph = 
   case candidates of
