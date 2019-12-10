@@ -1,0 +1,15 @@
+= Approach
+
+= Installation
+We use Java 8 with Junit for the unit tests.
+
+= Usage
+Running the tests: 
+```
+gradlew test
+```
+
+Solving the problem:
+```
+gradlew run
+```

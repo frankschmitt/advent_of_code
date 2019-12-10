@@ -14,7 +14,7 @@ different programming languages as possible; my plan is to use
 + OCaml (2017-15)
 Prolog
 Minikanren
-+ C++ (2017-05
++ C++ (2017-05)
 C#
 Elm
 Purescript
