@@ -3,12 +3,39 @@
  */
 package the_tyranny_of_the_rocket_equation;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
+import java.util.stream.Collectors;
+
 public class App {
-    public String getGreeting() {
-        return "Hello world.";
+    public Long fuelForMass(Long input) {
+        return (input / 3L) - 2L;
     }
 
+    public Long fuelForMassList(List<Long> input) {
+        return input.stream().mapToLong(i -> fuelForMass(i.longValue())).sum();
+    }
+
+
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+        //String fileName = "input.txt";
+        App app = new App();
+        String fileName = app.getClass().getClassLoader().getResource("input.txt").getFile();
+        List<Long> input = new ArrayList<>();
+        try (Stream<String> stream = Files.lines(Paths.get(fileName))) {
+
+            input = stream
+                    .map(s -> Long.parseLong(s))
+                    .collect(Collectors.toList());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println(app.fuelForMassList(input));
     }
 }

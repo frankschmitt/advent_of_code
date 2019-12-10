@@ -4,11 +4,27 @@
 package the_tyranny_of_the_rocket_equation;
 
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import static org.junit.Assert.*;
 
 public class AppTest {
-    @Test public void testAppHasAGreeting() {
-        App classUnderTest = new App();
-        assertNotNull("app should have a greeting", classUnderTest.getGreeting());
+    @Test public void fuelForMass12ShouldBe2() {
+        App app = new App();
+        assertEquals(2, app.fuelForMass(12L).longValue());
+    }
+
+    @Test public void fuelForMass100756ShouldBe33583() {
+        App app = new App();
+        assertEquals(33583L, app.fuelForMass(100756L).longValue());
+    }
+
+    @Test public void fuelForMassListShouldEqualSum() {
+        App app = new App();
+        List<Long> input = new ArrayList<>(Arrays.asList(12L, 14L));
+        assertEquals(4L, app.fuelForMassList(input).longValue());
     }
 }
