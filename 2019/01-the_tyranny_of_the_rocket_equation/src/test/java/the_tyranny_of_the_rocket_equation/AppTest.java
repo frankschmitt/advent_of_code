@@ -27,4 +27,14 @@ public class AppTest {
         List<Long> input = new ArrayList<>(Arrays.asList(12L, 14L));
         assertEquals(4L, app.fuelForMassList(input).longValue());
     }
+
+    @Test public void fuelForMassRec14ShouldBe2() {
+        App app = new App();
+        assertEquals(2, app.fuelForMassRec(14L).longValue());
+    }
+
+    @Test public void fuelForMassRec1969ShouldBe966() {
+        App app = new App();
+        assertEquals(966, app.fuelForMassRec(1969L).longValue());
+    }
 }

@@ -12,12 +12,39 @@ import java.util.stream.Stream;
 import java.util.stream.Collectors;
 
 public class App {
+    /**
+     * Compute the basic fuel required for the given module.
+     *
+     * @param input weight of the module
+     * @return amount of fuel required
+     */
     public Long fuelForMass(Long input) {
         return (input / 3L) - 2L;
     }
 
+    /**
+     * Compute the complete fuel required for the given module (including the fuel for the fuel)
+     * @param input weight of the module
+     * @return total amount of fuel required
+     */
+    public Long fuelForMassRec(Long input) {
+        Long fuel = (input / 3L) - 2L;
+        // additional fuel required? recursively compute fuel required for that additional fuel
+        if (fuel > 0) {
+            fuel += fuelForMassRec(fuel);
+        }
+        else if (fuel < 0) {
+            fuel = 0L;
+        }
+        return fuel;
+    }
+
     public Long fuelForMassList(List<Long> input) {
         return input.stream().mapToLong(i -> fuelForMass(i.longValue())).sum();
+    }
+
+    public Long fuelForMassListRec(List<Long> input) {
+        return input.stream().mapToLong(i -> fuelForMassRec(i.longValue())).sum();
     }
 
 
@@ -37,5 +64,6 @@ public class App {
         }
 
         System.out.println(app.fuelForMassList(input));
+        System.out.println(app.fuelForMassListRec(input));
     }
 }
