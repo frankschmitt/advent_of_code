@@ -1,5 +1,6 @@
 #[macro_use(c)]
 extern crate cute;
+extern crate regex;
 
 mod helpers {
   //use std::fs;
@@ -9,12 +10,23 @@ mod helpers {
   use std::fs::File;
 
   pub fn read_int_list(filename: String) -> Vec<i64> {
-
       let reader = BufReader::new(File::open(filename).expect("Cannot open file"));
       let mut result = Vec::new();
       let mut val: i64;
       for line in reader.lines() {
           val = line.unwrap().parse().unwrap();
+          result.push(val);
+      }
+
+     return result;
+  }
+
+  pub fn read_string_list(filename: String) -> Vec<String> {
+      let reader = BufReader::new(File::open(filename).expect("Cannot open file"));
+      let mut result = Vec::new();
+      let mut val: String;
+      for line in reader.lines() {
+          val = line.unwrap();
           result.push(val);
       }
 
@@ -64,7 +76,20 @@ mod a01_report_repair {
     }
 }
 
+mod a02_password_philosophy {
+    pub fn solve() {
+        let filename = "a02_password_philosophy/input.txt";
+        let values = crate::helpers::read_string_list((&filename).to_string());
+        println!("got values: {}", values.len());
+        // a line of input consists of: <min>-<max> <letter>: <password>
+        let re = Regex::new(r"(\d+)-(\d+) ([a-z]): ([a-z]+)").unwrap();
+        let result1 = -1;
+        let result2 = -1;
+        println!("02 - password philsophy : {} {}", result1, result2);
+    }
+}
 // pub use a01_report_repair;
 fn main() {
     a01_report_repair::solve();
+    a02_password_philosophy::solve();
 }
