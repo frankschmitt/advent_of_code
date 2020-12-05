@@ -1,3 +1,5 @@
+#[macro_use(c)]
+extern crate cute;
 
 mod helpers {
   //use std::fs;
@@ -16,30 +18,53 @@ mod helpers {
           result.push(val);
       }
 
-     // let contents = fs::read_to_string(filename)
-       //  
-        //                 .expect("Something went wrong reading the file");
-     //let mut result = Vec::new();
-     //Ok(result)
-     //let path = Path::new(&filename);
-     //let mut file = BufferedReader::new(File::open(&path));
-     //let result: Vec<i64> = file.lines().map(|x| x.into());
      return result;
+  }
+
+  // cute doesn't provide a version for three iterators 
+  macro_rules! c3 {
+    ($exp:expr, for $i:ident in $iter:expr, for $i2:ident in $iter2:expr, for $i3:ident in $iter3:expr, if $cond:expr) => (
+        {
+            let mut r = vec![];
+            for $i3 in $iter3 {
+                for $i2 in $iter2 {
+                    for $i in $iter {
+                        if $cond{
+                            r.push($exp);
+                        }
+                    }
+                }
+            }
+            r
+        }
+    );
   }
 
 }
 
 mod a01_report_repair {
     pub fn solve() {
-        println!("hello from a01");
         let filename = "a01_report_repair/input.txt";
         let values = crate::helpers::read_int_list((&filename).to_string());
-        println!("got values: {}", values.len());
+        // println!("got values: {}", values.len());
+        let result1 = c![x*y, for x in &values, for y in &values, if x+y  == 2020 && x > y][0];
+        // cute doesn't provide 3-iterator versions - therefore, use simple loops here
+        let mut result2:i64 = -1;
+        for x in &values {
+            for y in &values {
+                for z in &values {
+                    if (x+y+z == 2020) {
+                        result2 = x*y*z;
+                    }
+                }
+            }
+        }
+
+        println!("01 - report repair: {} {}", result1, result2);
     }
 }
 
 // pub use a01_report_repair;
 fn main() {
-    println!("Hello, world!");
     a01_report_repair::solve();
 }
