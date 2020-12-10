@@ -133,7 +133,6 @@ mod a02_password_philosophy {
 
 mod a09_encoding_error {
 
-    // we use a deque for solving the puzzle - push one, take one out
     pub fn solve() {
         let filename = "a09_encoding_error/input.txt";
         let values = crate::helpers::read_int_list((&filename).to_string());
