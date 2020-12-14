@@ -21,10 +21,20 @@ impl Grid {
     pub fn cell(&self, row: usize, col: usize) -> char {
       let myrow = row % self.height;
       let mycol = col % self.width;
-      println!("getting cell at {}/{} -> {}/{}", row, col, myrow, mycol);
+      // println!("getting cell at {}/{} -> {}/{}", row, col, myrow, mycol);
       let line = &self.cells[myrow];
       let ch= line[mycol];
       return ch;
+    }
+
+    pub fn print(&self) -> () {
+        for row in 0 .. self.height {
+            let mut line: String = "".to_string();
+            for col in 0 .. self.width  {
+                line += &self.cell(row, col).to_string();
+            }
+            println!("{}", line);
+        }
     }
 }
 
