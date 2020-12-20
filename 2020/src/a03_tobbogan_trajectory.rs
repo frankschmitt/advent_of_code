@@ -7,30 +7,21 @@ pub fn solve() {
         trees: usize
     }
 
-    // let filename = "a03_tobbogan_trajectory/test_input.txt";
     let filename = "a03_tobbogan_trajectory/input.txt";
     let grid = crate::helpers::read_char_grid(filename.to_string());
-    grid.print();
     let walks = vec![Walk { x:0, y:0, delta_x:1, delta_y : 1, trees : 0},
                      Walk { x:0, y:0, delta_x:3, delta_y : 1, trees : 0},
                      Walk { x:0, y:0, delta_x:5, delta_y : 1, trees : 0},
                      Walk { x:0, y:0, delta_x:7, delta_y : 1, trees : 0},
                      Walk { x:0, y:0, delta_x:1, delta_y : 2, trees : 0}
                     ];
-    let _walks = vec![ Walk { x:0, y:0, delta_x:3, delta_y : 1, trees : 0},
-                    ];
     let mut result1 = 0;
     let mut result2 = 1;
     for mut w in walks {
-        println!("walking with {} / {}", w.delta_x, w.delta_y);
         while w.y < grid.height() {
-            let c = grid.cell(w.y, w.x);
+            let c = grid.cell(w.y, w.x); // y: row, x: column !
             if c == '#' {
-                println!("tree");
                 w.trees += 1;
-            }
-            else {
-                println!("square");
             }
             w.x += w.delta_x;
             w.y += w.delta_y;
@@ -40,8 +31,6 @@ pub fn solve() {
         }
         result2 = result2 * w.trees;
     }
-
-    println!("grid dim: height = {}, width = {}", grid.height(), grid.width());
     println!("03 - tobbogan trajectory: {} {}", result1, result2);
 }
 
@@ -95,6 +84,23 @@ mod tests {
       // one after last column -> first column
       assert_eq!('.', grid.cell(0, 11));
       assert_eq!('.', grid.cell(10,11));
+    }
+
+    #[test]
+    fn cell_for_test_input_should_give_expected_result() {
+      let grid =read_test_input_grid();
+      // one after last row -> first row
+      assert_eq!('.', grid.cell(0, 0));
+      assert_eq!('.', grid.cell(1, 3));
+      assert_eq!('#', grid.cell(2, 6));
+      assert_eq!('.', grid.cell(3, 9));
+      assert_eq!('#', grid.cell(4,12));
+      assert_eq!('#', grid.cell(5,15));
+      assert_eq!('.', grid.cell(6, 18));
+      assert_eq!('#', grid.cell(7, 21));
+      assert_eq!('#', grid.cell(8, 24));
+      assert_eq!('#', grid.cell(9, 27));
+      assert_eq!('#', grid.cell(10,30));
     }
 }
 
