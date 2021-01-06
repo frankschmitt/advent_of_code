@@ -75,6 +75,18 @@ pub fn read_string_list(filename: String) -> Vec<String> {
     return result;
 }
 
+pub fn read_string(filename: String) -> String {
+    let reader = BufReader::new(File::open(filename).expect("Cannot open file"));
+    let mut result = String::new();
+    let mut val: String;
+    for line in reader.lines() {
+        val = line.unwrap();
+        result += &(val + "\n");
+    }
+
+    return result;
+}
+
 // cute doesn't provide a version for three iterators 
 /* macro_rules! c3 {
    ($exp:expr, for $i:ident in $iter:expr, for $i2:ident in $iter2:expr, for $i3:ident in $iter3:expr, if $cond:expr) => (
