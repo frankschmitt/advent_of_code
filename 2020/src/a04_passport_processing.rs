@@ -2,6 +2,7 @@ use std::str::FromStr;
 use std::num::ParseIntError;
 use std::collections::HashMap;
 use std::iter::FromIterator;
+use regex::Regex;
 
 #[derive(Debug, PartialEq)]
 pub struct Passport {
@@ -19,14 +20,6 @@ impl FromStr for Passport {
   type Err = ParseIntError;
 
   fn from_str(s: &str) -> Result<Self, Self::Err> {
-     /* let coords: Vec<&str> = s.trim_matches(|p| p == '(' || p == ')' )
-                               .split(',')
-                               .collect();
-
-      let x_fromstr = coords[0].parse::<i32>()?;
-      let y_fromstr = coords[1].parse::<i32>()?;
-
-      Ok(Point { x: x_fromstr, y: y_fromstr })*/
         // fields are separated by spaces
         let field_strings: Vec<&str> = s.split_ascii_whitespace().collect::<Vec<_>>();
         // fields consist of <name>:<value>
@@ -49,6 +42,7 @@ impl FromStr for Passport {
 
 impl Passport {
     
+    // part I: a passport is valid if all fields are present (cid is optional, though)
     pub fn is_valid(&self) -> bool {
         return self.byr.is_some() &&
                self.iyr.is_some() &&
@@ -58,6 +52,113 @@ impl Passport {
                self.ecl.is_some() &&
                self.pid.is_some();
     }
+
+    fn is_u64_between_bounds(v: &str, min: u64, max: u64) -> bool {
+      return match v.parse::<u64>() { 
+          Err(_) => false,
+          Ok(val) => val >= min && val <= max 
+      };
+    }  
+      
+    fn is_valid_height(v: &Option<String>) -> bool {
+      let re = Regex::new(r"(\d{2,3})(in|cm)").unwrap();
+      let result = match v {
+        None => false,
+        Some(x) => match re.captures(x) {
+          None => false,
+          // md[0] is the complete match - the captured groups start at 1
+          Some(md) => (&md[2] == "in" && Passport::is_u64_between_bounds(&md[1], 59, 76)) ||
+                      (&md[2] == "cm" && Passport::is_u64_between_bounds(&md[1], 150, 193))
+        }
+      };
+      // println!("is_valid_height: {} -> {}", Passport::to_string(v), result);
+      return result;
+    }
+    
+    fn is_valid_rgb(v: &Option<String>) -> bool {
+      let re = Regex::new(r"^#[0-9a-f]{6}$").unwrap();
+      let result = match v {
+        None => false,
+        Some(x) => re.is_match(x)
+      };
+      // println!("is_valid_rgb: {} -> {}", Passport::to_string(v), result);
+      return result;
+    }
+   
+    fn to_string(v:&Option<String>) -> String {
+      return match v {
+        None => "None".to_string(),
+        Some(x) => x.to_string()
+      };
+    }
+
+    fn is_valid_colour_name(v: &Option<String>) -> bool {
+      let result = match v {
+        None => false,
+        Some(x) => match x.as_ref() {
+          "amb" => true,
+          "blu" => true, 
+          "brn" => true, 
+          "gry" => true, 
+          "grn" => true, 
+          "hzl" => true, 
+          "oth" => true,
+          _ => false  
+        }
+      };
+      // println!("is_valid_colour_name: {} -> {}", Passport::to_string(v), result);
+      return result;
+    }
+   
+    fn is_valid_pid(v: &Option<String>) -> bool {
+      let re = Regex::new(r"^[0-9]{9}$").unwrap();
+      let result = match v {
+        None => false,
+        Some(x) => re.is_match(x)
+      };
+      // println!("is_valid_pid: {} -> {}", Passport::to_string(v), result);
+      return result;
+    }
+
+    fn is_valid_year_between_bounds(v: &Option<String>, min: u64, max: u64) -> bool {
+      let result = match v {
+        None => false,
+        Some(x) => x.len() == 4 && Passport::is_u64_between_bounds(x, min, max)
+      };
+      // println!("is_valid_year_between_bounds: {}, {}, {} -> {}", Passport::to_string(v), min, max, result);
+      return result;
+    
+    }
+
+    // part II: a passport is valid if the fields satisfy these criteria
+    // byr (Birth Year) - four digits; at least 1920 and at most 2002.
+    // iyr (Issue Year) - four digits; at least 2010 and at most 2020.
+    // eyr (Expiration Year) - four digits; at least 2020 and at most 2030.
+    // hgt (Height) - a number followed by either cm or in:
+    //                  If cm, the number must be at least 150 and at most 193.
+    //                  If in, the number must be at least 59 and at most 76.
+    // hcl (Hair Color) - a # followed by exactly six characters 0-9 or a-f.
+    // ecl (Eye Color) - exactly one of: amb blu brn gry grn hzl oth.
+    // pid (Passport ID) - a nine-digit number, including leading zeroes.
+    // cid (Country ID) - ignored, missing or not.
+    pub fn is_valid2(&self) -> bool {
+      let is_valid_byr = Passport::is_valid_year_between_bounds(&self.byr, 1920, 2002);
+      let is_valid_iyr = Passport::is_valid_year_between_bounds(&self.iyr, 2010, 2020);
+      let is_valid_eyr = Passport::is_valid_year_between_bounds(&self.eyr, 2020, 2030);
+      let is_valid_hgt = Passport::is_valid_height(&self.hgt);
+      let is_valid_hcl = Passport::is_valid_rgb(&self.hcl);
+      let is_valid_ecl = Passport::is_valid_colour_name(&self.ecl);
+      let is_valid_pid = Passport::is_valid_pid(&self.pid);
+
+      return is_valid_byr &&
+             is_valid_iyr &&
+             is_valid_eyr &&
+             is_valid_hgt &&
+             is_valid_hcl && 
+             is_valid_ecl &&
+             is_valid_pid;
+  }
+
 
 }
 
@@ -75,7 +176,9 @@ pub fn solve() {
 
     let valid_passports = passports.iter().filter( |&p| p.is_valid()).collect::<Vec<_>>();
     let result1 = valid_passports.len();
-    let result2 = -1;
+    // ruleset2 is more strict than ruleset1, therefore, it suffices to only check the valid passports from part I
+    let valid_passports2 = valid_passports.iter().filter( |&p| p.is_valid2()).collect::<Vec<_>>();
+    let result2 = valid_passports2.len();
     println!("04 - passport processing: {} {}", result1, result2);
 }
 
@@ -88,6 +191,12 @@ mod tests {
 
     fn read_test_input() -> Vec<Passport> {
       let filename = "src/a04_passport_processing/test_input.txt";
+      let passports = read_input(filename);
+      return passports;
+    }
+
+    fn read_test_input2() -> Vec<Passport> {
+      let filename = "src/a04_passport_processing/test_input2.txt";
       let passports = read_input(filename);
       return passports;
     }
@@ -106,6 +215,13 @@ mod tests {
       assert_eq!(2, valid_passports.len()) ;
     }
 
+    #[test]
+    fn test_input2_should_contain_four_valid2_passports() {
+      let passports = read_test_input2();
+      let valid_passports = passports.iter().filter( |&p| p.is_valid2()).collect::<Vec<_>>();
+      assert_eq!(8, passports.len()) ;
+      assert_eq!(4, valid_passports.len()) ;
+    }
 
 }
 
