@@ -1,15 +1,20 @@
-use std::collections::HashSet;
+use std::collections::HashMap;
 use std::num::ParseIntError;
 use std::str::FromStr;
 
 #[derive(Debug, PartialEq)]
 pub struct Group {
-    positive_answers: HashSet<char>
+    positive_answers: HashMap<char, usize>,
+    member_count: usize
 }
 
 impl Group {
     pub fn count(&self) -> usize {
         return self.positive_answers.len();
+    }
+
+    pub fn all_count(&self) -> usize {
+        return self.positive_answers.iter().filter(|(k,v)| **v == self.member_count).collect::<Vec<_>>().len();
     }
 }
 
@@ -20,12 +25,19 @@ impl FromStr for Group {
           // entries are separated by spaces
           //let field_strings: Vec<&str> = s.split_ascii_whitespace().collect::<Vec<_>>();
           let chars = s.chars().filter(|ch| ch.is_ascii_alphabetic());
-          let mut positive_answers = HashSet::<char>::new();
+          let member_count = s.split_ascii_whitespace().collect::<Vec<_>>().len();
+          let mut positive_answers = HashMap::<char, usize>::new();
           chars.for_each(|ch| { 
-              let _ = positive_answers.insert(ch);
+            if let Some(x) = positive_answers.get_mut(&ch) {
+                *x = *x + 1;
+            }
+            else {
+                positive_answers.insert(ch, 1);
+            }
           }); 
           return Ok( Group { 
-            positive_answers: positive_answers
+            positive_answers: positive_answers,
+            member_count: member_count
           });
     }
 } 
@@ -42,11 +54,15 @@ pub fn sum_count(groups: &Vec<Group>) -> usize {
     return groups.iter().fold(0, |acc, g| acc + g.count());
 }
 
+pub fn sum_all_count(groups: &Vec<Group>) -> usize {
+    return groups.iter().fold(0, |acc, g| acc + g.all_count());
+}
+
 pub fn solve() {
     let filename = "a06_custom_customs/input.txt";
     let groups = read_input(filename);
     let result1 = sum_count(&groups);
-    let result2 = -1;
+    let result2 = sum_all_count(&groups);
     println!("06 - custom customs: {} {}", result1, result2);
 }
 
@@ -72,5 +88,11 @@ mod tests {
     fn test_input_should_give_sum_count_eleven() {
         let groups = read_test_input();
         assert_eq!(11, sum_count(&groups));
+    }
+    
+    #[test]
+    fn test_input_should_give_sum_all_count_six() {
+        let groups = read_test_input();
+        assert_eq!(6, sum_all_count(&groups));
     }
 }
