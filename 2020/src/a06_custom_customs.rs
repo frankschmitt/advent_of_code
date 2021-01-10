@@ -14,7 +14,7 @@ impl Group {
     }
 
     pub fn all_count(&self) -> usize {
-        return self.positive_answers.iter().filter(|(k,v)| **v == self.member_count).collect::<Vec<_>>().len();
+        return self.positive_answers.iter().filter(|(_k,v)| **v == self.member_count).collect::<Vec<_>>().len();
     }
 }
 
