@@ -87,6 +87,14 @@ pub fn read_string(filename: String) -> String {
     return result;
 }
 
+
+pub fn result_to_string<T: std::fmt::Debug, E: std::fmt::Debug>(v:&Result<T,E>) -> String {
+    return match v {
+      Err(e) => format!("Err: {:#?}", e),
+      Ok(t) => format!("Ok: {:#?}", t)
+    };
+}
+
 // cute doesn't provide a version for three iterators 
 /* macro_rules! c3 {
    ($exp:expr, for $i:ident in $iter:expr, for $i2:ident in $iter2:expr, for $i3:ident in $iter3:expr, if $cond:expr) => (
