@@ -1,19 +1,27 @@
 use core::str::FromStr;
 use regex::Regex;
 use std::convert::TryInto;
+use std::clone::Clone;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum Instruction {
     Acc(i64),
     Jmp(i64),
-    Nop
+    Nop(i64)
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
+pub enum ProgramResult {
+    InfiniteLoop,
+    Terminated
+}
+
+#[derive(Debug, PartialEq, Clone)]
 pub enum ParseProgramError {
     ParseInstructionError
 }
 
+#[derive(Debug, PartialEq, Clone)]
 pub struct Program {
     instructions: Vec<Instruction>,
     accumulator: i64, 
@@ -21,12 +29,17 @@ pub struct Program {
     execution_counts: Vec<usize>
 }
 
+use crate::a08_handheld_halting::ProgramResult::*;
+   
 impl Program {
-
-    pub fn run(&mut self) -> () {
+    
+    pub fn run(&mut self) -> ProgramResult {
+        if self.next >= self.instructions.len() {
+            return Terminated;
+        }
         let old_count = self.execution_counts[self.next];
         if old_count > 0 {
-            return;
+            return InfiniteLoop;
         }
         else {
             self.execution_counts[self.next] += 1;
@@ -41,7 +54,7 @@ impl Program {
                 Instruction::Jmp(i) => ((self.next as i64) + i).try_into().unwrap(),
                 _ => self.next + 1
             };
-            self.run(); // recursive call
+            return self.run(); // recursive call
         }
     }
 }
@@ -57,7 +70,7 @@ impl FromStr for Instruction {
             Some(md) => Ok(match &md[1] {
                 "acc" => Instruction::Acc(md[2].parse::<i64>().unwrap()),
                 "jmp" => Instruction::Jmp(md[2].parse::<i64>().unwrap()),
-                _ => Instruction::Nop
+                _ => Instruction::Nop(md[2].parse::<i64>().unwrap())
             }) 
         };
         // println!("parsed '{}' -> {}", s, crate::helpers::result_to_string(&result));
@@ -87,12 +100,40 @@ pub fn read_input(filename: &str) -> Program {
     return program;
 }
 
+// run the permutations, and return the single one that terminates normally
+pub fn run_permutations(master: &Program) -> Option<Program> {
+    for i in 0 .. master.instructions.len() {
+        let instruction = &master.instructions[i];
+        match instruction {
+            Instruction::Acc(_) => {},
+            Instruction::Jmp(x) => {
+                let mut copy = master.clone();
+                copy.instructions[i] = Instruction::Nop(*x);
+                match copy.run() {
+                    InfiniteLoop => (),
+                    Terminated => return Some(copy)
+                }
+            },
+            Instruction::Nop(x) => {
+                let mut copy = master.clone();
+                copy.instructions[i] = Instruction::Jmp(*x);
+                match copy.run() {
+                    InfiniteLoop => (),
+                    Terminated => return Some(copy)
+                }
+            },
+        } 
+    }
+    return None;
+}
+
 pub fn solve() {
     let filename = "a08_handheld_halting/input.txt";
-    let mut program = read_input(filename);
+    let master = read_input(filename);
+    let mut program = master.clone();
     program.run();
     let result1 = program.accumulator;
-    let result2 = -1;
+    let result2 = run_permutations(&master).unwrap().accumulator;
     println!("08 - handheld halting: {} {}", result1, result2);
 }
 
@@ -108,7 +149,7 @@ mod tests {
 
     #[test]
     fn parsing_a_single_instruction() {
-        assert_eq!(Ok(Instruction::Nop), "nop +0".parse());
+        assert_eq!(Ok(Instruction::Nop(0)), "nop +0".parse());
         assert_eq!(Ok(Instruction::Jmp(-4)), "jmp -4".parse());
         assert_eq!(Ok(Instruction::Acc(99)), "acc +99".parse());
     }
@@ -125,6 +166,14 @@ mod tests {
         program.run();
         assert_eq!(5, program.accumulator);
     }    
+
+    #[test]
+    fn running_fixed_test_program_should_return_8() {
+        let master = read_test_input();
+        let copy = run_permutations(&master).unwrap();
+        assert_eq!(8, copy.accumulator);
+    
+    }
 }
 
 
