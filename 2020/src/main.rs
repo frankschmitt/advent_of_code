@@ -12,6 +12,7 @@ mod a06_custom_customs;
 mod a07_handy_haversacks;
 mod a08_handheld_halting;
 mod a09_encoding_error;
+mod a10_adapter_array;
 
 // use crate::a03_tobbogan_trajectory;
 fn main() {
@@ -24,4 +25,5 @@ fn main() {
     a07_handy_haversacks::solve();
     a08_handheld_halting::solve();
     a09_encoding_error::solve();
+    a10_adapter_array::solve();
 }
