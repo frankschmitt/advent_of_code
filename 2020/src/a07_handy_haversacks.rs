@@ -1,10 +1,10 @@
 use petgraph::stable_graph::{StableDiGraph, NodeIndex};
-//use petgraph::graphmap::DiGraphMap;
-//use petgraph::matrix_graph::{MatrixGraph, NodeIndex};
 use petgraph::dot::{Dot, Config};
 use petgraph::algo::has_path_connecting;
-use petgraph::visit::{IntoEdgeReferences, IntoNodeReferences, NodeIndexable, IntoNeighbors};
+use petgraph::visit::{EdgeRef};
+use petgraph::Outgoing;
 use std::collections::HashMap;
+use std::fmt::Debug;
 use regex::Regex;
 
 pub struct BagPuzzle {
@@ -96,6 +96,25 @@ pub fn read_input(filename: &str) -> BagPuzzle {
     return result;
 }
 
+pub fn get_node_count_connecting_to(g: &StableDiGraph<String, usize>, end_idx: NodeIndex) -> usize {
+    let result = g.node_indices().filter( |&n|
+        // note the innocuous &graph - figuring this out took me literally several hours :-(
+        has_path_connecting(&g, n, end_idx, None)
+    ).count() - 1; // ignore the connection from v1 to itself
+    return result;
+}
+
+
+
+// part II: compute the total number of bags contained in a shiny gold bag
+pub fn get_edge_weight_sum_from(g: &StableDiGraph<String, usize>, idx: NodeIndex) -> usize {
+    // visit each outgoing edge; the edge weight for this branch is 
+    //   the weight of the edge (= number of contained bags) times the weight of the target node
+    //   the weight of the target node is its edge weight sum (the recursive call) plus one (the bag itself)
+    let result = g.edges_directed(idx, Outgoing).map(|e| e.weight() * (1 + get_edge_weight_sum_from(g, e.target()))).sum();
+    return result;
+}
+
 // this is a typical graph problem - the bag types are the vertices,
 // and the contains relations are the edges (tagged with the number of bags)
 // Therefore, we use this overall approach:
@@ -106,11 +125,10 @@ pub fn solve() {
     let filename = "a07_handy_haversacks/input.txt";
     let bp = read_input(filename);
     let graph = &bp.graph;
-    let result1 = graph.node_indices().filter( |&n|
-        // note the innocuous &graph - figuring this out took me literally several hours :-(
-        has_path_connecting(&graph, n, bp.shiny_node_idx, None)
-    ).count() - 1; // ignore the connection from v1 to itself
-    let result2 = -1;
+    // part I: compute the number of bags that might containg a shiny gold bag
+    //         this is simple - just check all vertices whether they have a path leading to the shiny gold bag vertex
+    let result1 = get_node_count_connecting_to(&graph, bp.shiny_node_idx);
+    let result2 = get_edge_weight_sum_from(&graph, bp.shiny_node_idx);
     println!("07 - handy haversacks: {} {}", result1, result2);
 }
 
@@ -125,15 +143,26 @@ mod tests {
     }
 
     #[test]
-    fn test_input_should_() {
+    fn graph_for_test_input_should_be_built_correctly() {
         let bp = read_test_input();
         let g = bp.graph;
-        //g.node_indices().for_each(|n|
-        //    println!("node: {}", g[n])
-        //);
-        println!("{:?}", Dot::with_config(&g, &[]));
+        // println!("{:?}", Dot::with_config(&g, &[]));
         assert_eq!(9, g.node_count());
         assert_eq!(13, g.edge_count());
+    }
+
+    #[test]
+    fn node_count_connected_to_end_node_should_be_correct_for_test_input() {
+        let bp = read_test_input();
+        let g = bp.graph;
+        assert_eq!(4, get_node_count_connecting_to(&g, bp.shiny_node_idx));
+    }
+
+    #[test]
+    fn edge_weight_sum_from_start_node_should_be_correct_for_test_input() {
+        let bp = read_test_input();
+        let g = bp.graph;
+        assert_eq!(32, get_edge_weight_sum_from(&g, bp.shiny_node_idx));
     }
 
 }
