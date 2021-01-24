@@ -2,13 +2,9 @@ use maplit::hashmap;
 use std::collections::{HashMap};
 use std::vec::Vec;
 use std::iter::FromIterator;
-use petgraph::graph::{DiGraph, NodeIndex};
 
 pub struct JoltProblem {
-    adapters: Vec<i64>, 
-    graph: DiGraph<i64, i64>,
-    start_idx: NodeIndex,
-    end_idx: NodeIndex
+    adapters: Vec<i64>
 }
 
 /// compute all jolt differences between neighbouring adapters
@@ -32,80 +28,34 @@ pub fn solve() {
     println!("10 - adapter array: {} {}", result1, result2);
 }
 
-
-/// given the list of (sorted) adapters, build the connection graph
-pub fn build_graph(adapters: &Vec<i64>) -> (DiGraph<i64, i64>, NodeIndex, NodeIndex) {
-    let mut graph = DiGraph::<i64, i64>::new();
-    let mut nodes_helper = HashMap::<i64, NodeIndex>::new(); // contains adapter -> NodeIndex mappings
-    // add vertices for the adapters
-    adapters.iter().for_each(|a|
-        {
-            let idx = graph.add_node(*a);
-            nodes_helper.insert(*a, idx);
-        }
-    );
-    // add edges - every viable combination (delta <= 3) gets an edge
-    let mut current: usize = 0;
-    let mut num_paths: usize = 0;
-    while current < adapters.len() {
-        println!("current: {}, #paths: {}", current, num_paths);
-        let jolt0 = adapters[current];
-        let node_idx0 = nodes_helper[&jolt0];
-        let idx0 = current;
-        let idx1 = idx0 + 1;
-        let idx2 = idx0 + 2;
-        let idx3 = idx0 + 3;
-        // first combo compatible?
-        if idx1 < adapters.len() {
-            let jolt1 = adapters[idx1];
-            if jolt0 + 3 >= jolt1 {
-                let node_idx1 = nodes_helper[&jolt1];
-                graph.add_edge(node_idx0, node_idx1, jolt1 - jolt0);
-                num_paths += 1;
-            }
-        } 
-        // second combo compatible?
-        if idx2 < adapters.len() {
-            let jolt2 = adapters[idx2];
-            if jolt0 + 3 >= jolt2 {
-                let node_idx2 = nodes_helper[&jolt2];
-                graph.add_edge(node_idx0, node_idx2, jolt2 - jolt0);
-                num_paths += 1;
-            }
-        } 
-        // third combo compatible?
-        if idx3 < adapters.len() {
-            let jolt3 = adapters[idx3];
-            if jolt0 + 3 >= jolt3 {
-                let node_idx3 = nodes_helper[&jolt3];
-                graph.add_edge(node_idx0, node_idx3, jolt3 - jolt0);
-                num_paths += 1;
-            }
-        } 
-        
-        current = current + 1;    
-    }
-    let start_idx = nodes_helper[adapters.first().unwrap()];
-    let end_idx = nodes_helper[adapters.last().unwrap()];
-    println!("fin, returning graph");
-    return (graph, start_idx, end_idx);
-}
-
 pub fn read_input(filename: &str) -> JoltProblem {
     let mut  adapters = crate::helpers::read_int_list(filename.to_string());
     adapters.push(0); // add the power outlet
     adapters.sort();
     let max = adapters.iter().max().unwrap();
     adapters.push(max + 3); // add the universal adapter
-    let (graph, start_idx, end_idx) = build_graph(&adapters);
-    return JoltProblem { adapters: adapters, graph: graph, start_idx: start_idx, end_idx: end_idx };
+    return JoltProblem { adapters: adapters  };
 }
 
+
+/// Part II is a modified Fibonacci sequence - the number of paths from node X equals the sum of paths from its predecessors
+/// each node has between 1 and 3 predecessors
 pub fn get_path_count(problem: &JoltProblem) -> usize {
-    let mut result: usize = 0;
-    println!("checking paths, #edges: {}", &problem.graph.edge_count());
-    let paths: Vec<Vec<NodeIndex>> = petgraph::algo::all_simple_paths(&problem.graph, problem.start_idx, problem.end_idx, 0, None).collect();
-    return paths.len();
+    let mut path_counts: Vec<usize> = vec![1, 1]; // initialize the first two entries for the outlet and the first adapter 
+    for i in 2 .. problem.adapters.len()-1 {
+        let mut its_result = 0;
+        let adapters = &problem.adapters;
+        if (i >= 3) && (adapters[i-3] >= adapters[i] -3) {
+            its_result += path_counts[i-3];
+        }
+        if adapters[i-2] >= adapters[i] -3 {
+            its_result += path_counts[i-2];
+        }
+        // the immediate predecessor is always compatible
+        its_result += path_counts[i-1];
+        path_counts.push(its_result);
+    }
+    return *path_counts.last().unwrap();
 }
 
 #[cfg(test)]
