@@ -2,9 +2,39 @@ use std::io::{BufRead, BufReader};
 use std::fs::File;
 
 pub struct Grid {
-    width: usize,
-    height: usize,
-    cells: Vec<Vec<char>>
+    pub width: usize,
+    pub height: usize,
+    pub cells: Vec<Vec<char>>
+}
+
+pub struct GridIter<'a> {
+    grid: &'a Grid,
+    cur_row: usize,
+    cur_col: usize
+}
+
+impl<'a> Iterator for GridIter<'a> {
+    type Item = char;
+
+    fn next(&mut self) -> Option<char> {
+        // past last row? return none
+        if self.cur_row >= self.grid.height() {
+            return None;
+        }
+        // already at last element? return none
+        if self.cur_row == self.grid.height()-1 && self.cur_col == self.grid.width()-1 {
+            return None;
+        }
+        // last col? go to next row, col 0
+        if self.cur_col == self.grid.width()-1 {
+            self.cur_row += 1;
+            self.cur_col = 0;
+        }
+        else {
+            self.cur_col += 1;
+        }
+        return Some(self.grid.cell(self.cur_row, self.cur_col));
+    }
 }
 
 
@@ -18,6 +48,8 @@ impl Grid {
         return self.height;
     }
 
+    // get cell at given coordinates
+    // wraps around
     pub fn cell(&self, row: usize, col: usize) -> char {
       let myrow = row % self.height;
       let mycol = col % self.width;
@@ -25,6 +57,16 @@ impl Grid {
       let line = &self.cells[myrow];
       let ch= line[mycol];
       return ch;
+    }
+
+    // iterate over cells
+    // this one doesn't wrap around (otherwise, we'd get an infinite iterator)
+    pub fn cell_iter(&self) -> GridIter {
+        GridIter {
+            grid: self,
+            cur_row: 0,
+            cur_col: 0
+        }
     }
 
     pub fn print(&self) -> () {

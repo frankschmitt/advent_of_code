@@ -13,6 +13,7 @@ mod a07_handy_haversacks;
 mod a08_handheld_halting;
 mod a09_encoding_error;
 mod a10_adapter_array;
+mod a11_seating_system;
 
 // use crate::a03_tobbogan_trajectory;
 fn main() {
@@ -26,4 +27,5 @@ fn main() {
     a08_handheld_halting::solve();
     a09_encoding_error::solve();
     a10_adapter_array::solve();
+    a11_seating_system::solve();
 }
