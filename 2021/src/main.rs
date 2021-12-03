@@ -4,8 +4,11 @@ extern crate cute;
 
 mod helpers;
 mod a01_sonar_sweep;
+mod a02_dive;
+mod a03_binary_diagnostic;
 
 fn main() {
     a01_sonar_sweep::solve();
-    println!("Hello, world!");
+    a02_dive::solve();
+    a03_binary_diagnostic::solve();
 }
