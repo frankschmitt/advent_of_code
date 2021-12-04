@@ -1,24 +1,22 @@
-use ndarray::prelude::*;
-use std::collections::HashSet;
-
-fn print_candidates(mat: &Array2<&char>, indices: &Vec<usize>) {
+fn print_candidates(mat: &Vec<Vec<char>>, indices: &Vec<usize>) {
   for idx in indices {
-    println!("  {:?}", mat.slice(s![*idx, ..]));
+    println!("  {:?}", mat[*idx]);
   }
 }
 
 #[derive(Eq, PartialEq)]
 enum RatingType { OXYGEN, CO2 }
 
-fn get_rating(mat: &Array2<&char>, rows: usize, cols: usize, rating_type: RatingType) -> usize {
+fn get_rating(mat: &Vec<Vec<char>>, rows: usize, cols: usize, rating_type: RatingType) -> usize {
   let mut candidates: Vec<usize> = (0 .. rows).collect();
   let mut current_col_idx: usize = 0;
   loop {  
     // determine the target char for the current position and rating
     //   for Oxygen: take the most frequent one; if zeroes and ones are equally frequent: take '1'
     //   for CO2:    take the less frequent one; if zeroes and ones are equally frequent: take '0'
-    let col = mat.slice(s![candidates, current_col_idx]);
-    let current_counts = col.iter().fold((0,0), |(c0, c1), elem| if **elem == '0' { (c0+1, c1)} else {(c0, c1+1)});
+    //let col = mat.slice(s![candidates, current_col_idx]);
+    let col: Vec<char> = mat.iter().map(|row| row[current_col_idx]).collect();
+    let current_counts = col.iter().fold((0,0), |(c0, c1), elem| if *elem == '0' { (c0+1, c1)} else {(c0, c1+1)});
     let mut target_char: char;
     if rating_type == RatingType::OXYGEN {
         if current_counts.1 >= current_counts.0 { target_char = '1'; } 
@@ -29,7 +27,7 @@ fn get_rating(mat: &Array2<&char>, rows: usize, cols: usize, rating_type: Rating
       else { target_char = '1'; }
     }
     // only keep candidates with the correct target char in the current position
-    candidates.retain (|&c| *mat[[c, current_col_idx]] == target_char);
+    //candidates.retain (|&c| *mat[[c, current_col_idx]] == target_char);
     println!("idx = {}, candidates: {:?}", current_col_idx, candidates);
     print_candidates(&mat, &candidates);
     current_col_idx += 1;
@@ -52,20 +50,23 @@ fn get_rating(mat: &Array2<&char>, rows: usize, cols: usize, rating_type: Rating
 //   part 2:
 //     
 pub fn solve() {
-    //let filename = "a03_binary_diagnostic/input.txt";
-    let filename = "a03_binary_diagnostic/example_input.txt";
+    let filename = "a03_binary_diagnostic/input.txt";
+    //let filename = "a03_binary_diagnostic/example_input.txt";
     let v = crate::helpers::read_string_list((&filename).to_string());
     // convert our vector of strings into a 2d-matrix of characters (each cell holds one character - either 0 or 1)
     let rows = v.len();
     let cols = v[0].len();
-    let chars: Vec<char> = v.iter().map (|w| w.chars()).flatten().collect();
-    let mat = Array::from_iter(chars.iter()).into_shape([rows, cols]).unwrap();
+    //let chars: Vec<char> = v.iter().map (|w| w.chars()).flatten().collect();
+    //let mat = Array::from_iter(chars.iter()).into_shape([rows, cols]).unwrap();
     // part 1: for each column: count the number of zeroes and ones, and append the more frequent one to our result 
+    //let mat: Vec<char> = v.iter().map (|w| w.chars()).flatten().collect();
+    let mat: Vec<Vec<char>> = v.iter().map (|row| row.chars().collect()).collect();
     let mut gamma_s = String::new();
     let mut epsilon_s = String::new();
     for c in 0 .. cols {
-      let col = mat.slice(s![.., c]);
-      let current_counts = col.iter().fold((0,0), |(c0, c1), elem| if **elem == '0' { (c0+1, c1)} else {(c0, c1+1)});
+      //let col = mat.slice(s![.., c]);
+      let col: Vec<char> = mat.iter().map(|row| row[c]).collect();
+      let current_counts = col.iter().fold((0,0), |(c0, c1), elem| if *elem == '0' { (c0+1, c1)} else {(c0, c1+1)});
       if current_counts.0 > current_counts.1 { 
           gamma_s.push('0');
           epsilon_s.push('1'); 
@@ -82,7 +83,7 @@ pub fn solve() {
     let result1 = gamma * epsilon;
     // part 2: successively filter the input lines by the current most (least) frequent bit until only one number remains
     // rather than removing whole strings, we just keep lists of the current candidates' indices
-    let mut oxygen_candidates: Vec<usize> = (0 .. rows).collect();
+    /*let mut oxygen_candidates: Vec<usize> = (0 .. rows).collect();
     let mut idx_oxygen: usize = 0;
     println!("mat: \n{:?}\n", mat);
     println!("gamma {}, epsilon: {}", gamma_s, epsilon_s);
@@ -102,6 +103,7 @@ pub fn solve() {
       if co2_candidates.len() == 1 { break; }
     }
     println!("oxygen: {:?}, co2: {:?}", oxygen_candidates, co2_candidates);
+    */
     let result2 = -1;
     println!("03 - binary diagnostic: {} {}", result1, result2);
 }
