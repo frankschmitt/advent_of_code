@@ -7,6 +7,7 @@ fn print_candidates(mat: &Vec<Vec<char>>, indices: &Vec<usize>) {
 #[derive(Eq, PartialEq)]
 enum RatingType { OXYGEN, CO2 }
 
+// get the rating for the given rating type
 fn get_rating(mat: &Vec<Vec<char>>, rows: usize, cols: usize, rating_type: RatingType) -> usize {
   let mut candidates: Vec<usize> = (0 .. rows).collect();
   let mut current_col_idx: usize = 0;
@@ -15,9 +16,10 @@ fn get_rating(mat: &Vec<Vec<char>>, rows: usize, cols: usize, rating_type: Ratin
     //   for Oxygen: take the most frequent one; if zeroes and ones are equally frequent: take '1'
     //   for CO2:    take the less frequent one; if zeroes and ones are equally frequent: take '0'
     //let col = mat.slice(s![candidates, current_col_idx]);
-    let col: Vec<char> = mat.iter().map(|row| row[current_col_idx]).collect();
+    // we use enumerate() to get pairs of (index, value)
+    let col: Vec<char> = mat.iter().enumerate().filter(|(idx, row)| candidates.contains(idx)).map(|(idx,row)| row[current_col_idx]).collect();
     let current_counts = col.iter().fold((0,0), |(c0, c1), elem| if *elem == '0' { (c0+1, c1)} else {(c0, c1+1)});
-    let mut target_char: char;
+    let mut target_char: char = 'x';
     if rating_type == RatingType::OXYGEN {
         if current_counts.1 >= current_counts.0 { target_char = '1'; } 
         else { target_char = '0'; }
@@ -28,15 +30,17 @@ fn get_rating(mat: &Vec<Vec<char>>, rows: usize, cols: usize, rating_type: Ratin
     }
     // only keep candidates with the correct target char in the current position
     //candidates.retain (|&c| *mat[[c, current_col_idx]] == target_char);
+    candidates.retain (|c| mat[*c][current_col_idx] == target_char);
     println!("idx = {}, candidates: {:?}", current_col_idx, candidates);
     print_candidates(&mat, &candidates);
     current_col_idx += 1;
     if candidates.len() == 1 { break; }
   }
-  for c in candidates {
-    return c;
-  }
-  return 1;
+  // now, get the string for index, and covert it to an integer
+  let rating_s: String = mat[candidates[0]].iter().cloned().collect();
+  let rating = usize::from_str_radix(&rating_s, 2).unwrap();  
+
+  return rating;
 }
 
 // Overall approach:
@@ -83,6 +87,10 @@ pub fn solve() {
     let result1 = gamma * epsilon;
     // part 2: successively filter the input lines by the current most (least) frequent bit until only one number remains
     // rather than removing whole strings, we just keep lists of the current candidates' indices
+    let oxygen = get_rating(&mat, rows, cols, RatingType::OXYGEN);
+    let co2 = get_rating(&mat, rows, cols, RatingType::CO2);
+    
+    println!("oxygen: {}, co2: {}", oxygen, co2);
     /*let mut oxygen_candidates: Vec<usize> = (0 .. rows).collect();
     let mut idx_oxygen: usize = 0;
     println!("mat: \n{:?}\n", mat);
@@ -104,6 +112,6 @@ pub fn solve() {
     }
     println!("oxygen: {:?}, co2: {:?}", oxygen_candidates, co2_candidates);
     */
-    let result2 = -1;
+    let result2 = oxygen * co2;
     println!("03 - binary diagnostic: {} {}", result1, result2);
 }
