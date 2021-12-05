@@ -6,9 +6,11 @@ mod helpers;
 mod a01_sonar_sweep;
 mod a02_dive;
 mod a03_binary_diagnostic;
+mod a05_hydrothermal_venture;
 
 fn main() {
     a01_sonar_sweep::solve();
     a02_dive::solve();
     a03_binary_diagnostic::solve();
+    a05_hydrothermal_venture::solve();
 }
