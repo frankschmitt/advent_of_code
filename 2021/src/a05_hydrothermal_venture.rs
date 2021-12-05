@@ -2,7 +2,7 @@ use regex::Regex;
 use std::cmp::{max, min};
 
 #[derive(Debug, PartialEq, Eq)]
-enum Orientation { HORIZONTAL, VERTICAL, OTHER }
+enum Orientation { HORIZONTAL, VERTICAL, DIAGONAL }
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Line {
@@ -19,12 +19,7 @@ impl Line {
         let orientation = 
                  if x1 == x2 { Orientation::VERTICAL } 
                  else if y1 == y2 { Orientation::HORIZONTAL }
-                 else { Orientation::OTHER };
-        /*let orientation = match x1 == x2 {
-            false => Orientation::HORIZONTAL,
-            true  => Orientation::VERTICAL
-        };
-        */
+                 else { Orientation::DIAGONAL };
         return Line { index: index, x1: x1, y1: y1, x2: x2, y2: y2, orientation: orientation };
     }
 }
@@ -39,7 +34,7 @@ fn parse_line(index: usize, line: &str) -> Line {
     return Line::new(index, x1, y1, x2, y2);
 }
 
-fn add_line(grid: &mut Vec<Vec<usize>>, line: &Line) {
+fn add_line(grid: &mut Vec<Vec<usize>>, line: &Line, include_diagonals: bool) {
     match line.orientation {
         Orientation::HORIZONTAL => {
             // draw horizontal line
@@ -55,8 +50,21 @@ fn add_line(grid: &mut Vec<Vec<usize>>, line: &Line) {
                 grid[y][line.x1] += 1;
             }
         },
-        Orientation::OTHER => {
-            // do nothing
+        Orientation::DIAGONAL => {
+            if include_diagonals {
+                let step_x: i64 = if line.x1 < line.x2 { 1 } else { -1 };
+                let step_y: i64 = if line.y1 < line.y2 { 1 } else { -1 };
+                let mut x: i64 = line.x1 as i64;
+                let mut y: i64 = line.y1 as i64;
+                loop {
+                    // println!("adding diagonal, {},{} -> {},{}, current: {},{}", line.x1, line.y1, line.x2, line.y2, x, y);
+                    grid[y as usize][x as usize] += 1;
+                    // checking for x coordinate is sufficient (we always take diagonal steps)
+                    if x as usize == line.x2 { break; }
+                    x = x + step_x;
+                    y = y + step_y;
+                }
+            }
         }
     }
 }
@@ -81,23 +89,27 @@ pub fn max3(i: usize, j: usize, k: usize) -> usize {
 }
 
 pub fn solve() {
-    //let filename = "a05_hydrothermal_venture/example_input.txt";
+    // let filename = "a05_hydrothermal_venture/example_input.txt";
     let filename = "a05_hydrothermal_venture/input.txt";
     let v = crate::helpers::read_string_list((&filename).to_string());
     let lines: Vec<Line> = v.iter().enumerate().map(|(idx, s)| parse_line(idx+1, s)).collect();
-    // initialize grid with the correct dimensions
+    // determine width and height 
     let (max_x, max_y) = lines.iter().fold( (0,0), |acc, line| (max3(acc.0, line.x1, line.x2), max3(acc.1, line.y1, line.y2)));
-    let mut grid: Vec<Vec<usize>> = (0 .. max_y+1).map(|row| vec![0; max_x + 1]).collect();
-    // println!("dimensions: max_x = {}, max_y = {}", max_x, max_y);
-    // "paint" the lines on the grid
-    for line in lines {
-        // println!("line: \n{:?}", line);
-        add_line(&mut grid, &line);
-        // print_grid(&grid);
+    // part 1: don't include diagonals
+    let mut grid1: Vec<Vec<usize>> = (0 .. max_y+1).map(|row| vec![0; max_x + 1]).collect();
+    for line in lines.iter() {
+        add_line(&mut grid1, &line, false);
     }
-    // print_grid(&grid);
-    let result1 = grid.iter().fold(0, |acc, row| acc + row.iter().fold(0, |acc2, cell| if *cell > 1 { acc2 + 1} else { acc2 }));
-    let result2 = -1;
+    let result1 = grid1.iter().fold(0, |acc, row| acc + row.iter().fold(0, |acc2, cell| if *cell > 1 { acc2 + 1} else { acc2 }));
+    // part 2: including diagonals
+    let mut grid2: Vec<Vec<usize>> = (0 .. max_y+1).map(|row| vec![0; max_x + 1]).collect();
+    for line in lines.iter() {
+        add_line(&mut grid2, &line, true);
+        //println!("add line: {:?}", line);
+        // print_grid(&grid2);
+    }
+    // print_grid(&grid2);
+    let result2 = grid2.iter().fold(0, |acc, row| acc + row.iter().fold(0, |acc2, cell| if *cell > 1 { acc2 + 1} else { acc2 }));
     println!("05 - hydrothermal venture: {} {}", result1, result2);
 }
 
