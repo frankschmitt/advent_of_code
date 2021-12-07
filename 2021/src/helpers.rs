@@ -53,6 +53,7 @@ pub fn read_char_grid(filename: String) -> Grid {
    return grid;
 }
 
+// reads an int list (one int per line)
 pub fn read_int_list(filename: String) -> Vec<i64> {
     let reader = BufReader::new(File::open(filename).expect("Cannot open file"));
     let mut result = Vec::new();
@@ -60,6 +61,18 @@ pub fn read_int_list(filename: String) -> Vec<i64> {
     for line in reader.lines() {
         val = line.unwrap().parse().unwrap();
         result.push(val);
+    }
+
+    return result;
+}
+
+// reads an int list separated by commas
+pub fn read_int_comma_separated_list(filename: String) -> Vec<i64> {
+    let reader = BufReader::new(File::open(filename).expect("Cannot open file"));
+    let mut result = Vec::new();
+     for line in reader.lines() {
+        let mut parts: Vec<i64> = line.unwrap().split(',').map(|val| val.parse::<i64>().unwrap()).collect();
+        result.append(&mut parts);
     }
 
     return result;
