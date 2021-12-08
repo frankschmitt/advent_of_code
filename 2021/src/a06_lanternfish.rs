@@ -1,6 +1,6 @@
 pub fn solve() {
-    let filename = "a06_lanternfish/example_input.txt";
-    //let filename = "a06_lanternfish/input.txt";
+    //let filename = "a06_lanternfish/example_input.txt";
+    let filename = "a06_lanternfish/input.txt";
     let fishes: Vec<i64> = crate::helpers::read_int_comma_separated_list((&filename).to_string());
 
     let mut fish_counts: Vec<u128> = vec![0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -16,11 +16,11 @@ pub fn solve() {
           fish_counts[j-1] = fish_counts[j];
         }
         fish_counts[6] += adult_fish_count; // wrap around
-        fish_counts[8] += adult_fish_count; // add new fishes
+        fish_counts[8] = adult_fish_count; // add new fishes
         if i == 80 {
           result1 = fish_counts.iter().fold(0, |acc, cnt| acc + cnt);
         }
-        println!("day {}: {:?}", i, fish_counts);
+        // println!("day {}: {:?}", i, fish_counts);
     }
     let result2 = fish_counts.iter().fold(0, |acc, cnt| acc + cnt);
 
