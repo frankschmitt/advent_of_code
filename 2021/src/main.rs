@@ -9,12 +9,14 @@ mod a03_binary_diagnostic;
 mod a05_hydrothermal_venture;
 mod a06_lanternfish;
 mod a07_the_treachery_of_whales;
+mod a09_smoke_basin;
 
 fn main() {
-    a01_sonar_sweep::solve();
-    a02_dive::solve();
-    a03_binary_diagnostic::solve();
-    a05_hydrothermal_venture::solve();
-    a06_lanternfish::solve();
-    a07_the_treachery_of_whales::solve();
+    //a01_sonar_sweep::solve();
+    //a02_dive::solve();
+    //a03_binary_diagnostic::solve();
+    //a05_hydrothermal_venture::solve();
+    //a06_lanternfish::solve();
+    //a07_the_treachery_of_whales::solve();
+    a09_smoke_basin::solve();
 }
