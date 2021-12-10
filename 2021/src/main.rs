@@ -19,6 +19,6 @@ fn main() {
     //a05_hydrothermal_venture::solve();
     //a06_lanternfish::solve();
     //a07_the_treachery_of_whales::solve();
-    //a09_smoke_basin::solve();
-    a10_syntax_scoring::solve();
+    a09_smoke_basin::solve();
+    //a10_syntax_scoring::solve();
 }
