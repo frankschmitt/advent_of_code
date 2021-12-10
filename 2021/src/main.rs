@@ -9,6 +9,7 @@ mod a03_binary_diagnostic;
 mod a05_hydrothermal_venture;
 mod a06_lanternfish;
 mod a07_the_treachery_of_whales;
+mod a08_seven_segment_search;
 mod a09_smoke_basin;
 mod a10_syntax_scoring;
 
@@ -19,6 +20,7 @@ fn main() {
     //a05_hydrothermal_venture::solve();
     //a06_lanternfish::solve();
     //a07_the_treachery_of_whales::solve();
-    a09_smoke_basin::solve();
+    a08_seven_segment_search::solve();
+    //a09_smoke_basin::solve();
     //a10_syntax_scoring::solve();
 }
