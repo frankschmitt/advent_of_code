@@ -6,6 +6,7 @@ pub struct Entry {
     output_values: Vec<String>
 }
 
+// parse an entry 
 pub fn parse_entry(s: &str) -> Entry {
     let (s1, s2) = s.split_once('|').unwrap();
     let signal_patterns: Vec<String> = s1.split_terminator(' ').map(|s| s.to_string()).collect();
@@ -13,10 +14,12 @@ pub fn parse_entry(s: &str) -> Entry {
     return Entry { signal_patterns, output_values };
 }
 
+// check whether s1 is a subset of s2 
 fn is_subset_of(s1: &BTreeSet<char>, s2: &BTreeSet<char>) -> bool {
     return s1.iter().all(|item| s2.contains(item));
 }
 
+// find the missing value (= segment)
 fn find_missing_value(hm: &HashMap<char, char>) -> char {
     let all_vals: HashSet<_> = ['a', 'b', 'c', 'd', 'e', 'f', 'g'].iter().cloned().collect();
     let its_vals: HashSet<_> = hm.values().cloned().collect();
@@ -24,9 +27,8 @@ fn find_missing_value(hm: &HashMap<char, char>) -> char {
     for val in all_vals.difference(&its_vals) {
         return *val;
     }
+    // dummy return to satisfy compiler (I don't want to return an Option<> here)
     return 'x';
-    //let val = all_vals.iter().filter(|ch| hm.iter().find(|(key, &val)| val == ch).is_none()).nth(0).unwrap();
-    //return *val;
 }
 
 pub fn solve() {
@@ -35,7 +37,7 @@ pub fn solve() {
     let v = crate::helpers::read_string_list((&filename).to_string());
     //let v = vec!["acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab | cdfeb fcadb cdfeb cdbaf"];
     let entries: Vec<Entry> = v.iter().map(|line| parse_entry(line)).collect();
-    // part I: simply call the output values corresponding to 1 (two segments), 4 (four segments), 7 (three segments) and 8 (seven segments)
+    // part I: simply count the output values corresponding to 1 (two segments), 4 (four segments), 7 (three segments) and 8 (seven segments)
     let mut matching_words = vec![];
     for e in entries.iter() {
         let mut its_matching_words: Vec<String> = e.output_values.iter().filter(|w| vec![2,4,3,7].contains(&w.len())).map(|s| s.to_string()).collect();
@@ -74,9 +76,8 @@ pub fn solve() {
     //    segment g is the one that is set for 0, 2, 3, 5, 6, 8, 9, but not for 1, 4, 7 (or simply the one that remains)
     let mut result2 = 0;
     for e in entries.iter() {
-        //let mut input_patterns = vec!["", "", "", "", "", "", "", "", "", ""];
         let mut input_patterns = HashMap::<u8, BTreeSet::<char>>::new();
-        // 1, 4, 7 and 8 have unique lengths
+        // 1, 4, 7 and 8 are straightforward because they have unique lengths
         input_patterns.insert(1, e.signal_patterns.iter().filter(|p| p.len() == 2).nth(0).unwrap().chars().collect());       
         input_patterns.insert(4, e.signal_patterns.iter().filter(|p| p.len() == 4).nth(0).unwrap().chars().collect());       
         input_patterns.insert(7, e.signal_patterns.iter().filter(|p| p.len() == 3).nth(0).unwrap().chars().collect());       
@@ -117,7 +118,7 @@ pub fn solve() {
             return p.len() == 5 && !is_subset_of(&its_chars, &input_patterns[&6]) && !is_subset_of(&its_chars, &input_patterns[&9]);
          }
         ).nth(0).unwrap().chars().collect());
-        println!("input patterns for {:?} : \n{:?}\n", e.signal_patterns, input_patterns);
+        // println!("input patterns for {:?} : \n{:?}\n", e.signal_patterns, input_patterns);
 
         // now we know which input pattern belongs to which input digit. From that, let's determine which segment is which
         let mut segments = HashMap::<char, char>::new();
@@ -135,21 +136,10 @@ pub fn solve() {
         segments.insert('f', *input_patterns[&1].iter().filter(|ch| !input_patterns[&2].contains(ch)).nth(0).unwrap());
         // segment g is the one that is set for 0, 2, 3, 5, 6, 8, 9, but not for 1, 4, 7 (or simply the one that remains unmapped)
         segments.insert('g', find_missing_value(&segments));
-        println!("segments for {:?} : \n{:?}\n", e, segments);
+        // println!("segments for {:?} : \n{:?}\n", e, segments);
 
-        // finally, we can determine the digits from the strings
+        // Progress! We can now determine the digits from the strings
         let digits_to_segments = HashMap::from([ 
-            /*(0, "abcefg".chars().map(|ch| segments[&ch]).collect::<BTreeSet<char>>()),
-            (1, "cf".chars().map(|ch| segments[&ch]).collect::<BTreeSet<char>>()),
-            (2, "acdeg".chars().map(|ch| segments[&ch]).collect::<BTreeSet<char>>()),
-            (3, "acdfg".chars().map(|ch| segments[&ch]).collect::<BTreeSet<char>>()),
-            (4, "bcdf".chars().map(|ch| segments[&ch]).collect::<BTreeSet<char>>()),
-            (5, "abdfg".chars().map(|ch| segments[&ch]).collect::<BTreeSet<char>>()),
-            (6, "abdefg".chars().map(|ch| segments[&ch]).collect::<BTreeSet<char>>()),
-            (7, "acf".chars().map(|ch| segments[&ch]).collect::<BTreeSet<char>>()),
-            (8, "abcdefg".chars().map(|ch| segments[&ch]).collect::<BTreeSet<char>>()),
-            (9, "abcdfg".chars().map(|ch| segments[&ch]).collect::<BTreeSet<char>>()),
-            */
             ("abcefg".chars().map(|ch| segments[&ch]).collect::<BTreeSet<char>>(), 0),
             ("cf".chars().map(|ch| segments[&ch]).collect::<BTreeSet<char>>(), 1),
             ("acdeg".chars().map(|ch| segments[&ch]).collect::<BTreeSet<char>>(), 2),
@@ -161,16 +151,17 @@ pub fn solve() {
             ("abcdefg".chars().map(|ch| segments[&ch]).collect::<BTreeSet<char>>(), 8),
             ("abcdfg".chars().map(|ch| segments[&ch]).collect::<BTreeSet<char>>(), 9),
         ]);
-        println!("digits_to_segments for {:?} : \n{:?}\n", e, digits_to_segments);
+        // println!("digits_to_segments for {:?} : \n{:?}\n", e, digits_to_segments);
 
+        // finally, we can map the output values to digits and compute the result for this entry 
         let mut partial_result2 = 0;
         for ov in e.output_values.iter() {
-            println!("digit: {}", ov);
+            // println!("digit: {}", ov);
             let its_chars = ov.chars().collect::<BTreeSet<char>>();
             let digit = digits_to_segments[&its_chars];
             partial_result2 = partial_result2*10 + digit;
         }
-        println!("partial result2 for {:?} : {}", e, partial_result2);
+        // println!("partial result2 for {:?} : {}", e, partial_result2);
         result2 += partial_result2;
     }
    
