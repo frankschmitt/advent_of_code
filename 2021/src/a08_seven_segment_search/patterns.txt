@@ -1,0 +1,40 @@
+= Which segment is present in which digit?
+
+seg 0 1 2 3 4 5 6 7 8 9 
+-----------------------
+a   x   x x   x x x x x
+b   x       x x x   x x
+c   x x x x x     x x x
+d       x x x x x   x x
+e   x   x       x   x
+f   x x   x x x x x x x
+g   x   x x   x x   x x
+
+
+= small example: which segment is switched to which?
+== original
+  aaaa
+ b    c
+ b    c
+  dddd
+ e    f
+ e    f
+  gggg
+
+== switched
+ dddd
+e    a
+e    a
+ ffff
+g    b
+g    b
+ cccc
+
+ == mapping
+ a -> d
+ b -> e
+ c -> a
+ d -> f 
+ e -> g 
+ f -> b 
+ g -> c 

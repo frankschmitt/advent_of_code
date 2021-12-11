@@ -1,4 +1,4 @@
-use std::collections::{HashMap, BTreeSet};
+use std::collections::{HashMap, BTreeSet, HashSet};
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct Entry {
@@ -9,7 +9,7 @@ pub struct Entry {
 pub fn parse_entry(s: &str) -> Entry {
     let (s1, s2) = s.split_once('|').unwrap();
     let signal_patterns: Vec<String> = s1.split_terminator(' ').map(|s| s.to_string()).collect();
-    let output_values: Vec<String> = s2.split_terminator(' ').map(|s| s.to_string()).collect();
+    let output_values: Vec<String> = s2.trim_start_matches(' ').split_terminator(' ').map(|s| s.to_string()).collect();
     return Entry { signal_patterns, output_values };
 }
 
@@ -17,9 +17,21 @@ fn is_subset_of(s1: &BTreeSet<char>, s2: &BTreeSet<char>) -> bool {
     return s1.iter().all(|item| s2.contains(item));
 }
 
+fn find_missing_value(hm: &HashMap<char, char>) -> char {
+    let all_vals: HashSet<_> = ['a', 'b', 'c', 'd', 'e', 'f', 'g'].iter().cloned().collect();
+    let its_vals: HashSet<_> = hm.values().cloned().collect();
+    // Can be seen as `a - b`.
+    for val in all_vals.difference(&its_vals) {
+        return *val;
+    }
+    return 'x';
+    //let val = all_vals.iter().filter(|ch| hm.iter().find(|(key, &val)| val == ch).is_none()).nth(0).unwrap();
+    //return *val;
+}
+
 pub fn solve() {
-    //let filename = "a08_seven_segment_search/input.txt";
-    let filename = "a08_seven_segment_search/example_input.txt";
+    let filename = "a08_seven_segment_search/input.txt";
+    //let filename = "a08_seven_segment_search/example_input.txt";
     let v = crate::helpers::read_string_list((&filename).to_string());
     //let v = vec!["acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab | cdfeb fcadb cdfeb cdbaf"];
     let entries: Vec<Entry> = v.iter().map(|line| parse_entry(line)).collect();
@@ -53,13 +65,14 @@ pub fn solve() {
     //    e    f
     //     gggg
     //
-    //    segment a is the one that is set in 1 but not in 2
+    //    segment a is the one that is set in 7 but not in 1
     //    segment b is the one that is set in 9 but not in 3
     //    segment c is the one that is not set in 6
     //    segment d is the one that is not set in 0
     //    segment e is the one that is not set in 9
-    //    segment f is the one that is set in all except 2
-    //    segment g is the one that is set for 0, 2, 3, 5, 6, 8, 9, but not for 1, 4, 7
+    //    segment f is the one that is set in 1 but not in 2
+    //    segment g is the one that is set for 0, 2, 3, 5, 6, 8, 9, but not for 1, 4, 7 (or simply the one that remains)
+    let mut result2 = 0;
     for e in entries.iter() {
         //let mut input_patterns = vec!["", "", "", "", "", "", "", "", "", ""];
         let mut input_patterns = HashMap::<u8, BTreeSet::<char>>::new();
@@ -104,9 +117,62 @@ pub fn solve() {
             return p.len() == 5 && !is_subset_of(&its_chars, &input_patterns[&6]) && !is_subset_of(&its_chars, &input_patterns[&9]);
          }
         ).nth(0).unwrap().chars().collect());
-        println!("input patterns for {:?} : {:?}", e, input_patterns);
+        println!("input patterns for {:?} : \n{:?}\n", e.signal_patterns, input_patterns);
+
+        // now we know which input pattern belongs to which input digit. From that, let's determine which segment is which
+        let mut segments = HashMap::<char, char>::new();
+        // segment a is the one that is set in 7 but not in 1
+        segments.insert('a', *input_patterns[&7].iter().filter(|ch| !input_patterns[&1].contains(ch)).nth(0).unwrap());
+        // segment b is the one that is set in 9 but not in 3
+        segments.insert('b', *input_patterns[&9].iter().filter(|ch| !input_patterns[&3].contains(ch)).nth(0).unwrap());
+        //    segment c is the one that is not set in 6
+        segments.insert('c', *input_patterns[&8].iter().filter(|ch| !input_patterns[&6].contains(ch)).nth(0).unwrap());
+        //    segment d is the one that is not set in 0
+        segments.insert('d', *input_patterns[&8].iter().filter(|ch| !input_patterns[&0].contains(ch)).nth(0).unwrap());
+        //    segment e is the one that is not set in 9
+        segments.insert('e', *input_patterns[&8].iter().filter(|ch| !input_patterns[&9].contains(ch)).nth(0).unwrap());
+        // segment f is the one that is set in 1 but not in 2
+        segments.insert('f', *input_patterns[&1].iter().filter(|ch| !input_patterns[&2].contains(ch)).nth(0).unwrap());
+        // segment g is the one that is set for 0, 2, 3, 5, 6, 8, 9, but not for 1, 4, 7 (or simply the one that remains unmapped)
+        segments.insert('g', find_missing_value(&segments));
+        println!("segments for {:?} : \n{:?}\n", e, segments);
+
+        // finally, we can determine the digits from the strings
+        let digits_to_segments = HashMap::from([ 
+            /*(0, "abcefg".chars().map(|ch| segments[&ch]).collect::<BTreeSet<char>>()),
+            (1, "cf".chars().map(|ch| segments[&ch]).collect::<BTreeSet<char>>()),
+            (2, "acdeg".chars().map(|ch| segments[&ch]).collect::<BTreeSet<char>>()),
+            (3, "acdfg".chars().map(|ch| segments[&ch]).collect::<BTreeSet<char>>()),
+            (4, "bcdf".chars().map(|ch| segments[&ch]).collect::<BTreeSet<char>>()),
+            (5, "abdfg".chars().map(|ch| segments[&ch]).collect::<BTreeSet<char>>()),
+            (6, "abdefg".chars().map(|ch| segments[&ch]).collect::<BTreeSet<char>>()),
+            (7, "acf".chars().map(|ch| segments[&ch]).collect::<BTreeSet<char>>()),
+            (8, "abcdefg".chars().map(|ch| segments[&ch]).collect::<BTreeSet<char>>()),
+            (9, "abcdfg".chars().map(|ch| segments[&ch]).collect::<BTreeSet<char>>()),
+            */
+            ("abcefg".chars().map(|ch| segments[&ch]).collect::<BTreeSet<char>>(), 0),
+            ("cf".chars().map(|ch| segments[&ch]).collect::<BTreeSet<char>>(), 1),
+            ("acdeg".chars().map(|ch| segments[&ch]).collect::<BTreeSet<char>>(), 2),
+            ("acdfg".chars().map(|ch| segments[&ch]).collect::<BTreeSet<char>>(), 3),
+            ("bcdf".chars().map(|ch| segments[&ch]).collect::<BTreeSet<char>>(), 4),
+            ("abdfg".chars().map(|ch| segments[&ch]).collect::<BTreeSet<char>>(), 5),
+            ("abdefg".chars().map(|ch| segments[&ch]).collect::<BTreeSet<char>>(), 6),
+            ("acf".chars().map(|ch| segments[&ch]).collect::<BTreeSet<char>>(), 7),
+            ("abcdefg".chars().map(|ch| segments[&ch]).collect::<BTreeSet<char>>(), 8),
+            ("abcdfg".chars().map(|ch| segments[&ch]).collect::<BTreeSet<char>>(), 9),
+        ]);
+        println!("digits_to_segments for {:?} : \n{:?}\n", e, digits_to_segments);
+
+        let mut partial_result2 = 0;
+        for ov in e.output_values.iter() {
+            println!("digit: {}", ov);
+            let its_chars = ov.chars().collect::<BTreeSet<char>>();
+            let digit = digits_to_segments[&its_chars];
+            partial_result2 = partial_result2*10 + digit;
+        }
+        println!("partial result2 for {:?} : {}", e, partial_result2);
+        result2 += partial_result2;
     }
    
-    let result2 = -1;
     println!("08 seven segment search: {} {}", result1, result2);
 }
