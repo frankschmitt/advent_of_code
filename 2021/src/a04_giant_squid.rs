@@ -28,14 +28,7 @@ impl std::fmt::Display for Board {
 //  if a number is marked, we subtract 1000 from it, making it negative
 //  to compute the score, we then have to add the 1000 again
 impl Board {
-    /*fn calc_col_score(&self, col_idx: usize) -> i64 {
-        return self.elems.column(col_idx).sum().abs();
-    }
-
-    fn calc_row_score(&self, row_idx: usize) -> i64 {
-        return self.elems.row(row_idx).sum().abs();
-    }*/
-
+    // calculate board score: sum of unmarked fields times the winning number
     fn calc_score(&self, num: i64) -> i64 {
         return self.elems.iter().filter(|v| **v > 0).fold(0, |acc, x| acc + x.abs()) * num;
     }
@@ -65,13 +58,16 @@ impl Board {
             if r.iter().all(|elem| *elem < 0 ) { return true; }
         }
         return false;
+        //return self.winning_score > 0;
     }
 }
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct Bingo {
     numbers: Vec<i64>,
-    boards: Vec<Board>
+    boards: Vec<Board>, 
+    winning_score: i64, 
+    losing_score: i64
 }
 
 impl std::fmt::Display for Bingo {
@@ -85,14 +81,33 @@ impl std::fmt::Display for Bingo {
 
 impl Bingo {
     // run the bingo game - draw numbers until a winner is determined
-    pub fn run(&mut self) -> i64 {
+    pub fn run(&mut self) {
         for n in self.numbers.iter() {
-            for b in self.boards.iter_mut() {
+            let num_boards = self.boards.len();
+            let mut boards_to_remove = vec![];
+            for (idx, b) in self.boards.iter_mut().enumerate() {
                 b.mark(*n);
-                if b.is_winner() { println!("----- WINNNER! score: {} --------\n", b.winning_score); return b.winning_score; }
+                if b.is_winner() { 
+                    // println!("----- WINNNER! score: {} --------\n", b.winning_score); 
+                    // last board? set losing score + exit
+                    if num_boards == 1 {
+                        self.losing_score = b.winning_score;
+                        return;
+                    }
+                    // first board? set winning score 
+                    if self.winning_score == 0 { 
+                        self.winning_score = b.winning_score; 
+                    }
+                    // mark board for removal
+                    //  we add higher indices at the front so removing them in-order later on doesn't cause problems due to shifted indices
+                    boards_to_remove.insert(0, idx); 
+                }
+            }
+            // remove winning boards
+            for idx in boards_to_remove {
+                self.boards.remove(idx);
             }
         }
-        return 0;
     }
 }
 
@@ -116,12 +131,12 @@ pub fn parse_bingo(input: &Vec<String>) -> Bingo {
     let line = input.first().unwrap();
     let numbers: Vec<i64> = line.split(',').map(|val| val.parse::<i64>().unwrap()).collect();
     let boards = parse_boards(&input[2..]);
-    return Bingo { numbers: numbers, boards: boards};
+    return Bingo { numbers: numbers, boards: boards, winning_score: 0, losing_score: 0};
 }
 
 pub fn solve() {
-     let filename = "a04_giant_squid/input.txt";
-    //let filename = "a04_giant_squid/example_input.txt";
+    let filename = "a04_giant_squid/input.txt";
+    // let filename = "a04_giant_squid/example_input.txt";
     let v = crate::helpers::read_string_list((&filename).to_string());   
     let mut bingo = parse_bingo(&v);
     
@@ -129,7 +144,7 @@ pub fn solve() {
 
     //println!("bingo: {}", bingo);
 
-    let result1 = -1;
-    let result2 = -1;
+    let result1 = bingo.winning_score;
+    let result2 = bingo.losing_score;
     println!("04 - giant squid: {} {}", result1, result2);
 }
