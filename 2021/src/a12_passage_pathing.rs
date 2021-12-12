@@ -1,11 +1,9 @@
-use petgraph::graph::*;
 use petgraph::graphmap::*;
-use petgraph::algo::*;
 
 // walk all paths from start to end (ignoring all small caves that have already been visited)
 //   strangely, there seems to be no standard implementation for this - we have to roll our own
 fn walk_small_only_once(g: &UnGraphMap<&str, i32>, start: &str, end: &str, visited: &Vec<&str>, found_paths: &Vec<String>) -> Vec<String> {
-    println!("visiting {}, found_paths: {:?}", start, found_paths);
+    // println!("visiting {}, found_paths: {:?}", start, found_paths);
     if start == end {
         return found_paths.to_vec();
     }
@@ -68,20 +66,23 @@ pub fn solve() {
     //let filename = "a12_passage_pathing/example_input_large.txt";
     let filename = "a12_passage_pathing/input.txt";
     let v = crate::helpers::read_string_list((&filename).to_string());   
-    // get list of edges
+    // build graph from edge list
     let edges: Vec<(&str, &str)> = v.iter().map(|line| line.split_once('-').unwrap()).collect();
     let mut g = UnGraphMap::new();
     for e in edges {
         g.add_edge(e.0, e.1, -1);
     }
     // println!("graph: {:?}", g);
-    let paths1 = find_all_paths_small_only_once(&g, "start", "end");
-    println!("paths1: {:?}", paths1);
-    let result1 = paths1.len();
-    // part 2: allow walking a single small cave only once
-    let paths2 = find_all_paths_single_small_twice(&g, "start", "end");
-    println!("paths2: {:?}", paths2);
     
+    // part 1: only walk small caves once
+    let paths1 = find_all_paths_small_only_once(&g, "start", "end");
+    // println!("paths1: {:?}", paths1);
+    let result1 = paths1.len();
+    
+    // part 2: allow walking a single small cave twice
+    let paths2 = find_all_paths_single_small_twice(&g, "start", "end");
+    // println!("paths2: {:?}", paths2);
     let result2 = paths2.len();
+    
     println!("12 - passage pathing: {} {}", result1, result2);
 }
