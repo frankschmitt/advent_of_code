@@ -2,12 +2,6 @@ use ndarray::*;
 use std::fmt;
 
 #[derive(Debug, Eq, PartialEq)]
-pub struct Cell {
-    num: u64,
-    marked: bool
-}
-
-#[derive(Debug, Eq, PartialEq)]
 pub struct Board {
     elems: Array2<i64>,
     winning_score: i64
