@@ -9,7 +9,6 @@ pub struct Cell {
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct Board {
-    //elems: Array2<Cell>,
     elems: Array2<i64>,
     winning_score: i64
 }
@@ -20,7 +19,7 @@ enum Update { NoMatch, Match, MatchAndWin }
 impl std::fmt::Display for Board {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
       write!(f, "{:?}", self.elems);
-      return write!(f, "\nwinner? : {}, winning_score: {}\n", self.is_winner(), self.winning_score);
+      return write!(f, "winning_score: {}\n", self.winning_score);
     }
 }
 
@@ -33,7 +32,7 @@ impl Board {
         return self.elems.iter().filter(|v| **v > 0).fold(0, |acc, x| acc + x.abs()) * num;
     }
 
-    // mark the given number; returns true if 
+    // mark the given number
     pub fn mark(&mut self, num: i64) -> Update {   
         let mut result = Update::NoMatch;
         for r in 0 .. self.elems.nrows() {
@@ -48,18 +47,6 @@ impl Board {
         }
         return result;     
     } 
-
-    // check whether we have won 
-    pub fn is_winner(&self) -> bool {
-        for c in self.elems.columns() {
-            if c.iter().all(|elem| *elem < 0) { return true; }
-        }
-        for r in self.elems.rows() {
-            if r.iter().all(|elem| *elem < 0 ) { return true; }
-        }
-        return false;
-        //return self.winning_score > 0;
-    }
 }
 
 #[derive(Debug, Eq, PartialEq)]
@@ -86,8 +73,7 @@ impl Bingo {
             let num_boards = self.boards.len();
             let mut boards_to_remove = vec![];
             for (idx, b) in self.boards.iter_mut().enumerate() {
-                b.mark(*n);
-                if b.is_winner() { 
+                if b.mark(*n) == Update::MatchAndWin {
                     // println!("----- WINNNER! score: {} --------\n", b.winning_score); 
                     // last board? set losing score + exit
                     if num_boards == 1 {
@@ -139,11 +125,7 @@ pub fn solve() {
     // let filename = "a04_giant_squid/example_input.txt";
     let v = crate::helpers::read_string_list((&filename).to_string());   
     let mut bingo = parse_bingo(&v);
-    
     bingo.run();
-
-    //println!("bingo: {}", bingo);
-
     let result1 = bingo.winning_score;
     let result2 = bingo.losing_score;
     println!("04 - giant squid: {} {}", result1, result2);
