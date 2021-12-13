@@ -17,6 +17,30 @@ impl Grid {
         return self.height;
     }
 
+    // create a grid with given width, height and default char
+    pub fn new(rows: usize, cols: usize, ch: char) -> Grid {
+        let mut cells = Vec::new();
+        for row in 0 .. rows {
+           let mut chars = vec![];
+           for col in 0 .. cols {
+               chars.push(ch);
+           }
+           cells.push(chars);
+        }
+        let grid = Grid { height: cells.len(),
+                          width: cells[0].len(),
+                          cells: cells };
+        return grid;
+    }
+
+    // set cell at given coordinates
+    // wraps around
+    pub fn set_cell(&mut self, row: usize, col: usize, ch: char) {
+        let myrow = row % self.height;
+        let mycol = col % self.width;
+        self.cells[myrow][mycol] = ch;
+    }
+
     // get cell at given coordinates
     // wraps around
     pub fn cell(&self, row: usize, col: usize) -> char {
