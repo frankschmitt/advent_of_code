@@ -78,6 +78,15 @@ pub fn solve() {
     polymerization.run(10);
     //println!("len: {}", polymerization.formula.len());
     let result1 = polymerization.distance();
+    
+    // idea for part II:
+    //   * store pairs of characters + count in a hashmap ("Windows" of size 2 into the formula)
+    //   * store characters and counts in a hashmap
+    //   * in each step:
+    //     * check each rules against the hashmap of pairs
+    //     *   if the rule matches: increase count of the target character
+    //     *                        increase count of both pairs (source1, target) and (target, source2) 
+    //     *   then, at the end, we just have to return max and min of our hashmap for the character counts
     let result2 = -1;
     println!("14 - extended polymerization: {} {}", result1, result2);
 }
