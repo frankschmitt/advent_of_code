@@ -1,4 +1,3 @@
-use regex::Regex;
 use std::collections::HashMap;
 
 #[derive(Debug, Eq, PartialEq, Ord, PartialOrd, Clone)]
@@ -32,20 +31,6 @@ impl Polymerization {
     }
 
     pub fn step(&mut self) {
-      // old style
-      /*let mut idx = 0;
-      loop {
-         for r in self.rules.iter() {
-             if self.formula[idx] == r.source.0 && self.formula[idx+1] == r.source.1 {
-                 self.formula.insert(idx+1, r.target);
-                 idx = idx + 1; // skip the new element
-                 break; // skip remaining rules
-             }
-         }
-         idx = idx + 1;
-         if idx == self.formula.len() -1 { break; }
-      }*/
-      // new style
       let mut new_digraphs: HashMap<(char, char), i128> = HashMap::new();
       let mut new_chars: HashMap<char, i128> = HashMap::new();
       for d in self.digraphs.iter() {
@@ -55,11 +40,10 @@ impl Polymerization {
               *new_digraphs.entry((r.target, r.source.1)).or_insert(0) += d.1;
               *new_digraphs.entry((r.source.0, r.source.1)).or_insert(0) -= d.1; // remove the old pair
               *new_chars.entry(r.target).or_insert(0) += d.1;  
-              // println!("matched rule: {:?} for {:?}\n", r, d);
-              // println!("  new digraphs after: {:?}\n", new_digraphs);
             }
         }
       }
+      // update digraph and character counts
       for (d, count) in new_digraphs {
           *self.digraphs.entry(d).or_insert(0) += count;
       }
@@ -71,16 +55,11 @@ impl Polymerization {
     pub fn run(&mut self, num_steps: usize) {
         for i in 0 .. num_steps {
             self.step();
-            //println!("step: {}, formula: {:?}", i, self.formula);
         }
     }
 
     // get the distance, i.e. the number of occurrences of the most frequent element minus the number of occurrences of the least frequent element
     pub fn distance(&self) -> i128 {
-        /*let hmap = self.formula.iter().fold(HashMap::new(), |mut acc, ch| {
-            *acc.entry(ch).or_insert(0) += 1;
-            acc
-        });*/
         let max = self.characters.iter().map(|(k,v)| v).max().unwrap();
         let min = self.characters.iter().map(|(k,v)| v).min().unwrap();
         return max - min;
@@ -104,25 +83,21 @@ pub fn parse_polymerization(input: &Vec<String>) -> Polymerization {
     return Polymerization::new(&formula, &rules);
 }
 
+// approach    
+//   * store pairs of characters + count in a hashmap ("Windows" of size 2 into the formula)
+//   * store characters and counts in a hashmap
+//   * in each step:
+//     * check each rules against the hashmap of pairs
+//     *   if the rule matches: increase count of the target character
+//     *                        increase count of both pairs (source1, target) and (target, source2) 
+//     *   then, at the end, we just have to return max and min of our hashmap for the character counts
 pub fn solve() {
     //let filename = "a14_extended_polymerization/example_input.txt";
     let filename = "a14_extended_polymerization/input.txt";
     let v = crate::helpers::read_string_list((&filename).to_string());   
-    // part I, old approach: scan the whole string, replace with *lowercase* characters (to avoid affecting later rules in the same iteration),
-    //            and at the end of the step, replace all lowercase characters with uppercase
-    //            presumably, this will fail spectacularly in part II because we scan the string multiple times
     let mut polymerization = parse_polymerization(&v);
     polymerization.run(10);
     let result1 = polymerization.distance();
-    
-    // idea for part II:
-    //   * store pairs of characters + count in a hashmap ("Windows" of size 2 into the formula)
-    //   * store characters and counts in a hashmap
-    //   * in each step:
-    //     * check each rules against the hashmap of pairs
-    //     *   if the rule matches: increase count of the target character
-    //     *                        increase count of both pairs (source1, target) and (target, source2) 
-    //     *   then, at the end, we just have to return max and min of our hashmap for the character counts
     polymerization.run(30);
     let result2 = polymerization.distance();
     println!("14 - extended polymerization: {} {}", result1, result2);
