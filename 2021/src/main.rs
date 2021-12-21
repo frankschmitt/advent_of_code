@@ -13,6 +13,7 @@ mod a07_the_treachery_of_whales;
 mod a08_seven_segment_search;
 mod a09_smoke_basin;
 mod a10_syntax_scoring;
+mod a11_dumbo_octopus;
 mod a12_passage_pathing;
 mod a13_transparent_origami;
 mod a14_extended_polymerization;
@@ -28,7 +29,8 @@ fn main() {
     //a08_seven_segment_search::solve();
     //a09_smoke_basin::solve();
     //a10_syntax_scoring::solve();
+    a11_dumbo_octopus::solve();
     //a12_passage_pathing::solve();
     //a13_transparent_origami::solve();
-    a14_extended_polymerization::solve();
+    //a14_extended_polymerization::solve();
 }

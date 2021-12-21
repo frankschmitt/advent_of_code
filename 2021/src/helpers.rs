@@ -1,7 +1,9 @@
 use std::io::{BufRead, BufReader};
+use std::fmt;
 use std::fs::File;
 use std::str;
 
+#[derive(Debug, Eq, PartialEq)]
 pub struct Grid {
     pub width: usize,
     pub height: usize,
@@ -76,7 +78,7 @@ pub fn read_char_grid(filename: String) -> Grid {
    return grid;
 }
 
-
+#[derive(Debug, Eq, PartialEq)]
 pub struct UIntGrid {
     pub width: usize,
     pub height: usize,
@@ -92,6 +94,22 @@ impl UIntGrid {
         return self.height;
     }
 
+    // create a grid with given width, height and default value
+    pub fn new(rows: usize, cols: usize, value: usize) -> UIntGrid {
+        let mut cells = Vec::new();
+        for row in 0 .. rows {
+        let mut vals = vec![];
+        for col in 0 .. cols {
+            vals.push(value);
+        }
+        cells.push(vals);
+        }
+        let grid = UIntGrid { height: cells.len(),
+                              width: cells[0].len(),
+                              cells: cells };
+        return grid;
+    }
+
     // get cell at given coordinates
     // wraps around
     pub fn cell(&self, row: usize, col: usize) -> usize {
@@ -101,6 +119,14 @@ impl UIntGrid {
       let line = &self.cells[myrow];
       let ch= line[mycol];
       return ch;
+    }
+
+    // set cell at given coordinates
+    // wraps around
+    pub fn set_cell(&mut self, row: usize, col: usize, val: usize) {
+        let myrow = row % self.height;
+        let mycol = col % self.width;
+        self.cells[myrow][mycol] = val;
     }
 
     pub fn print(&self) -> () {
@@ -114,6 +140,20 @@ impl UIntGrid {
     }
 }
 
+impl fmt::Display for UIntGrid {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        for row in 0 .. self.height {
+            let mut line: String = "".to_string();
+            for col in 0 .. self.width  {
+                line += &self.cell(row, col).to_string();
+            }
+            writeln!(f, "{}", line);
+        }
+        return Ok(());
+    }
+}
+
+// reads a grid of unsigned integers (single-digit, without separators)
 pub fn read_uint_grid(filename: String) -> UIntGrid {
    let lines = read_string_list(filename);
    let mut cells: Vec<Vec<usize>> = Vec::new();
