@@ -4,7 +4,8 @@ use std::fmt;
 #[derive(Debug)]
 struct Octopus {
     grid: UIntGrid,
-    num_flashes: usize
+    num_flashes: usize,
+    sync_flash_step_num: usize
 }
 
 impl Octopus {
@@ -45,7 +46,7 @@ impl Octopus {
     }
 
     // run a single step
-    pub fn step(&mut self) {
+    pub fn step(&mut self, step_num: usize) {
       let mut new_grid = UIntGrid { height: self.grid.height, width: self.grid.width, cells: self.grid.cells.clone() };
       // helper grid to remember where we have flashed
       let mut flashes = UIntGrid::new(self.grid.height, self.grid.width, 0);
@@ -83,12 +84,18 @@ impl Octopus {
       }
       self.grid = new_grid;
       self.num_flashes += num_flashes;
+      if num_flashes == self.grid.height * self.grid.width && self.sync_flash_step_num == 0 {
+        self.sync_flash_step_num = step_num;
+      }
     }
 
-    // run a given number of steps
-    pub fn run(&mut self, n: usize) {
-      for i in 0 .. n {
-        self.step();
+    // run step indices start_n till end_n (including) or (if stop_at_sync is set) until we sync flash for the first time
+    pub fn run(&mut self, start_n: usize, end_n: usize, stop_at_sync: bool) {
+      for i in start_n ..=end_n {
+        self.step(i);
+        if self.sync_flash_step_num > 0 && stop_at_sync {
+          break;
+        }
       }
     }
 }
@@ -104,15 +111,11 @@ pub fn solve() {
     //let filename = "a11_dumbo_octopus/example_input.txt";
     let filename = "a11_dumbo_octopus/input.txt";
     let grid = crate::helpers::read_uint_grid((&filename).to_string());
-    let mut octopus = Octopus { grid: grid, num_flashes: 0 };
-    println!("before step 1: \n{}\n", octopus);
-    //octopus.step();
-    //println!("after step 1: \n{}\n", octopus);
-    //octopus.step();
-    //println!("after step 2: \n{}\n", octopus);
-    octopus.run(100);
-
+    let mut octopus = Octopus { grid: grid, num_flashes: 0, sync_flash_step_num: 0 };
+    octopus.run(1, 100, false);
     let result1 = octopus.num_flashes;
-    let result2 = -1;
+    // we assume 1e9 steps will be sufficient :-)
+    octopus.run(101, 1_000_000_000, true);
+    let result2 = octopus.sync_flash_step_num;
     println!("11 - dumbo octopus: {} {}", result1, result2);
 }
