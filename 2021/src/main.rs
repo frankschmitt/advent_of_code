@@ -17,6 +17,7 @@ mod a11_dumbo_octopus;
 mod a12_passage_pathing;
 mod a13_transparent_origami;
 mod a14_extended_polymerization;
+mod a15_chiton;
 
 fn main() {
     //a01_sonar_sweep::solve();
@@ -29,8 +30,9 @@ fn main() {
     //a08_seven_segment_search::solve();
     //a09_smoke_basin::solve();
     //a10_syntax_scoring::solve();
-    a11_dumbo_octopus::solve();
+    //a11_dumbo_octopus::solve();
     //a12_passage_pathing::solve();
     //a13_transparent_origami::solve();
     //a14_extended_polymerization::solve();
+    a15_chiton::solve();
 }
