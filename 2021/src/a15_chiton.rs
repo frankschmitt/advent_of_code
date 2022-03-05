@@ -45,7 +45,6 @@ pub fn solve() {
     //let filename = "a15_chiton/example_input.txt";
     let grid = crate::helpers::read_uint_grid((&filename).to_string());  
     let chiton = Chiton::build_chiton(&grid); 
-    // TODO: build_graph must return the start and finish node, as well
     let path = astar(&chiton.graph, chiton.start_idx, |finish| finish == chiton.end_idx, |e| *e.weight(), |_| 0);
     //println!("graph: {:?}", chiton.graph);
     println!("path: {:?}", path);
