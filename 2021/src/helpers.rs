@@ -147,7 +147,7 @@ impl fmt::Display for UIntGrid {
             for col in 0 .. self.width  {
                 line += &self.cell(row, col).to_string();
             }
-            writeln!(f, "{}", line);
+            let _ = writeln!(f, "{}", line);
         }
         return Ok(());
     }

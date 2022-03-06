@@ -12,7 +12,7 @@ enum Update { NoMatch, Match, MatchAndWin }
 
 impl std::fmt::Display for Board {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-      write!(f, "{:?}", self.elems);
+      let _ = write!(f, "{:?}", self.elems);
       return write!(f, "winning_score: {}\n", self.winning_score);
     }
 }
@@ -54,7 +54,7 @@ pub struct Bingo {
 impl std::fmt::Display for Bingo {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
       for b in self.boards.iter() {
-        write!(f, "{}", b);
+        let _ = write!(f, "{}", b);
       }
       return write!(f, "\n");
     }

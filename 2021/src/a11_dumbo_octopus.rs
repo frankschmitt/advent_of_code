@@ -102,7 +102,7 @@ impl Octopus {
 
 impl fmt::Display for Octopus {
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-    write!(f, "{}", self.grid);
+    let _ = write!(f, "{}", self.grid);
     return Ok(());
   }
 }
