@@ -18,6 +18,7 @@ mod a12_passage_pathing;
 mod a13_transparent_origami;
 mod a14_extended_polymerization;
 mod a15_chiton;
+mod a21_dirac_dice;
 
 fn main() {
     //a01_sonar_sweep::solve();
@@ -34,5 +35,6 @@ fn main() {
     //a12_passage_pathing::solve();
     //a13_transparent_origami::solve();
     //a14_extended_polymerization::solve();
-    a15_chiton::solve();
+    //a15_chiton::solve();
+    a21_dirac_dice::solve();
 }
