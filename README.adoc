@@ -6,7 +6,7 @@ different programming languages as possible; my plan is to use
 
 == 2017
 + Ruby (2017-12)
-+ Haskell
++ Haskell (2017-09)
 + Python (2017-01)
 + Java (2017-14)
 + Kotlin (2017-13)
@@ -49,4 +49,5 @@ SQL
 PL/SQL
 Erlang
 Excel
+Zig
 
