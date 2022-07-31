@@ -130,7 +130,7 @@ pub fn solve2(start_pos1: u32, start_pos2: u32, winning_score: u32) -> u128 {
             for each entry in old_state:
               if a player has already won:
                  add the entry unchanged to new_state 
-              for each die_roll in ((1,1,1), (1,1,2), (1,1,3), ..., (3,3,3)):
+              else: for each die_roll in ((1,1,1), (1,1,2), (1,1,3), ..., (3,3,3)):
                  new_pos += die_roll
                  new_score += new_pos
                  update new_state for this key; if it doesn't exit: add new entry, number of paths = number of paths for current state

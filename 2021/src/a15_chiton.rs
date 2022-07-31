@@ -49,6 +49,7 @@ pub fn solve() {
     //println!("graph: {:?}", chiton.graph);
     println!("path: {:?}", path);
     // astar returns the weight plus the path - we're only interested in the weight
+    // TODO this doesn't return the correct result for the "real" input - apparently, the A* implementation of petgraph isn't optimal. SUBMIT A BUG REPORT!
     let result1 = path.unwrap().0;
     let result2 = -1;
     println!("15 - chiton: {} {}", result1, result2);
