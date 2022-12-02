@@ -13,6 +13,10 @@ class CalorieCountingTest(unittest.TestCase):
         cc = CC.CalorieCounting.read_input_file('example_input.txt')
         self.assertEqual(24000, cc.solve_part_I())
 
+    def test_solve_part_I(self):
+        cc = CC.CalorieCounting.read_input_file('example_input.txt')
+        self.assertEqual(45000, cc.solve_part_II())
+
 
 if __name__ == '__main__':
     unittest.main()

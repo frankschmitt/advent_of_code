@@ -1,4 +1,4 @@
-from pipe import Pipe, map, sort
+from pipe import Pipe, map, sort, take
 
 class Elf:
   calories = []
@@ -35,19 +35,19 @@ class CalorieCounting:
     cc = CalorieCounting(elves)
     return cc
 
-  def get_top_n_scores(n):
-    sorted_scores = list(self.elves
-                         | map(lambda e: e.sum_calories)
-                         | sort(reverse = True)
-                         )
+  def sum_top_n_scores(self, n):
+    return sum(self.elves
+                | map(lambda e: e.sum_calories)
+                | sort(reverse = True)
+                | take(n)
+                )
 
   def solve_part_I(self):
-    sorted_scores = list(self.elves
-                         | map(lambda e: e.sum_calories)
-                         | sort(reverse = True)
-                         )
-    return sorted_scores[0]
+    return self.sum_top_n_scores(1)
+
+  def solve_part_II(self):
+    return self.sum_top_n_scores(3)
 
 if __name__ == '__main__':
     cc = CalorieCounting.read_input_file('input.txt')
-    print("{}".format(cc.solve_part_I()))
+    print("{} {}".format(cc.solve_part_I(), cc.solve_part_II()))
