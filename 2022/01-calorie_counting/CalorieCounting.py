@@ -1,10 +1,11 @@
-from pipe import Pipe
+from pipe import Pipe, map, sort
 
 class Elf:
   calories = []
  
   def __init__(self, calories = []):
       self.calories = calories
+      self.sum_calories = sum(self.calories)
 
 @Pipe
 def split_elves(iterable):
@@ -33,3 +34,20 @@ class CalorieCounting:
       
     cc = CalorieCounting(elves)
     return cc
+
+  def get_top_n_scores(n):
+    sorted_scores = list(self.elves
+                         | map(lambda e: e.sum_calories)
+                         | sort(reverse = True)
+                         )
+
+  def solve_part_I(self):
+    sorted_scores = list(self.elves
+                         | map(lambda e: e.sum_calories)
+                         | sort(reverse = True)
+                         )
+    return sorted_scores[0]
+
+if __name__ == '__main__':
+    cc = CalorieCounting.read_input_file('input.txt')
+    print("{}".format(cc.solve_part_I()))
