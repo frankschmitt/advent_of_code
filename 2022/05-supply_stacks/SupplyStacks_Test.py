@@ -13,7 +13,7 @@ class SupplyStacksTest(unittest.TestCase):
 
     def test_read_example_input(self):
         ss = SS.SupplyStacks.read_input_file('example_input.txt')
-        self.assertEqual({1: ['Z', 'N'], 2: ['M', 'C', 'D'], 3: ['P']}, ss.stacks)
+        self.assertEqual({1: ['Z', 'N'], 2: ['M', 'C', 'D'], 3: ['P']}, ss.stacks1)
         self.assertEqual([{'n': 1, 'source': 2, 'target': 1},
                           {'n': 3, 'source': 1, 'target': 3},
                           {'n': 2, 'source': 2, 'target': 1},
@@ -26,6 +26,7 @@ class SupplyStacksTest(unittest.TestCase):
 
     def test_solve_part_II(self):
         ss = SS.SupplyStacks.read_input_file('example_input.txt')
+        ss.solve_part_I() # necessary because we execute the instructions in part I
         self.assertEqual('MCD', ss.solve_part_II())
 
 if __name__ == '__main__':
