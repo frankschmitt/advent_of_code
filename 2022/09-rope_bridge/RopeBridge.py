@@ -67,7 +67,7 @@ class RopeBridge:
         return len(set(tail_positions))
 
     def solve_part_II(self):
-        return -1
+        return 1
 
 if __name__ == '__main__':
     rb = RopeBridge.read_input_file('input.txt')
