@@ -1,7 +1,10 @@
+from itertools import chain
+
 class Tree:
     def __init__(self, height):
         self.height = height
         self.visible_from = {} # contains directions this tree is visible from - t, b, l, r
+        self.scenic_score = 1 # use 1 as base so we can just multiply it
 
 class TreetopTreeHouse:
     def __init__(self, lines):
@@ -56,8 +59,40 @@ class TreetopTreeHouse:
             num_visible += len(visible_in_row)
         return num_visible
 
+    def compute_scenic_score(self, row, col):
+        its_height = self.grid[row][col].height
+        # look N
+        visible_N = 0
+        for r in range(row-1, -1, -1):
+            visible_N += 1
+            if self.grid[r][col].height >= its_height:
+                break
+        # look S
+        visible_S = 0
+        for r in range(row+1, len(self.grid)):
+            visible_S += 1
+            if self.grid[r][col].height >= its_height:
+                break
+        # look E
+        visible_E = 0
+        for c in range(col+1, len(self.grid[0])):
+            visible_E += 1
+            if self.grid[row][c].height >= its_height:
+                break
+        # look W
+        visible_W = 0
+        for c in range(col-1, -1, -1):
+            visible_W += 1
+            if self.grid[row][c].height >= its_height:
+                break
+        return visible_N * visible_S * visible_E * visible_W 
+
     def solve_part_II(self):
-        return -1
+        # iterate over all the trees
+        for r in range(0, len(self.grid)):
+          for c in range(0, len(self.grid[0])):
+              self.grid[r][c].scenic_score = self.compute_scenic_score(r, c)
+        return max([ t.scenic_score for t in chain.from_iterable(self.grid)])
 
 if __name__ == '__main__':
     tth = TreetopTreeHouse.read_input_file('input.txt')
