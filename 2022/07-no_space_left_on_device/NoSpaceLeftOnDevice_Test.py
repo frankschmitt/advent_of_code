@@ -15,6 +15,10 @@ class NoSpaceLeftOnDeviceTest(unittest.TestCase):
         ns = NoSpaceLeftOnDevice.read_input_file('example_input.txt')
         self.assertEqual(95437, ns.solve_part_I())
 
+    def test_solve_part_II(self):
+        ns = NoSpaceLeftOnDevice.read_input_file('example_input.txt')
+        self.assertEqual(24933642, ns.solve_part_II())
+
 
 if __name__ == '__main__':
     unittest.main()

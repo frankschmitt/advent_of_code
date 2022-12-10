@@ -56,7 +56,12 @@ class NoSpaceLeftOnDevice:
         return sum([c[1] for c in candidates])
 
     def solve_part_II(self):
-        return -1
+        total = 70000000 
+        required = 30000000
+        unused = total - self.rec_size('/')
+        missing = required - unused
+        candidates = [(e, self.rec_size(e)) for e in self.entries if self.rec_size(e) >= missing]
+        return min([c[1] for c in candidates])
 
 
 if __name__ == '__main__':
