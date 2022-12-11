@@ -23,13 +23,8 @@ class CathodRayTubes:
     def print_sprite(self, i, msg, instruction, currval):
         pos = i-1
         sprite_range = range(currval-1, currval+2) # correct offset of 1
-        print("cycle {}: {} {}".format(i, msg, instruction))
         if (pos % 40) in sprite_range:
             self.output[pos // 40][pos % 40] = '#'
-        print("current CRT row: {}".format(''.join(self.output[pos // 40])))
-        sprite_pos_output = ['.'] * 40
-        sprite_pos_output[currval-1 : currval+1] = '###'
-        print("sprite pos:      {}".format(''.join(sprite_pos_output)))
 
     def solve_it(self):
         currval = 1
