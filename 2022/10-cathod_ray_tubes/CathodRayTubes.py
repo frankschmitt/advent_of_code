@@ -2,20 +2,17 @@
 
 def parse_instruction(ins):
     if ins == 'noop':
-        result = 0
+        result = ('noop', 0)
     else:
-        result = int(ins.split()[1])
+        result = ('add', int(ins.split()[1]))
     return result
 
 class CathodRayTubes:
 
     def __init__(self, lines):
         self.lines = lines
-        self.memory = [{'instruction': '-', 'delta_instruction': 0, 'x': 1, 'delta_to_apply': 0}] # instruction 0, will be skipped
-        self.memory.extend([{'instruction': l, 'delta_instruction': parse_instruction(l), 'x': 1, 'delta_to_apply': 0} for l in lines])
-        # extend memory to 230 
-        for i in range(len(self.memory), 231):
-            self.memory.append({'instruction': '-', 'delta_instruction': 0, 'x': 1, 'delta_to_apply': 0})
+        self.instructions = [parse_instruction(l) for l in lines]
+        self.memory = [0] * 500 # will store actual values
 
     def read_input_file(filename):
         with open(filename) as f:
@@ -24,15 +21,22 @@ class CathodRayTubes:
 
     def solve_part_I(self):
         currval = 1
-        #for i in range(1, 221):
-        for i in range(1, 25):
-            self.memory[i+1]['delta_to_apply'] = self.memory[i]['delta_instruction']
-            self.memory[i]['x'] = currval 
-            currval += self.memory[i]['delta_to_apply']
-            print("{} : instruction: {}, delta_instruction: {}, currval: {}, delta_to_apply: {}".format(
-                i, self.memory[i]['instruction'], self.memory[i]['delta_instruction'], currval, self.memory[i]['delta_to_apply']))
-        result = sum(i * self.memory[i]['x'] for i in [20, 60, 100, 140, 180, 220])
+        i = 1
+        for ins in self.instructions: 
+            self.memory[i] = currval 
+            i += 1
+            if ins[0] == 'add':
+                # wait another cycle, and then perform the change
+                self.memory[i] = currval
+                i += 1
+                currval += ins[1]
+        # write result of last instruction
+        self.memory[i] = currval
+        result = sum(i * self.memory[i] for i in [20, 60, 100, 140, 180, 220])
         return result
+
+    def solve_part_II(self):
+        return -1
 
 if __name__ == '__main__':
     crt = CathodRayTubes.read_input_file('input.txt')

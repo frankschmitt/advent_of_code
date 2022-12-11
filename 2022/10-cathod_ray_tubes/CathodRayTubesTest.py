@@ -8,8 +8,8 @@ class CathodRayTubesTest(unittest.TestCase):
         pass
         crt = CathodRayTubes.read_input_file('example_input-small.txt')
         crt.solve_part_I()
-        got = [crt.memory[i]['x'] for i in [1, 2, 3, 4, 5] ]
-        self.assertEqual([1, 1, 1, 4, -1], got) 
+        got = [crt.memory[i] for i in [1, 2, 3, 4, 5, 6] ]
+        self.assertEqual([1, 1, 1, 4, 4, -1], got) 
 
     def test_solve_part_I(self):
         crt = CathodRayTubes.read_input_file('example_input.txt')
