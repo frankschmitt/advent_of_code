@@ -1,5 +1,6 @@
 from parse import parse
 from pipe import Pipe
+from functools import reduce
 
 # MonkeyInTheMiddle.py
 class Monkey:
@@ -47,39 +48,54 @@ class MonkeyInTheMiddle:
         self.monkeys = list(lines
                              | split_monkeys
                            )
+        # to ensure the reduced worry level is equivalent for all monkeys, we simply use the
+        #   product of all their tests
+        #   we could probably compute the smallest common multiple, but I'm too lazy for that 
+        self.divisor = reduce(lambda acc, x: acc * x, [m.test for m in self.monkeys], 1)
 
     def read_input_file(filename):
         with open(filename) as f:
             lines = [l.rstrip() for l in f.readlines()]
         return MonkeyInTheMiddle(lines)
 
-    def step(self):
+    def step(self, reduce):
         for m in self.monkeys:
+            #print("Monkey {}".format(m.index))
             for i in m.items:
+                m.num_inspections += 1
                 if m.operation == ('*', 'old'):
                     new_val = i*i
                 elif m.operation[0] == '*':
-                    new_val = i * m.operation[1]
+                    new_val = i * int(m.operation[1])
                 elif m.operation[0] == '/':
-                    new_val = i / m.operation[1]
+                    new_val = i / int(m.operation[1])
                 elif m.operation[0] == '-':
-                    new_val = i - m.operation[1]
+                    new_val = i - int(m.operation[1])
                 elif m.operation[0] == '+':
-                    new_val = i + m.operation[1]
-                new_val = new_val // 3
-
-
-
+                    new_val = i + int(m.operation[1])
+                if reduce:
+                    new_val = new_val // 3
+                else:
+                    new_val = new_val % self.divisor
+                target = m.true_action if (new_val % m.test == 0) else m.false_action
+                self.monkeys[target].items.append(new_val)
+                #print(" item with old lvl {}, new lvl {} thrown to {}".format(i, new_val, target))
+            m.items = []
 
     def solve_part_I(self):
         for i in range(1, 21):
-            self.step()
+            self.step(True)
         sorted_vals = sorted(m.num_inspections for m in self.monkeys)
         return sorted_vals[-1] * sorted_vals[-2]
 
     def solve_part_II(self):
-        return -1
+        for i in range(1, 10001):
+            self.step(False)
+            print("\rStep {}".format(i), end = "" if i < 10000 else "\n")
+        sorted_vals = sorted(m.num_inspections for m in self.monkeys)
+        return sorted_vals[-1] * sorted_vals[-2]
 
 if __name__ == '__main__':
-    mitm = MonkeyInTheMiddle.read_input_file('input.txt')
-    print("{} {}".format(mitm.solve_part_I(), mitm.solve_part_II()))
+    mitm1 = MonkeyInTheMiddle.read_input_file('input.txt')
+    mitm2 = MonkeyInTheMiddle.read_input_file('input.txt')
+    print("{} {}".format(mitm1.solve_part_I(), mitm2.solve_part_II()))

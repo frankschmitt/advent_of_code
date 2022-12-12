@@ -27,6 +27,10 @@ class MonkeyInTheMiddle_Test(unittest.TestCase):
     def test_solve_part_I(self):
         mitm = MonkeyInTheMiddle.read_input_file('example_input.txt')
         self.assertEqual(10605, mitm.solve_part_I())
+
+    def test_solve_part_II(self):
+        mitm = MonkeyInTheMiddle.read_input_file('example_input.txt')
+        self.assertEqual(2713310158, mitm.solve_part_II())
    
 
 if __name__ == '__main__':
