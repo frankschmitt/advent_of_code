@@ -67,12 +67,21 @@ class HillClimbingAlgorithm:
         return len(path) - 1
 
     def solve_part_II(self):
-        return -1
+        starting_points = [n for n in nx.nodes(self.G) if n[2] == 'a']
+        paths = [] 
+        for sp in starting_points:
+            try:
+                path = nx.shortest_path(self.G, sp, self.end)
+                paths.append(path)
+            except nx.NetworkXNoPath as e:
+                logging.info("exception occurred: {}".format(e))
+           
+        logging.info("shortest paths from each a: {}".format(paths))
+        return min(len(p) for p in paths)-1
 
 if __name__ == '__main__':
-    #logging.basicConfig(level=logging.INFO)
-    logging.basicConfig(level=logging.DEBUG)
-    # hca = HillClimbingAlgorithm.read_input_file('example_input.txt')
+    logging.basicConfig(level=logging.INFO)
+    #logging.basicConfig(level=logging.DEBUG)
     hca = HillClimbingAlgorithm.read_input_file('input.txt')
     print("{} {}".format(hca.solve_part_I(), hca.solve_part_II()))
 
