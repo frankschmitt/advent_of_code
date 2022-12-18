@@ -30,6 +30,7 @@ class Pair:
                     logging.debug("{} == {}, comparing tails".format(left[0], right[0]))
                     return self.compare_lists(left[1:], right[1:])
             else:
+                logging.debug("expanding left to list: {} and {}".format(left[0], right[0]))
                 res = self.compare_lists([left[0]], right[0]) 
                 if res in (-1, 1):
                     return res
@@ -37,12 +38,14 @@ class Pair:
                     return self.compare_lists(left[1:], right[1:])
         else: # left starts with list
             if type(right[0]) == type(0): # right is int - expand it, and continue
-                res = self.compare_lists([left[0]], [right[0]]) 
+                logging.debug("expanding right to list: {} and {}".format(left[0], right[0]))
+                res = self.compare_lists(left[0], [right[0]]) 
                 if res in (-1, 1):
                     return res
                 else:
                     return self.compare_lists(left[1:], right[1:])
             else: # both are lists
+                logging.debug("both lists: {} and {}".format(left[0], right[0]))
                 res = self.compare_lists(left[0], right[0]) 
                 if res in (-1, 1):
                     return res
