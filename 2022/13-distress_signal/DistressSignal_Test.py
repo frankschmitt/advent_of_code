@@ -11,6 +11,10 @@ class DistressSignalTest(unittest.TestCase):
         ds = DistressSignal.read_input_file('example_input.txt')
         self.assertEqual(13, ds.solve_part_I())
 
+    def test_solve_part_II(self):
+        ds = DistressSignal.read_input_file('example_input.txt')
+        self.assertEqual(140, ds.solve_part_II())
+
     def test_is_in_right_order(self):
         p1 = Pair(1, "[1,1,3,1,1]", "[1,1,5,1,1]")
         self.assertEqual(p1.is_in_right_order(), True)
