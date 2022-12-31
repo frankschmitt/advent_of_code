@@ -13,12 +13,12 @@ class SolveTest(unittest.TestCase):
         self.assertEqual('#', solve.grid[502,4])
         self.assertEqual('.', solve.grid[501,4])
         self.assertEqual('#', solve.grid[494,9])
-        #self.assertEqual(9, solve.bottom)
+        self.assertEqual(9, solve.bottom)
         print(solve)
 
     def test_solve_part_I(self):
         solve = Solve.read_input_file('example_input.txt')
-        #self.assertEqual(24, solve.solve_part_I())
+        self.assertEqual(24, solve.solve_part_I())
 
     def test_solve_part_II(self):
         solve = Solve.read_input_file('example_input.txt')

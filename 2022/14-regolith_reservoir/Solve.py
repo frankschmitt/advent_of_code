@@ -9,6 +9,7 @@ class Solve:
             logging.debug("adding segment {}".format(s))
             self.grid[s[0], s[1]] = '#'
             logging.debug("setting {} to #".format(s))                
+            self.bottom = max(self.bottom, s[1])
 
 
     def parse_line(self, line):
@@ -35,18 +36,46 @@ class Solve:
         # init an empty 1001x1001 grid
         a = [ ['.'] * 1001 for i in range(0, 1001)]
         self.grid = np.asmatrix(a)
-        # initialize bottom at 0
         self.bottom = 0
         for l in lines:
             self.add_segments(self.parse_line(l))
+        self.num_sands = 0
 
     def read_input_file(filename):
         with open(filename) as f:
             lines = [l.rstrip() for l in f.readlines()]
         return Solve(lines)
 
+    # place next unit of sand
+    # @return True if sand was placed successfully, False if it is falling forever
+    def place_next_sand(self):
+        pos = [500,0]
+        falling = True
+        while falling and pos[1] <= self.bottom:
+            # position directly below free? 
+            if self.grid[pos[0], pos[1] + 1] == '.':
+                pos[1] += 1
+            # position down left free? 
+            elif self.grid[pos[0] - 1, pos[1] + 1] == '.':
+                pos[0] -= 1
+                pos[1] += 1
+            # position down right free?
+            elif self.grid[pos[0] + 1, pos[1] + 1] == '.':
+                pos[0] += 1
+                pos[1] += 1
+            # nothing free: rest
+            else:
+                falling = False
+                self.grid[pos[0], pos[1]] = '+'
+        return falling == False
+
+    def run(self):
+        while self.place_next_sand():
+            self.num_sands += 1
+
     def solve_part_I(self):
-        return -1
+        self.run()
+        return self.num_sands
 
     def solve_part_II(self):
         return -1
