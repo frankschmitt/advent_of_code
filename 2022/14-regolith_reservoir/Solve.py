@@ -6,8 +6,9 @@ class Solve:
 
     def add_segments(self, segments):
         for s in segments:
-            for c in s:
-                self.grid[c] = '#'
+            logging.debug("adding segment {}".format(s))
+            self.grid[s[0], s[1]] = '#'
+            logging.debug("setting {} to #".format(s))                
 
 
     def parse_line(self, line):
@@ -21,10 +22,21 @@ class Solve:
                   res.append((i, j))
         return res
 
+    def __str__(self):
+        s = ""
+        for row in range(0, 20):
+            s += "{0:>2} ".format(row)
+            for col in range(490, 510):
+                s += self.grid[col,row]
+            s += "\n"
+        return s
+
     def __init__(self, lines):
         # init an empty 1001x1001 grid
         a = [ ['.'] * 1001 for i in range(0, 1001)]
         self.grid = np.asmatrix(a)
+        # initialize bottom at 0
+        self.bottom = 0
         for l in lines:
             self.add_segments(self.parse_line(l))
 
