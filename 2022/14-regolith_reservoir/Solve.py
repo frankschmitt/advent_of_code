@@ -67,22 +67,27 @@ class Solve:
             else:
                 falling = False
                 self.grid[pos[0], pos[1]] = '+'
-        return falling == False
+        return falling == False and pos[1] != 0
 
-    def run(self):
+    def run(self, with_bottom=False):
+        if with_bottom:
+            self.bottom += 2
+            self.add_segments(self.parse_line("0,{} -> 1000,{}".format(self.bottom, self.bottom)))
         while self.place_next_sand():
             self.num_sands += 1
 
     def solve_part_I(self):
-        self.run()
+        self.run(False)
         return self.num_sands
 
     def solve_part_II(self):
-        return -1
+        self.run(True)
+        return self.num_sands + 1 # we need to take the last sand into account
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG)
-    solve = Solve.read_input_file('input.txt')
-    print("{} {}".format(solve.solve_part_I(), solve.solve_part_II()))
+    logging.basicConfig(level=logging.INFO)
+    solve1 = Solve.read_input_file('input.txt')
+    solve2 = Solve.read_input_file('input.txt')
+    print("{} {}".format(solve1.solve_part_I(), solve2.solve_part_II()))
 
 
