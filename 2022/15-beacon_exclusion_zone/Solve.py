@@ -41,6 +41,11 @@ class Solve:
               forbidden[x] = True
         return len(forbidden)
 
+    # idea: - build a system of (#sensors + 2) inequations  
+    #           0 <= x <= 4e9
+    #           0 <= y <= 4e9
+    #           for each sensor s:
+    #             abs(s.x - x) + abs(s.y - y) > s.range
     def solve_part_II(self, max_x, max_y):
         for x in range(0, max_x+1):
             for y in range(0, max_y+1):
