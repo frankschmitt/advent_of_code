@@ -1,0 +1,39 @@
+= INPUT
+Sensor at x=2, y=18: closest beacon is at x=-2, y=15
+Sensor at x=9, y=16: closest beacon is at x=10, y=16
+Sensor at x=13, y=2: closest beacon is at x=15, y=3
+Sensor at x=12, y=14: closest beacon is at x=10, y=16
+Sensor at x=10, y=20: closest beacon is at x=10, y=16
+Sensor at x=14, y=17: closest beacon is at x=10, y=16
+Sensor at x=8, y=7: closest beacon is at x=2, y=10
+Sensor at x=2, y=0: closest beacon is at x=2, y=10
+Sensor at x=0, y=11: closest beacon is at x=2, y=10
+Sensor at x=20, y=14: closest beacon is at x=25, y=17
+Sensor at x=17, y=20: closest beacon is at x=21, y=22
+Sensor at x=16, y=7: closest beacon is at x=15, y=3
+Sensor at x=14, y=3: closest beacon is at x=15, y=3
+Sensor at x=20, y=1: closest beacon is at x=15, y=3
+
+= APPROACHES
+== 1: system of inequations
+=== Derived rules
+0 <= x
+x <= 20
+0 <= y
+y <= 20
+abs(x - 2) + abs(y - 18) > 7
+abs(x - 9) + abs(y - 16) > 1
+abs(x - 13) + abs(y - 2) > 3
+abs(x - 12) + abs(y - 14) > 4
+abs(x - 10) + abs(y - 20) > 4
+abs(x - 14) + abs(y - 17) > 5
+abs(x - 8) + abs(y - 7) > 9
+abs(x - 2) + abs(y - 0) > 14
+abs(x - 0) + abs(y - 11) > 3
+abs(x - 20) + abs(y - 14) > 8
+abs(x - 17) + abs(y - 20) > 6
+abs(x - 16) + abs(y - 7) > 5
+abs(x - 14) + abs(y - 3) > 1
+abs(x - 20) + abs(y - 1) > 7
+
+
