@@ -35,10 +35,10 @@ class Solve:
         return Solve(lines)
 
     """Idea:
-        - all_sides = [] (or empty dict)
-        - for each cube: store all its sides in all_sides
-        - remove duplicates from all_sides (those are the sides that are shared between two cubes)
-        - return len(all_sides)
+        - all_faces = {}
+        - for each cube: store all its faces in all_faces
+        - remove duplicates from all_faces (those are the faces that are shared between two cubes)
+        - return len(all_faces)
     """
     def solve_part_I(self):
         unique_faces = {}

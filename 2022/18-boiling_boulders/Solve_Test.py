@@ -24,7 +24,7 @@ class SolveTest(unittest.TestCase):
 
     def test_solve_part_II(self):
         solve = Solve.read_input_file('example_input.txt')
-        self.assertEqual(-3, solve.solve_part_II())
+        self.assertEqual(58, solve.solve_part_II())
 
 if __name__ == '__main__':
     unittest.main()
