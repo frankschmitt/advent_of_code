@@ -17,7 +17,7 @@ Sensor at x=20, y=1: closest beacon is at x=15, y=3
 = APPROACHES
 == 1: system of inequations
 === Derived rules
-0 <= x
+0 <= x 
 x <= 20
 0 <= y
 y <= 20
@@ -36,4 +36,27 @@ abs(x - 16) + abs(y - 7) > 5
 abs(x - 14) + abs(y - 3) > 1
 abs(x - 20) + abs(y - 1) > 7
 
+abs(x) <= 20
+abs(y) <= 20
 
+== 2 resolve it
+from constraint import *
+p = Problem()
+p.addVariable("x", range(0,21))
+p.addVariable("y", range(0,21))
+p.addConstraint(abs(x - 2) + abs(y - 18) > 7, ("x","y"))
+p.addConstraint(abs(x - 9) + abs(y - 16) > 1, ("x","y"))
+p.addConstraint(abs(x - 13) + abs(y - 2) > 3, ("x","y"))
+p.addConstraint(abs(x - 12) + abs(y - 14) > 4, ("x","y"))
+p.addConstraint(abs(x - 10) + abs(y - 20) > 4, ("x","y"))
+p.addConstraint(abs(x - 14) + abs(y - 17) > 5, ("x","y"))
+p.addConstraint(abs(x - 8) + abs(y - 7) > 9, ("x","y"))
+p.addConstraint(abs(x - 2) + abs(y - 0) > 14, ("x","y"))
+p.addConstraint(abs(x - 0) + abs(y - 11) > 3, ("x","y"))
+p.addConstraint(abs(x - 20) + abs(y - 14) > 8, ("x","y"))
+p.addConstraint(abs(x - 17) + abs(y - 20) > 6, ("x","y"))
+p.addConstraint(abs(x - 16) + abs(y - 7) > 5, ("x","y"))
+p.addConstraint(abs(x - 14) + abs(y - 3) > 1, ("x","y"))
+p.addConstraint(abs(x - 20) + abs(y - 1) > 7, ("x","y"))
+res = p.getSolutions()
+print(res)

@@ -14,6 +14,9 @@ class Sensor:
 
         return self.x == other.x and self.y == other.y and self.beacon_x == other.beacon_x and self.beacon_y == other.beacon_y
 
+    def __str__(self):
+        return "sensor: {}/{}, beacon: {}/{}, range: {}".format(self.x, self.y, self.beacon_x, self.beacon_y, self.range_) 
+
 
 class Solve:
 
@@ -30,6 +33,11 @@ class Solve:
             lines = [l.rstrip() for l in f.readlines()]
         return Solve(lines)
 
+    # part I: get number of "forbidden" positions in given row
+    # approach:
+    #   - start with empty list of forbidden positions (actually, we use a dict to handle duplicates)
+    #   - for each beacon: determine its list of forbidden positions, and add it to the overall list of forbidden positions
+    #   - return the number of unique positions
     def solve_part_I(self, row):
         forbidden = {}
         for s in self.sensors:
@@ -41,17 +49,31 @@ class Solve:
               forbidden[x] = True
         return len(forbidden)
 
+
+    def rec_solve_part_II(self, partial_solutions, remaining_sensors):
+        if len(remaining_sensors) == 0:
+            logging.info("no more sensors remaining - returning {}".format(partial_solutions))
+            return partial_solutions
+        else:
+            hd, tail = remaining_sensors[0], remaining_sensors[1:]
+            logging.info("next: {}".format(hd))
+            new_solutions = partial_solutions
+            # 4 cases: 
+            return self.rec_solve_part_II(new_solutions, tail)
+
+
+
     # idea: - build a system of (#sensors + 2) inequations  
     #           0 <= x <= 4e9
     #           0 <= y <= 4e9
     #           for each sensor s:
     #             abs(s.x - x) + abs(s.y - y) > s.range
+    # idea2:
+    #   - for each coordinate: keep track of possible positions as an intervall [x_low;x_high], [y_low; y_high]
+    #   - start with [0; max_coord]
+    #   - for each beacon: handle all 4 different cases, and recursively search the remaining beacons (aggressively pruning empty intervals)
     def solve_part_II(self, max_x, max_y):
-        for x in range(0, max_x+1):
-            for y in range(0, max_y+1):
-                excluded = False
-                for b in self.sensors:
-                    pass 
+        res = self.rec_solve_part_II([(0,max_x,0,max_y)], self.sensors)
         return -1
 
 if __name__ == '__main__':
