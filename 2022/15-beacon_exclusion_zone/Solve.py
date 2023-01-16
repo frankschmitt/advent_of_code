@@ -63,6 +63,13 @@ class Solve:
             return self.rec_solve_part_II(new_solutions, tail)
 
 
+    # create a constraint
+    # to avoid the late binding problem, we use a function factory; see https://stackoverflow.com/a/3431699/610979
+    def make_constraint(self, s_x, s_y, s_range):
+        def f(x,y):
+            # create the function here
+            return abs(x - s_x) + abs(y - s_y) > s_range
+        return f
 
     # idea: - build a system of (#sensors + 2) inequations  
     #           0 <= x <= 4e9
@@ -76,15 +83,15 @@ class Solve:
     def solve_part_II(self, max_x, max_y):
         #res = self.rec_solve_part_II([(0,max_x,0,max_y)], self.sensors)
         p = Problem()
-        p.addVariable("x_", range(0, max_x + 1))
-        p.addVariable("y_", range(0, max_y + 1))
+        p.addVariable("x", range(0, max_x + 1))
+        p.addVariable("y", range(0, max_y + 1))
         for s in self.sensors:
             print("adding rule for sensor {}: abs(x-{}) + abs(y-{}) > {}".format(s, s.x, s.y, s.range_))
-            p.addConstraint(lambda x_,y_: abs(x_ - s.x) + abs(y_ - s.y) > s.range_, ("x_", "y_"))
+            p.addConstraint(self.make_constraint(s.x, s.y, s.range_), ("x", "y"))
         sols = p.getSolutions()
         print("#solutions: {}, first: {}".format(len(sols), sols[0]))
 
-        return -1
+        return int(sols[0]['x'] * 4e6 + sols[0]['y']) 
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
