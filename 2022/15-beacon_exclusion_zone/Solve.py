@@ -1,6 +1,7 @@
 import logging
 import functools
 from parse import parse
+from constraint import Problem
 
 class Sensor:
     def __init__(self, x, y, beacon_x, beacon_y):
@@ -73,7 +74,16 @@ class Solve:
     #   - start with [0; max_coord]
     #   - for each beacon: handle all 4 different cases, and recursively search the remaining beacons (aggressively pruning empty intervals)
     def solve_part_II(self, max_x, max_y):
-        res = self.rec_solve_part_II([(0,max_x,0,max_y)], self.sensors)
+        #res = self.rec_solve_part_II([(0,max_x,0,max_y)], self.sensors)
+        p = Problem()
+        p.addVariable("x_", range(0, max_x + 1))
+        p.addVariable("y_", range(0, max_y + 1))
+        for s in self.sensors:
+            print("adding rule for sensor {}: abs(x-{}) + abs(y-{}) > {}".format(s, s.x, s.y, s.range_))
+            p.addConstraint(lambda x_,y_: abs(x_ - s.x) + abs(y_ - s.y) > s.range_, ("x_", "y_"))
+        sols = p.getSolutions()
+        print("#solutions: {}, first: {}".format(len(sols), sols[0]))
+
         return -1
 
 if __name__ == '__main__':
