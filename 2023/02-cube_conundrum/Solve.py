@@ -53,7 +53,7 @@ class Game:
                 logging.debug(f"    parsed color: {m_inner['color']} -> {m_inner['cnt']}")
             sets.append(Set(coldict['red'], coldict['green'], coldict['blue']))
         game = Game(idx, sets)
-        logging.info(f"parsed line: {line} -> {game}")
+        logging.debug(f"parsed line: {line} -> {game}")
         return game
 
 
@@ -73,7 +73,7 @@ class Solve:
         return sum([game.power() for game in self.games]) 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
     solve = Solve.read_input_file('input.txt')
     print("{} {}".format(solve.solve_part_I(), solve.solve_part_II()))
 
