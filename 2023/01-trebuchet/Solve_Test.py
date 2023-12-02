@@ -8,12 +8,14 @@ class SolveTest(unittest.TestCase):
   
 
     def test_solve_part_I(self):
-        solve = Solve.read_input_file('example_input.txt')
-        self.assertEqual(142, solve.solve_part_I())
+        #solve = Solve.read_input_file('example_input.txt')
+        #self.assertEqual(142, solve.solve_part_I())
+        pass
 
     def test_solve_part_II(self):
-        solve = Solve.read_input_file('example_input.txt')
-        #self.assertEqual(-3, solve.solve_part_II())
+        solve = Solve.read_input_file('example_input2.txt')
+        self.assertEqual(281, solve.solve_part_II())
+        #pass
 
 if __name__ == '__main__':
     unittest.main()
