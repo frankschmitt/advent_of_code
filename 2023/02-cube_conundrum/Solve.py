@@ -24,6 +24,14 @@ class Game:
     def is_valid(self):
         return ft.reduce(lambda acc, set: acc and set.is_valid(), self.sets, True)
 
+    # a game's power is the product of the minimum number of red, green and blue stones required for all sets to be valid
+    def power(self):
+        r = max([s.red for s in self.sets])
+        g = max([s.green for s in self.sets])
+        b = max([s.blue for s in self.sets])
+        return r*g*b
+
+
     # parse a line, and return the parsed game
     def parse_game(line):
         re_outer = re.compile("Game (?P<idx>[0-9]+): (?P<sets>.*)")
@@ -62,7 +70,7 @@ class Solve:
         return sum([game.idx for game in self.games if game.is_valid()])
 
     def solve_part_II(self):
-        return -1
+        return sum([game.power() for game in self.games]) 
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
