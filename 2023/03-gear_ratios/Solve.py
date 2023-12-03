@@ -146,7 +146,7 @@ class Solve:
         return result 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
     solve = Solve.read_input_file('input.txt')
     print("{} {}".format(solve.solve_part_I(), solve.solve_part_II()))
 
