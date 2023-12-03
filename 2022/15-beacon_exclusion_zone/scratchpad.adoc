@@ -60,3 +60,28 @@ p.addConstraint(abs(x - 14) + abs(y - 3) > 1, ("x","y"))
 p.addConstraint(abs(x - 20) + abs(y - 1) > 7, ("x","y"))
 res = p.getSolutions()
 print(res)
+
+== 3 new / modified idea
+=== Motivation
+approach 1/2 works per se, but is too slow
+
+=== approach
+* use variables dist_x_i and dist_y_i for each sensor i
+* use MinSumConstraints: dist_x_i + dist_y_i > range_i
+* use constraints for x and y; dist_x_i = |x-delta_x_i| => x  
+
+=== draft
+from constraint import *
+p = Problem()
+p.addVariable("x", range(0,21))
+p.addVariable("y", range(0,21))
+# sensor 1
+p.addVariable("abs_delta_x_1", range(0, 21))
+p.addVariable("abs_delta_y_1", range(0, 21))
+p.addConstraint(abs_delta_x_1 + abs_delta_y_1 > 7, ("abs_delta_x_1", "abs_delta_y_1"))
+p.addContraint(??? how does x depend on abs_delta_x_1 for abs_delta_x_1 = abs(x - delta_x_1) = |x - 2)
+   => (x >= delta_x_1 and x - delta_x_1 == abs_delta_x_1) or (x < delta_x_1 and (-x - delta_x_1) == abs_delta_x_1)
+... etc.
+res = p.getSolutions()
+print(res)
+

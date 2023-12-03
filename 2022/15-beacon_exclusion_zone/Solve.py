@@ -1,7 +1,7 @@
 import logging
 import functools
 from parse import parse
-from constraint import Problem
+from constraint import Problem, MinConflictsSolver
 
 class Sensor:
     def __init__(self, x, y, beacon_x, beacon_y):
@@ -82,21 +82,22 @@ class Solve:
     #   - for each beacon: handle all 4 different cases, and recursively search the remaining beacons (aggressively pruning empty intervals)
     def solve_part_II(self, max_x, max_y):
         #res = self.rec_solve_part_II([(0,max_x,0,max_y)], self.sensors)
-        p = Problem()
+        p = Problem(MinConflictsSolver())
         p.addVariable("x", range(0, max_x + 1))
         p.addVariable("y", range(0, max_y + 1))
         for s in self.sensors:
             print("adding rule for sensor {}: abs(x-{}) + abs(y-{}) > {}".format(s, s.x, s.y, s.range_))
             p.addConstraint(self.make_constraint(s.x, s.y, s.range_), ("x", "y"))
-        sols = p.getSolutions()
-        print("#solutions: {}, first: {}".format(len(sols), sols[0]))
+        sol = p.getSolution()
+        print("solution: {}".format(sol))
 
-        return int(sols[0]['x'] * 4e6 + sols[0]['y']) 
+        return int(sol['x'] * 4e6 + sol['y']) 
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
     solve = Solve.read_input_file('input.txt')
     # part I: 5181556
-    print("{} {}".format(solve.solve_part_I(2000000), solve.solve_part_II(4000000, 4000000)))
+    #print("{} {}".format(solve.solve_part_I(2000000), solve.solve_part_II(4000000, 4000000)))
+    print("{} {}".format(-1, solve.solve_part_II(4000000, 4000000)))
 
 
