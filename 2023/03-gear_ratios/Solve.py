@@ -55,10 +55,15 @@ class Solve:
                     debug += " is NO digit"
                     if in_number and has_symbol_neighbour:
                         result += currval
-                        debug += "  added, new result: {result}"
+                        debug += f"  added, new result: {result}"
                     in_number = False
                     has_symbol_neighbour = False
                     currval = 0
+                logging.debug(debug)
+            # check if we've got a number adjacent to a symbol at the end of the line; if yes, we still need to add it
+            if in_number and has_symbol_neighbour:
+                result += currval
+                debug += f"  added (end of line), new result: {result}"
                 logging.debug(debug)
         return result 
 
