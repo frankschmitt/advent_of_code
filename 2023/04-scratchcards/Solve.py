@@ -18,23 +18,28 @@ class Card:
         winning_numbers = [int(s) for s in m['winning_numbers'].split()]
         numbers = [int(s) for s in m['numbers'].split()]
         result = Card(idx, winning_numbers, numbers)
-        logging.info(f"parsed '{line}', result: {result}")
+        logging.debug(f"parsed '{line}', result: {result}")
+        return result
+
+    def num_matching(self):
+        result = len(list(set(self.winning_numbers).intersection(self.numbers)))
         return result
 
     def points(self):
-        num_common = len(list(set(self.winning_numbers).intersection(self.numbers)))
-        if num_common >= 1:
-            result = 2**(num_common-1)
+        n = self.num_matching()
+        if n >= 1:
+            result = 2**(n-1)
         else:
             result = 0
-        logging.info(f"points for {self}: {result}")
+        logging.debug(f"points for {self}: {result}")
         return result
 
 
 class Solve:
     def __init__(self, lines):
         self.lines = lines
-        self.cards = [Card.parse_card(line) for line in lines]
+        parsed_cards = [Card.parse_card(line) for line in lines]
+        self.cards = { c.idx : c for c in parsed_cards }
 
     def read_input_file(filename):
         with open(filename) as f:
@@ -42,13 +47,28 @@ class Solve:
         return Solve(lines)
 
     def solve_part_I(self):
-        return sum([c.points() for c in self.cards]) 
+        return sum([c.points() for (idx,c) in self.cards.items()]) 
 
     def solve_part_II(self):
-        return -1
+        # initially, we've got one of each card
+        got_cards = { idx: 1 for idx in self.cards}
+        # process cards linearly; this is ok because a card with index n only gives us cards with indices > n
+        for (idx, c) in self.cards.items():
+            count = got_cards[idx]
+            debug = f"processing {c}, count: {count}"
+            if c.num_matching() == 0:
+                debug += ", not winning"
+            else:
+                debug += ", winning, adding: "
+                for i in range(1,c.num_matching()+1):
+                    card = self.cards[idx+i]
+                    debug += f"{card}, "
+                    got_cards[card.idx] += count
+            logging.debug(debug)
+        return sum([cnt for (idx, cnt) in got_cards.items()])
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
     solve = Solve.read_input_file('input.txt')
     print("{} {}".format(solve.solve_part_I(), solve.solve_part_II()))
 
