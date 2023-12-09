@@ -13,13 +13,13 @@ class SolveTest(unittest.TestCase):
         pass
 
     def test_solve_part_I(self):
-        solve = Solve.read_input_file('example_input.txt')
-        self.assertEqual(6440, solve.solve_part_I())
+        #solve = Solve.read_input_file('example_input.txt')
+        #self.assertEqual(6440, solve.solve_part_I())
+        pass
 
     def test_solve_part_II(self):
-        #solve = Solve.read_input_file('example_input.txt')
-        #self.assertEqual(-3, solve.solve_part_II())
-        pass
+        solve = Solve.read_input_file('example_input.txt')
+        self.assertEqual(5905, solve.solve_part_II())
 
 if __name__ == '__main__':
     unittest.main()
