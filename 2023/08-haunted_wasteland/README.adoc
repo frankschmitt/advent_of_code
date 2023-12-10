@@ -1,0 +1,9 @@
+= IDEA
+* part I: walk the path until we found the goal node
+* part II
+  ** brute force: walk each path until all are in a 'Z' node -> terribly inefficient, canceled after > 1M rounds
+  ** mathy
+     *** walk each path until we detect a cycle, and note the 'Z' nodes' indices
+     *** compute the kgV (smallest common multiple) of all path lengths
+
+ 

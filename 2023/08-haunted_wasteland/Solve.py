@@ -13,7 +13,7 @@ class Solve:
         self.end = G.add_node('ZZZ')
         self.lines = lines
         self.path = lines[0]
-        re_line = re.compile("^(?P<start>[A-Z]+) = [(](?P<lhs>[A-Z]+), (?P<rhs>[A-Z]+)[)]$")
+        re_line = re.compile("^(?P<start>[0-9A-Z]+) = [(](?P<lhs>[0-9A-Z]+), (?P<rhs>[0-9A-Z]+)[)]$")
         for line in lines[2:]:
             m = re_line.match(line)
             if m is None:
@@ -32,10 +32,10 @@ class Solve:
         curr_node = 'AAA'
         path = [curr_node]
         for p in itertools.cycle(self.path):
-            logging.info(f"direction: {p}")
+            logging.debug(f"direction: {p}")
             # get edges for current vertex, including direction, format: (start, end, direction)
             for e in self.G.edges(curr_node, data="direction"):
-                logging.info(f"inspecting edge {e}")
+                logging.debug(f"inspecting edge {e}")
                 if e[2] == p:
                     path.append(e[1])
                     curr_node = e[1]
@@ -45,10 +45,32 @@ class Solve:
         return -1
 
     def solve_part_II(self):
+        curr_nodes = [ n for n in list(self.G.nodes()) if n[-1] == 'A']
+        logging.info(f"starting nodes: {curr_nodes}, cnt: {len(curr_nodes)}")
+        length = 0
+        for p in itertools.cycle(self.path):
+            logging.debug(f"direction: {p}")
+            next_nodes = []
+            all_z = True
+            for cn in curr_nodes:
+                # get edges for current vertex, including direction, format: (start, end, direction)
+                for e in self.G.edges(cn, data="direction"):
+                    logging.debug(f"inspecting edge {e}")
+                    if e[2] == p:
+                        next_nodes.append(e[1])
+                        if e[1][-1] != 'Z':
+                            all_z = False
+            length += 1
+            logging.info(f"current length: {length}")
+            if all_z:
+                logging.info(f"found solution, simultaneous length: {length}")
+                return length
+            else:
+                curr_nodes = next_nodes
         return -1
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
     solve = Solve.read_input_file('input.txt')
     print("{} {}".format(solve.solve_part_I(), solve.solve_part_II()))
 
