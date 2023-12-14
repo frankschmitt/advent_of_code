@@ -25,33 +25,59 @@ class Solve:
             lines = [l.rstrip() for l in f.readlines()]
         return Solve(lines)
 
-    def solve_part_I(self):
-        # part I: expand it: duplicate empty rows + cols
+    def solve(self, factor=1e6):
+        # part I: expand it: mark row_type (. = no galaxy, # = at least one galaxy)
         # rows
+        row_types = []
         for i in range(len(self.grid)-1, -1, -1):
             if '#' not in self.grid[i, :]:
-                logging.debug(f"duplicating row #{i}: {self.grid[i, :]}")
-                self.grid = dup_row(self.grid, i)
+                logging.debug(f"multiplying row #{i}: {self.grid[i, :]}")
+                row_types.append('.')
+            else:
+                row_types.append('#')
         # cols
+        col_types = []
         for j in range(len(self.grid[0])-1, -1, -1):
             if '#' not in self.grid[:, j]:
-                logging.debug(f"duplicating col #{j}: {self.grid[:, j]}")
-                self.grid = dup_col(self.grid, j)
-        logging.info(f"grid after expansion:\n{pretty_print_grid(self.grid)}")
+                logging.debug(f"multiplying col #{j}: {self.grid[:, j]}")
+                col_types.append('.')
+            else:
+                col_types.append('#')
         # part II: find the galaxies
         galaxies = [pos for pos, x in np.ndenumerate(self.grid) if x == '#']
         result = 0
+        # pairwise comparison / distance computation
         for i in range(len(galaxies)):
             for j in range(i+1, len(galaxies)):
-                result += abs(galaxies[i][0]-galaxies[j][0]) + abs(galaxies[i][1] - galaxies[j][1])
+                min_row, max_row = min(galaxies[i][0],galaxies[j][0]), max(galaxies[i][0],galaxies[j][0]) 
+                logging.debug(f"computing distance between galaxies {galaxies[i]} and {galaxies[j]}")
+                for x in range(min_row, max_row):
+                    if row_types[x] == '.': 
+                        result += factor
+                        logging.debug(f"empty row {x} -> adding {factor}")
+                    else:
+                        result += 1
+                        logging.debug(f"non-empty row {x} -> adding 1")
+                min_col, max_col = min(galaxies[i][1],galaxies[j][1]), max(galaxies[i][1],galaxies[j][1]) 
+                for y in range(min_col, max_col):
+                    if col_types[y] == '.': 
+                        result += factor
+                        logging.debug(f"empty col {y} -> adding {factor}")
+                    else:
+                        result += 1
+                        logging.debug(f"non-empty col {y} -> adding 1")
         return result 
 
-    def solve_part_II(self):
-        return -1
+    def solve_part_I(self):
+        return self.solve(2)
+
+    def solve_part_II(self, factor=1000000):
+        return self.solve(factor)
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG)
-    solve = Solve.read_input_file('input.txt')
-    print("{} {}".format(solve.solve_part_I(), solve.solve_part_II()))
+    logging.basicConfig(level=logging.INFO)
+    solve1 = Solve.read_input_file('input.txt')
+    solve2 = Solve.read_input_file('input.txt')
+    print("{} {}".format(solve1.solve_part_I(), solve2.solve_part_II(1000000)))
 
 

@@ -11,9 +11,10 @@ class SolveTest(unittest.TestCase):
         self.assertEqual(374, solve.solve_part_I())
 
     def test_solve_part_II(self):
-        #solve = Solve.read_input_file('example_input.txt')
-        #self.assertEqual(-3, solve.solve_part_II())
-        pass
+        solve = Solve.read_input_file('example_input.txt')
+        self.assertEqual(374, solve.solve_part_II(2))
+        self.assertEqual(1030, solve.solve_part_II(10))
+        self.assertEqual(8410, solve.solve_part_II(100))
 
 if __name__ == '__main__':
     unittest.main()
