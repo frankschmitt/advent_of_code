@@ -1,9 +1,11 @@
 import logging
-import functools
+import functools as ft
 
 class Solve:
     def __init__(self, lines):
         self.lines = lines
+        self.steps = lines[0].split(',')
+        logging.info(f"parsed steps: {self.steps}")
 
     def read_input_file(filename):
         with open(filename) as f:
@@ -11,7 +13,9 @@ class Solve:
         return Solve(lines)
 
     def solve_part_I(self):
-        return -1
+        hash_codes = [ft.reduce(lambda acc,ch: ((acc + ord(ch))*17) % 256, step, 0) for step in self.steps]
+        logging.info(f"hash_codes: {hash_codes}")
+        return sum(hash_codes)
 
     def solve_part_II(self):
         return -1
