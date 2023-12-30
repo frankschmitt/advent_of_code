@@ -53,8 +53,8 @@ class Solve:
             lines = [l.rstrip() for l in f.readlines()]
         return Solve(lines)
 
-    def solve_part_I(self):
-        paths = [[s] for s in self.seeds]
+    def solve(self, paths):
+        print(f"start: {paths}")
         # walk the path: Seed > soil > fertilizer > water > light > temperature > humidity > location
         for b in self.blocks:
             # compute next step for each path
@@ -68,17 +68,24 @@ class Solve:
                 if dest == None:
                     dest = src
                 p.append(dest)
-        # self.dest_start, self.src_start, self.length = dest_start, src_start, length
             print(f"step: {paths}")
-
         return min([p[-1] for p in paths]) 
 
+    def solve_part_I(self):
+        paths = [[s] for s in self.seeds]
+        return self.solve(paths)
+
     def solve_part_II(self):
-        return -1
+        paths = []
+        for i in range(0, len(self.seeds), 2):
+            for j in range(self.seeds[i], self.seeds[i]+self.seeds[i+1]-1):
+                paths.append([j])
+        return self.solve(paths) 
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
     solve = Solve.read_input_file('input.txt')
-    print("{} {}".format(solve.solve_part_I(), solve.solve_part_II()))
+    #print("{} {}".format(solve.solve_part_I(), solve.solve_part_II()))
+    print("{} {}".format(solve.solve_part_II()))
 
 
