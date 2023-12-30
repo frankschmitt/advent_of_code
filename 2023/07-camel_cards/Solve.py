@@ -28,7 +28,7 @@ class Hand:
             self.joker_type = HandType.FIVE_OF_A_KIND
         elif ci[0] == 4:
             self.type = HandType.FOUR_OF_A_KIND
-            if self.joker_count == 1:
+            if self.joker_count > 0:
                 self.joker_type = HandType.FIVE_OF_A_KIND
             else:
                 self.joker_type = HandType.FOUR_OF_A_KIND
@@ -49,7 +49,7 @@ class Hand:
             if self.joker_count == 2:
                 self.joker_type = HandType.FOUR_OF_A_KIND
             elif self.joker_count == 1:
-                self.joker_type = HandType.THREE_OF_A_KIND
+                self.joker_type = HandType.FULL_HOUSE
             else:
                 self.joker_type = HandType.TWO_PAIRS
         elif ci[0] == 2:
@@ -67,7 +67,7 @@ class Hand:
         logging.debug(f"  init hand, cards: {self.cards}, bid: {self.bid}, counts: {self.counts}, joker_count: {self.joker_count}, type: {self.type}, joker_type: {self.joker_type}")
 
     def __str__(self):
-        return f"cards: {self.cards}, bid: {self.bid}, type: {self.type}, joker_type: {self.joker_type}, #jokers: {self.joker_count}"
+        return f"cards: {self.cards}, bid: {self.bid:6}, type: {self.type:10}, joker_type: {self.joker_type:10}, #jokers: {self.joker_count}"
 
 
     # compare two hands
@@ -133,12 +133,12 @@ class Solve:
         sorted_hands = sorted(self.hands, key=functools.cmp_to_key(Hand.joker_compare))
         #logging.debug(f"sorted hands: {[str(h) for h in sorted_hands]}")
         logging.debug("SORTED HANDS:\n")
-        for sh in sorted_hands:
-            logging.debug(f"{str(sh)}")
+        for idx, sh in enumerate(sorted_hands):
+            logging.debug(f"winnings: {(idx+1)*sh.bid:7} for {str(sh)}")
         return sum([ (i+1) * sorted_hands[i].bid for i in range(len(sorted_hands)) ])
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
     solve = Solve.read_input_file('input.txt')
     print("{} {}".format(solve.solve_part_I(), solve.solve_part_II()))
 

@@ -1,0 +1,5 @@
+38635: last THREE_OF_A_KIND joker_type
+38370: last TWO_PAIRS
+38376: J4334, joker_type: THREE_OF_A_KIND (should be FULL_HOUSE)
+
+
