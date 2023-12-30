@@ -6,7 +6,14 @@ class Block:
         self.name, self.start_idx, self.end_idx, self.map = name, start_idx, end_idx, map
 
     def __str__(self):
-        return f"{self.name}\n{self.map}\n"
+        return f"{self.name}\n{[str(me) for me in self.map]}\n"
+
+class MapEntry:
+    def __init__(self, dest_start, src_start, length):
+        self.dest_start, self.src_start, self.length = dest_start, src_start, length
+
+    def __str__(self):
+        return f"{self.dest_start} {self.src_start} {self.length}"
 
 class Solve:
     def __init__(self, lines):
@@ -35,7 +42,8 @@ class Solve:
                 end_idx = i
                 break
             else:
-                block.append([int(x) for x in lines[i].split()])
+                vals = [int(x) for x in lines[i].split()]
+                block.append(MapEntry(vals[0], vals[1], vals[2]))
         if end_idx == None:
             end_idx = len(lines)+1
         return Block(name, start_idx, end_idx, block)
@@ -46,7 +54,24 @@ class Solve:
         return Solve(lines)
 
     def solve_part_I(self):
-        return -1
+        paths = [[s] for s in self.seeds]
+        # walk the path: Seed > soil > fertilizer > water > light > temperature > humidity > location
+        for b in self.blocks:
+            # compute next step for each path
+            for p in paths:
+                src = p[-1]
+                dest = None
+                for me in b.map:
+                    if me.src_start <= src <= me.src_start+me.length-1:
+                        dest = me.dest_start+(src-me.src_start)
+                # no matching entry found? default: dest = src
+                if dest == None:
+                    dest = src
+                p.append(dest)
+        # self.dest_start, self.src_start, self.length = dest_start, src_start, length
+            print(f"step: {paths}")
+
+        return min([p[-1] for p in paths]) 
 
     def solve_part_II(self):
         return -1
