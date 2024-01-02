@@ -47,6 +47,8 @@ class Solve:
                         return len(path)-1
         return -1
 
+    # approach: keep track of the z indices for each ghost; as soon as we find at least on z index for each ghost: break and 
+    #   compute the path length as the least common multiple of the individual path lengths
     def solve_part_II(self):
         curr_nodes = [ n for n in list(self.G.nodes()) if n[-1] == 'A']
         z_indices = [ [] for n in curr_nodes]
@@ -55,28 +57,22 @@ class Solve:
         for p in itertools.cycle(self.path):
             logging.debug(f"direction: {p}")
             next_nodes = []
-            all_z = True
             for idx, cn in enumerate(curr_nodes):
                 # get edges for current vertex, including direction, format: (start, end, direction)
                 for e in self.G.edges(cn, data="direction"):
                     logging.debug(f"inspecting edge {e}")
                     if e[2] == p:
                         next_nodes.append(e[1])
-                        if e[1][-1] != 'Z':
-                            all_z = False
-                        else:
+                        if e[1][-1] == 'Z':
                             logging.info(f"node {idx} at Z after {length}")
                             z_indices[idx].append(length)
             logging.info(f"iteration {length}\n{next_nodes}\n{chr(10).join([str(zi) for zi in z_indices])}\n\n")
             # did we find an z-index for each starting point? break, compute the path length as least common multiple of all path lengths
             if all([len(a) > 0 for a in z_indices]): 
-                #   the individual path lengths equal the first z-index plus 1
+                # compute overall length as product of individual lengths; the individual path lengths equal the first z-index
                 res = reduce(lambda x,acc: lcm(x,acc), [ a[0] for a in z_indices])
+                logging.info(f"found solution, simultaneous length: {res}")
                 return res
-            #logging.info(f"current length: {length}")
-            if all_z:
-                logging.info(f"found solution, simultaneous length: {length}")
-                #return length
             else:
                 curr_nodes = next_nodes
                 length += 1
