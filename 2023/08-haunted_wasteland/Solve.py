@@ -4,13 +4,16 @@ import functools
 import itertools
 import networkx as nx
 import regex as re
+from math import gcd
+from functools import reduce
+
+# least common multiple of two integers
+def lcm(a,b):
+    return a*b // gcd(a,b)
 
 class Solve:
     def __init__(self, lines):
         G = nx.MultiDiGraph()
-        # we add start and end directly so we can keep references to them; the other nodes are added automatically
-        self.start = G.add_node('AAA')
-        self.end = G.add_node('ZZZ')
         self.lines = lines
         self.path = lines[0]
         re_line = re.compile("^(?P<start>[0-9A-Z]+) = [(](?P<lhs>[0-9A-Z]+), (?P<rhs>[0-9A-Z]+)[)]$")
@@ -46,13 +49,14 @@ class Solve:
 
     def solve_part_II(self):
         curr_nodes = [ n for n in list(self.G.nodes()) if n[-1] == 'A']
+        z_indices = [ [] for n in curr_nodes]
         logging.info(f"starting nodes: {curr_nodes}, cnt: {len(curr_nodes)}")
-        length = 0
+        length = 1
         for p in itertools.cycle(self.path):
             logging.debug(f"direction: {p}")
             next_nodes = []
             all_z = True
-            for cn in curr_nodes:
+            for idx, cn in enumerate(curr_nodes):
                 # get edges for current vertex, including direction, format: (start, end, direction)
                 for e in self.G.edges(cn, data="direction"):
                     logging.debug(f"inspecting edge {e}")
@@ -60,13 +64,22 @@ class Solve:
                         next_nodes.append(e[1])
                         if e[1][-1] != 'Z':
                             all_z = False
-            length += 1
-            logging.info(f"current length: {length}")
+                        else:
+                            logging.info(f"node {idx} at Z after {length}")
+                            z_indices[idx].append(length)
+            logging.info(f"iteration {length}\n{next_nodes}\n{chr(10).join([str(zi) for zi in z_indices])}\n\n")
+            # did we find an z-index for each starting point? break, compute the path length as least common multiple of all path lengths
+            if all([len(a) > 0 for a in z_indices]): 
+                #   the individual path lengths equal the first z-index plus 1
+                res = reduce(lambda x,acc: lcm(x,acc), [ a[0] for a in z_indices])
+                return res
+            #logging.info(f"current length: {length}")
             if all_z:
                 logging.info(f"found solution, simultaneous length: {length}")
-                return length
+                #return length
             else:
                 curr_nodes = next_nodes
+                length += 1
         return -1
 
 if __name__ == '__main__':

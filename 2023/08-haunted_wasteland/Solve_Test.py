@@ -4,7 +4,7 @@ from Solve import Solve
 
 class SolveTest(unittest.TestCase):
     logger = logging.getLogger(__name__)
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
   
 
     def test_solve_part_I_short_path(self):
