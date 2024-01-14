@@ -3,6 +3,12 @@ import logging
 import numpy as np
 import networkx as nx
 
+# for printing
+CSI = "\x1B["
+
+#print(CSI+"31;10m" + "Colored Text" + CSI + "0m")
+
+
 class Solve:
     def __init__(self, lines):
         self.lines = lines
@@ -125,7 +131,7 @@ class Solve:
         return res
 
 
-    def solve_part_I(self):
+    def find_loop(self):
         path = [self.start_coords]
         # starting from starting point S, find the direction in which we need to go 
         curr_coords = self.start_coords
@@ -136,6 +142,10 @@ class Solve:
             curr_coords = next_coords
             next_coords = self.find_next_coords(prev_coords, curr_coords)
         logging.info(f"found path: {path} with length: {len(path)}")
+        return path
+
+    def solve_part_I(self):
+        path = self.find_loop()
         return len(path) // 2
 
     def solve_part_II(self):

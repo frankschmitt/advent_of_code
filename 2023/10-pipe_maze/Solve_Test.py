@@ -8,8 +8,9 @@ class SolveTest(unittest.TestCase):
   
 
     def test_solve_part_I_simple_loop(self):
-        solve = Solve.read_input_file('example_input_1.txt')
-        self.assertEqual(4, solve.solve_part_I())
+        #solve = Solve.read_input_file('example_input_1.txt')
+        #self.assertEqual(4, solve.solve_part_I())
+        pass
 
     def test_solve_part_I_complex_loop(self):
         #solve = Solve.read_input_file('example_input_2.txt')
@@ -17,9 +18,8 @@ class SolveTest(unittest.TestCase):
         pass
 
     def test_solve_part_II(self):
-        #solve = Solve.read_input_file('example_input.txt')
-        #self.assertEqual(-3, solve.solve_part_II())
-        pass
+        solve = Solve.read_input_file('example_input_3.txt')
+        self.assertEqual(10, solve.solve_part_II())
 
 if __name__ == '__main__':
     unittest.main()

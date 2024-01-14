@@ -1,0 +1,9 @@
+= IDEA
+* part I: pretty straightforward
+  ** walk the path
+  ** keep track of the squares we visited
+  ** break if we reach S again
+  ** result = len(path) / 2
+* part II
+  ** flood-fill, starting at one square inside 
+  ** count number of squares inside filled area
