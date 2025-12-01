@@ -25,15 +25,13 @@ class Solve:
                 self.current += width
             else:
                 raise ValueError(f"Unknown direction: {direction}")
-            if (self.old < 0 and self.current > 0) or (self.old > 0 and self.current < 0):
-                self.crossed_zeroes += 1
-            if (self.current) > 100:
-                self.crossed_zeroes += 1
-            msg = f"Moved from {self.old} to {self.current}"
+            msg = f"{line} : moved from {self.old} to {self.current}"
+            if (self.current < 0 or self.current >= 100):
+                # we might make more than one rotation for a single move
+                self.crossed_zeroes += max(abs(int(self.current / 100)), 1)
             self.current = self.current % 100
             if self.current == 0:
                 self.num_zeroes += 1
-                self.crossed_zeroes += 1
             msg += f", , num_zeroes: {self.num_zeroes}, crossed zeroes: {self.crossed_zeroes}"
             print(msg)
 

@@ -1,0 +1,12 @@
+= SYNOPSIS
+Solution for the Advent of Code 2025, in Python 
+
+= TESTING
+cd <subdir>
+python3 -munittest Solve_Test.py
+
+= RUNNING
+cd <subdir>
+python3 Solve.py
+
+
