@@ -4,9 +4,7 @@ import functools
 class Solve:
     def __init__(self, lines):
         self.lines = lines
-        self.current = 50
-        self.num_zeroes = 0
-        self.crossed_zeroes = 0
+        self.values = []
 
     def read_input_file(filename):
         with open(filename) as f:
@@ -14,32 +12,23 @@ class Solve:
         return Solve(lines)
 
     def run(self):
+        current = 50
+        self.values = [current]
         for line in self.lines:
-            self.old = self.current
-            direction = line[0]
-            width = int(line[1:])
-            #print(f"Direction: {direction}, Width: {width}")
-            if direction == 'L':
-                self.current -= width
-            elif direction == 'R':
-                self.current += width
-            else:
-                raise ValueError(f"Unknown direction: {direction}")
-            msg = f"{line} : moved from {self.old} to {self.current}"
-            if (self.current < 0 or self.current >= 100):
-                # we might make more than one rotation for a single move
-                self.crossed_zeroes += max(abs(int(self.current / 100)), 1)
-            self.current = self.current % 100
-            if self.current == 0:
-                self.num_zeroes += 1
-            msg += f", , num_zeroes: {self.num_zeroes}, crossed zeroes: {self.crossed_zeroes}"
-            print(msg)
+            val = int(line.replace('L', '-').replace('R', '+'))
+            current += val
+            self.values.append(current)
 
     def solve_part_I(self):
-        return self.num_zeroes
+        self.run()
+        num_zeroes = len([v for v in self.values if v % 100 == 0])
+        return num_zeroes
 
+    # 2696: wrong, 3203: wrong
     def solve_part_II(self):
-        return self.crossed_zeroes
+        pairs = list(zip(self.values, self.values[1:]))
+        num_crossings = len([1 for a, b in pairs if (a // 100) != (b // 100) or (a % 100 == 0)])
+        return num_crossings
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
