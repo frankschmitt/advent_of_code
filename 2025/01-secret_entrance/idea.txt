@@ -1,0 +1,4 @@
+* use integer with arbitrary precision to keep track of current pos
+* L<n> : subtract n, R<n>: add n
+* part  I: solution = #entries in state list with %100 = 0
+* Part II: solution = #entries in state list with %100 != %100 of previous iteration 
