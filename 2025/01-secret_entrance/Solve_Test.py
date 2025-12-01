@@ -9,12 +9,10 @@ class SolveTest(unittest.TestCase):
 
     def test_solve_part_I(self):
         solve = Solve.read_input_file('example_input.txt')
-        solve.run()
         self.assertEqual(3, solve.solve_part_I())
 
     def test_solve_part_II(self):
         solve = Solve.read_input_file('example_input.txt')
-        solve.run()
         self.assertEqual(6, solve.solve_part_II())
 
 if __name__ == '__main__':
