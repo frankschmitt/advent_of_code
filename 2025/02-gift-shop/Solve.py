@@ -32,7 +32,7 @@ class Solve:
 
     # invalid check, part II
     # idea: split the string into chunks of the same length and check whether all chunks are equal
-    # we have to check chunks of length 1, 2, ..., len(s)//2
+    # we have to check chunks of length 1, 2, ..., len(s)//2 + 1
     def is_invalid_part_II(self, value):
        s = str(value)
        logging.debug(f"value: {s}, length: {len(s)}, max chunk size: {len(s)//2}")
@@ -49,14 +49,13 @@ class Solve:
         invalid_ids_list = [ [ v for v in r if self.is_invalid_part_I(v)] for r in self.ranges]
         invalid_ids = [v for row in invalid_ids_list for v in row]
         logging.debug(f"invalid ids: {invalid_ids}")
-        #return functools.reduce(lambda x,acc: x*acc, invalid_ids, 1)
+        #return functools.reduce(lambda x,acc: x*acc, invalid_ids, 1) # silly me, I misread the assignment and computed the product instead of the sum :P
         return sum(invalid_ids)
 
     def solve_part_II(self):
         invalid_ids_list = [ [ v for v in r if self.is_invalid_part_II(v)] for r in self.ranges]
         invalid_ids = [v for row in invalid_ids_list for v in row]
         logging.debug(f"invalid ids: {invalid_ids}")
-        #return functools.reduce(lambda x,acc: x*acc, invalid_ids, 1)
         return sum(invalid_ids)
 
 
