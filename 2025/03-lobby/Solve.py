@@ -19,20 +19,31 @@ class Solve:
         with open(filename) as f:
             lines = [l.rstrip() for l in f.readlines()]
         return Solve(lines)
-
-    # idea: take the largest integer in pos 0 .. n-1, note its pos as i and then take the largest one in positions i .. n
-    def solve_part_I(self):
+    
+    def solve(self, num_digits):
         res = 0
         for r in self.rows:
-            idx1 = np.argmax(r.values[:-1]) # index of first maximum, but only up to penultimate position
-            idx2 = np.argmax(r.values[idx1+1:]) # index of first maximum in remainder
-            val = r.values[idx1]*10 + r.values[idx1+1:][idx2]
-            #logging.debug(f"max for row {r}: {val} for indices {idx1} / {idx2}")
-            res += val
+            # approach: take the largest integer in allowed positions, note its pos and look for the largest remainder
+            # allowed positions: if we have n digits remaining that we need to cram into our output, we're allowed to look only in positions up to length(input)-n
+            logging.debug(f"checking row {r}")
+            start_idx = 0
+            its_res = 0
+            for i in range(0, num_digits):
+                allowed_row = r.values[start_idx : len(r.values) - num_digits + i + 1]
+                logging.debug(f"allowed_row for {i}: {allowed_row}")
+                idx = np.argmax(allowed_row)
+                start_idx += idx + 1
+                its_res = its_res*10 + allowed_row[idx]
+            logging.debug(f"max for row {r}: {its_res} for num_digits = {num_digits}")
+            res += its_res
         return res
 
-    def solve_part_II(self):
-        return -1
+
+   def solve_part_I(self):
+        return self.solve(2)
+
+   def solve_part_II(self):
+        return self.solve(12) 
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
