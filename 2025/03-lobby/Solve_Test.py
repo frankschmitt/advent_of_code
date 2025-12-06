@@ -9,7 +9,7 @@ class SolveTest(unittest.TestCase):
 
     def test_solve_part_I(self):
         solve = Solve.read_input_file('example_input.txt')
-        self.assertEqual(-2, solve.solve_part_I())
+        self.assertEqual(357, solve.solve_part_I())
 
     def test_solve_part_II(self):
         solve = Solve.read_input_file('example_input.txt')
